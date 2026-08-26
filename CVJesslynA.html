@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CV - Nama Anda</title>
+  <title>CV — Jesslyn Angelica Klarise</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg-pink: #F3C9D0;
+      --bg-pink: #F3C0C8;
       --card-white: #FFFFFF;
-      --text-dark: #333333;
+      --text-dark: #222222;
       --muted: #6b6b6b;
       --accent: #D98A9F;
-      --max-width: 900px;
+      --max-width: 920px;
     }
     *{box-sizing:border-box}
     body{
@@ -22,178 +22,117 @@
       color:var(--text-dark);
       display:flex;
       justify-content:center;
-      padding:32px;
+      padding:28px;
     }
-    .cv-container{
+    .cv{
       width:100%;
       max-width:var(--max-width);
       background:var(--card-white);
       border-radius:12px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.08);
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
       overflow:hidden;
       display:grid;
-      grid-template-columns: 280px 1fr;
-      gap:0;
+      grid-template-columns: 300px 1fr;
     }
-    /* Responsive */
-    @media (max-width:800px){
-      .cv-container{grid-template-columns:1fr}
-    }
+    @media (max-width:820px){ .cv{grid-template-columns:1fr} }
 
-    /* Left column */
+    /* kiri */
     .left{
       background:linear-gradient(180deg, rgba(217,138,159,0.06), rgba(243,201,208,0.04));
       padding:28px;
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:18px;
+      gap:16px;
     }
     .photo{
-      width:140px;
-      height:140px;
+      width:150px;
+      height:150px;
       border-radius:50%;
-      overflow:hidden;
+      background:#eee;
       border:6px solid var(--card-white);
       box-shadow:0 6px 18px rgba(217,138,159,0.12);
-      background:#eee;
-    }
-    .photo img{width:100%;height:100%;object-fit:cover;display:block}
-    .name{
-      text-align:center;
-    }
-    .name h1{
-      margin:6px 0 0 0;
-      font-family:'Montserrat',sans-serif;
-      font-size:20px;
-      letter-spacing:0.2px;
-    }
-    .name p{
-      margin:4px 0 0 0;
-      color:var(--muted);
-      font-size:14px;
-    }
-    .contact{
-      width:100%;
-      margin-top:6px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      font-size:14px;
-      color:var(--muted);
-    }
-    .contact .item{display:flex;gap:10px;align-items:center}
-    .contact .label{color:var(--text-dark);font-weight:500}
-
-    .skills-badge{
-      width:100%;
-      margin-top:8px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:center;
-    }
-    .badge{
-      background:rgba(217,138,159,0.12);
-      color:var(--text-dark);
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:500;
-    }
-
-    /* Right column */
-    .right{
-      padding:28px 32px;
-    }
-    .section{
-      margin-bottom:18px;
-    }
-    .section h2{
-      margin:0 0 10px 0;
-      font-family:'Montserrat',sans-serif;
-      font-size:16px;
-      color:var(--text-dark);
       display:flex;
       align-items:center;
-      gap:10px;
-    }
-    .card{
-      background:transparent;
-      padding:8px 0;
-      border-left:4px solid transparent;
-    }
-    .about p{margin:0;color:var(--muted);line-height:1.5}
-    .list{padding:0;margin:0;list-style:none}
-    .list li{margin-bottom:8px;color:var(--muted);font-size:14px}
-    .meta{font-weight:600;color:var(--text-dark);font-size:14px}
-    .timeline-item{display:flex;justify-content:space-between;gap:12px}
-    .timeline-item .leftcol{max-width:72%}
-    .small{font-size:13px;color:var(--muted)}
-
-    /* Footer / small print */
-    .footer{
-      margin-top:12px;
-      font-size:12px;
+      justify-content:center;
+      font-size:14px;
       color:var(--muted);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+      text-align:center;
+      padding:8px;
     }
+    /* Untuk menambahkan foto: ganti background-image di .photo dengan url('path/to/photo.jpg') */
+    .name{ text-align:center }
+    .name h1{ margin:6px 0 0 0; font-family:'Montserrat',sans-serif; font-size:20px; }
+    .name p{ margin:4px 0 0 0; color:var(--muted); font-size:14px; }
+
+    .contact{ width:100%; margin-top:6px; display:flex; flex-direction:column; gap:8px; font-size:14px; color:var(--muted) }
+    .contact .item{ display:flex; gap:10px; align-items:flex-start }
+    .contact .label{ color:var(--text-dark); font-weight:600; min-width:80px }
+
+    .badges{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:6px }
+    .badge{ background:rgba(217,138,159,0.12); color:var(--text-dark); padding:6px 10px; border-radius:999px; font-size:13px; font-weight:500 }
+
+    /* kanan */
+    .right{ padding:28px 32px; }
+    .section{ margin-bottom:18px }
+    .section h2{ margin:0 0 10px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:var(--text-dark) }
+    .card{ padding:8px 0; color:var(--muted); line-height:1.5 }
+    .meta{ font-weight:600; color:var(--text-dark) }
+    .small{ font-size:13px; color:var(--muted) }
+
+    ul.list{ padding-left:16px; margin:6px 0 0 0 }
+    ul.list li{ margin-bottom:8px }
+
+    .two-col{ display:flex; gap:24px; flex-wrap:wrap }
+    .col{ min-width:220px; }
+
+    .accent-line{ height:4px; background:var(--accent); border-radius:4px; margin:8px 0 18px 0 }
   </style>
 </head>
 <body>
-  <div class="cv-container" role="document" aria-label="Curriculum Vitae">
+  <article class="cv" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
     <aside class="left" aria-label="Informasi pribadi">
-      <div class="photo" id="profile-photo">
-        <!-- Ganti src dengan foto Anda -->
-        <img src="" alt="Foto profil">
+      <div class="photo" aria-hidden="false">
+        Foto formal sekolah
       </div>
+
       <div class="name">
-        <h1 id="full-name">Nama Lengkap</h1>
-        <p id="subtitle">Kelas / Posisi</p>
+        <h1><strong>Jesslyn Angelica Klarise</strong></h1>
+        <p><strong>11A</strong></p>
       </div>
 
       <div class="contact" aria-label="Kontak">
-        <div class="item"><span class="label">📍</span><span>Taman Kopo Indah II, Bandung</span></div>
-        <div class="item"><span class="label">📞</span><span>0877-2238-2001</span></div>
-        <div class="item"><span class="label">✉️</span><span>email@example.com</span></div>
+        <div class="item"><div class="label">Alamat</div><div>Taman Kopo Indah II, Bandung</div></div>
+        <div class="item"><div class="label">Telepon</div><div>0877-2238-2001</div></div>
+        <div class="item"><div class="label">Email</div><div>jxlynak@gmail.com</div></div>
+        <div class="item"><div class="label">TTL</div><div>Bandung, 10 October 2010</div></div>
       </div>
 
-      <div class="skills-badge" aria-hidden="false">
+      <div class="badges" aria-hidden="false">
         <span class="badge">Desain Grafis</span>
-        <span class="badge">Ilustrasi</span>
+        <span class="badge">Ilustrasi Digital</span>
         <span class="badge">Bahasa Inggris</span>
       </div>
     </aside>
 
     <main class="right" aria-label="Konten utama">
+      <div class="accent-line" aria-hidden="true"></div>
+
       <section class="section about">
         <h2>Tentang Saya</h2>
         <div class="card">
-          <p id="about-text">Ringkasan singkat tentang Anda. Gabungkan kreativitas dan pola berpikir kritis; sebutkan minat pada seni, sains, dan bahasa.</p>
+          Saya adalah murid SMA BPK Penabur Holis yang memiliki ketertarikan pada seni, sains, dan mempelajari bahasa baru. Saya dapat menggabungkan kreativitas dan pola berpikir kritis dalam pekerjaan saya. Saya senang mengeksplorasi bagaimana ide-ide artistik dapat terhubung dengan pemikiran ilmiah melalui desain, observasi, dan eksperimen. Saya termotivasi untuk terus belajar, mengembangkan keterampilan, dan memberikan perspektif baru untuk masa depan yang lebih baik.
         </div>
       </section>
 
       <section class="section">
         <h2>Pendidikan</h2>
         <div class="card">
-          <div class="timeline-item">
-            <div class="leftcol">
-              <div class="meta">SMPK BPK Penabur Singgasana & Holis</div>
-              <div class="small">Junior High School • 2022–2025</div>
-            </div>
-            <div class="small">Bandung</div>
-          </div>
-          <div style="height:8px"></div>
-          <div class="timeline-item">
-            <div class="leftcol">
-              <div class="meta">SMA BPK Penabur Holis</div>
-              <div class="small">Senior High School • Lulus 2027</div>
-            </div>
-            <div class="small">Bandung</div>
-          </div>
+          <div class="meta">SMPK BPK Penabur Singgasana & Holis</div>
+          <div class="small">Junior High School • 2022–2025</div>
+          <div style="height:10px"></div>
+          <div class="meta">SMA BPK Penabur Holis</div>
+          <div class="small">Senior High School • Lulus 2027</div>
         </div>
       </section>
 
@@ -202,106 +141,61 @@
         <div class="card">
           <ul class="list">
             <li><span class="meta">Elite Mandarin Holis — 2026</span><div class="small">Menyunting atau membuat feed post</div></li>
-            <li><span class="meta">OSIS Volunteer — 2025</span><div class="small">Membantu dekorasi Festival Moon Cake</div></li>
-            <li><span class="meta">Design Graphics — Gereja — 2024–2026</span><div class="small">Membuat desain untuk story IG</div></li>
+            <li><span class="meta">OSIS Volunteer — 2025</span><div class="small">Membantu dekorasi untuk Festival Moon Cake</div></li>
+            <li><span class="meta">Design Graphics — Gereja — 2024–2026</span><div class="small">Membuat desain untuk story Instagram</div></li>
           </ul>
         </div>
       </section>
 
       <section class="section">
-        <h2>Kemampuan</h2>
-        <div class="card">
-          <div style="display:flex;gap:24px;flex-wrap:wrap">
-            <div style="min-width:200px">
-              <div class="meta">Soft skills</div>
-              <ul class="list">
-                <li>Kemampuan berbicara di depan umum</li>
-                <li>Kerja sama tim & adaptasi</li>
-                <li>Manajemen waktu</li>
-              </ul>
-            </div>
-            <div style="min-width:200px">
-              <div class="meta">Hard skills</div>
-              <ul class="list">
-                <li>Desain grafis</li>
-                <li>Ilustrasi digital</li>
-                <li>Penyuntingan video dasar</li>
-              </ul>
-            </div>
+        <h2>Kemampuan & Pencapaian</h2>
+        <div class="card two-col">
+          <div class="col">
+            <div class="meta">Soft skills</div>
+            <ul class="list">
+              <li>Kemampuan berbicara di depan umum</li>
+              <li>Kerja sama tim & kemampuan beradaptasi</li>
+              <li>Kesabaran</li>
+              <li>Manajemen waktu</li>
+              <li>Berpikir kritis</li>
+              <li>Pemecahan masalah secara kreatif</li>
+            </ul>
+          </div>
+
+          <div class="col">
+            <div class="meta">Hard skills</div>
+            <ul class="list">
+              <li>Kemampuan berbahasa Inggris</li>
+              <li>Desain grafis</li>
+              <li>Ilustrasi digital</li>
+              <li>Riset & pengumpulan data</li>
+              <li>Penyuntingan video dasar</li>
+              <li>Pemahaman konsep dasar sains</li>
+            </ul>
           </div>
         </div>
+
+        <div style="height:12px"></div>
+
+        <div class="meta">Pencapaian</div>
+        <ul class="list">
+          <li>Tarumanegara Business Plan Competition 2026 — Top 5</li>
+          <li>The One Academy Poster Competition 2026 — Finalist</li>
+          <li>Young Change Maker Summit 2025 — Semi Finals</li>
+          <li>Sampoerna Academy STEAM Inter-School Competition 2025 — Finalist</li>
+          <li>Juara Umum 4 di SMP BPK Penabur Holis 2025</li>
+        </ul>
       </section>
+
+      <div style="height:6px"></div>
 
       <section class="section">
-        <h2>Pencapaian</h2>
+        <h2>Bahasa</h2>
         <div class="card">
-          <ul class="list">
-            <li><span class="meta">Tarumanegara Business Plan Competition 2026</span><div class="small">Top 5</div></li>
-            <li><span class="meta">The One Academy Poster Competition 2026</span><div class="small">Finalist</div></li>
-            <li><span class="meta">Young Change Maker Summit 2025</span><div class="small">Semi Finals</div></li>
-          </ul>
+          Indonesia; Inggris; Mandarin (HSK 3)
         </div>
       </section>
-
-      <div class="footer">
-        <div class="small">Bahasa: Indonesia; Inggris; Mandarin (HSK 3)</div>
-        <div class="small">Tanggal lahir: Bandung, 10 October 2010</div>
-      </div>
     </main>
-  </div>
-
-  <script>
-    // Contoh: isi data dinamis (opsional)
-    document.getElementById('full-name').textContent = 'Jesslyn Angelica Klarise';
-    document.getElementById('subtitle').textContent = '11A';
-    document.getElementById('about-text').textContent = 'Saya adalah murid SMA BPK Penabur Holis yang memiliki ketertarikan pada seni, sains, dan mempelajari bahasa baru. Saya dapat menggabungkan kreativitas dan pola berpikir kritis dalam pekerjaan saya.';
-    // Ganti src foto profil di bawah ini dengan path foto Anda
-    const photo = document.querySelector('#profile-photo img');
-    photo.src = ''; // masukkan
-    .photo{width:120px;height:120px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#f2a6b2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:0 8px 22px rgba(208,123,134,0.18);overflow:hidden;}
-    .photo img{width:100%;height:100%;object-fit:cover;display:block;}
-    .name{font-size:20px;font-weight:700;letter-spacing:0.4px;}
-    .role{color:var(--muted);font-size:13px;margin-top:4px;}
-    .section-title{font-size:12px;font-weight:700;color:var(--accent);margin-top:6px;text-transform:uppercase;letter-spacing:1px;}
-    .contact{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.6;}
-    .skills-list, .lang-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;font-size:14px;color:var(--muted);}
-    .pill{display:inline-block;background:rgba(208,123,134,0.12);color:var(--heading);padding:6px 10px;border-radius:999px;font-size:13px;margin-top:8px;}
-    /* Main */
-    .main{padding:28px;}
-    .about{font-size:15px;color:#333;line-height:1.6;}
-    .card-block{background:linear-gradient(180deg,#fff,#fff);border-radius:10px;padding:14px;box-shadow:0 6px 18px rgba(34,34,34,0.04);}
-    .muted{color:var(--muted);font-size:13px;}
-    h3{margin:0;font-size:16px;color:var(--heading);}
-    .small{font-size:13px;color:var(--muted);}
-    .meta{font-size:13px;color:var(--muted);margin-top:6px;}
-    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;}
-    .tag{background:rgba(208,123,134,0.08);padding:6px 10px;border-radius:8px;font-size:13px;color:var(--heading);}
-    /* Buttons */
-    .btn{
-      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid rgba(34,34,34,0.06);background:#fff;color:var(--heading);cursor:pointer;font-size:13px;
-    }
-    /* Responsive */
-    @media (max-width:900px){
-      .card{grid-template-columns:1fr;gap:12px}
-      .side{flex-direction:row;align-items:center;padding:16px}
-      .main{padding:16px}
-    }
-    /* Print */
-    @media print{
-      body{background:white}
-      .wrap{box-shadow:none;margin:0}
-      .card{box-shadow:none;border-radius:0}
-      .btn, input, label { display:none !important; }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card" role="document" aria-label="Curriculum Vitae Jill Valencia">
-      <!-- SIDEBAR -->
-      <aside class="side" aria-label="Kontak dan Keahlian">
-        <div class="photo-wrap">
-          <div class="photo" id="photoBox" aria-hidden="true">
-            <span id="initials">JV</span>
-            <!-- Contoh gambar template (visual placeholder) -->
-            <!-- <img src="
+  </article>
+</body>
+</html>
