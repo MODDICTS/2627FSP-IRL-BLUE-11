@@ -9,103 +9,206 @@
     :root{
       --bg-pink: #F3C0C8;
       --card-white: #FFFFFF;
-      --text-dark: #222222;
       --muted: #6b6b6b;
+      --text-dark: #222222;
       --accent: #D98A9F;
-      --max-width: 920px;
+      --accent-2: #C86F84;
+      --glass: rgba(255,255,255,0.85);
+      --max-width: 980px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: 'Roboto', sans-serif;
+      font-family:'Roboto',sans-serif;
       background: linear-gradient(180deg, var(--bg-pink) 0%, #F7E6E9 100%);
-      color:var(--text-dark);
       display:flex;
       justify-content:center;
       padding:28px;
+      color:var(--text-dark);
     }
-    .cv{
+    .cv-wrap{
       width:100%;
       max-width:var(--max-width);
-      background:var(--card-white);
-      border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+      border-radius:14px;
       overflow:hidden;
+      box-shadow:0 12px 36px rgba(0,0,0,0.12);
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
       display:grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 340px 1fr;
+      gap:0;
     }
-    @media (max-width:820px){ .cv{grid-template-columns:1fr} }
+    @media (max-width:900px){ .cv-wrap{grid-template-columns:1fr} }
 
-    /* kiri */
-    .left{
-      background:linear-gradient(180deg, rgba(217,138,159,0.06), rgba(243,201,208,0.04));
+    /* Header decorative diagonal */
+    .left-panel{
+      position:relative;
       padding:28px;
+      background:
+        linear-gradient(135deg, rgba(216,138,159,0.06) 0%, rgba(243,201,208,0.03) 100%);
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:16px;
+      gap:14px;
     }
-    .photo{
-      width:150px;
-      height:150px;
+    .diagonal{
+      position:absolute;
+      top:0; left:0;
+      width:100%;
+      height:110px;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      transform:skewY(-6deg);
+      transform-origin:0 0;
+      border-bottom-right-radius:40px;
+      opacity:0.12;
+    }
+
+    /* Photo profile */
+    .photo-wrap{
+      width:160px;
+      height:160px;
       border-radius:50%;
-      background:#eee;
+      overflow:hidden;
       border:6px solid var(--card-white);
-      box-shadow:0 6px 18px rgba(217,138,159,0.12);
+      box-shadow:0 8px 22px rgba(200,100,120,0.12);
+      background:#eee;
       display:flex;
       align-items:center;
       justify-content:center;
+    }
+    .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .name{
+      text-align:center;
+      margin-top:6px;
+    }
+    .name h1{
+      margin:6px 0 0 0;
+      font-family:'Montserrat',sans-serif;
+      font-size:20px;
+      letter-spacing:0.2px;
+    }
+    .name p{margin:4px 0 0 0;color:var(--muted);font-size:14px}
+
+    /* School photo card */
+    .school-card{
+      width:100%;
+      margin-top:8px;
+      border-radius:10px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));
+      box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      border:1px solid rgba(200,120,140,0.06);
+    }
+    .school-photo{
+      width:100%;
+      height:120px;
+      background:#ddd;
+      display:block;
+      object-fit:cover;
+    }
+    .school-caption{
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--text-dark);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .school-caption .label{font-weight:600}
+
+    .contact{
+      width:100%;
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
       font-size:14px;
       color:var(--muted);
-      text-align:center;
-      padding:8px;
     }
-    /* Untuk menambahkan foto: ganti background-image di .photo dengan url('path/to/photo.jpg') */
-    .name{ text-align:center }
-    .name h1{ margin:6px 0 0 0; font-family:'Montserrat',sans-serif; font-size:20px; }
-    .name p{ margin:4px 0 0 0; color:var(--muted); font-size:14px; }
+    .contact .row{display:flex;gap:10px;align-items:flex-start}
+    .contact .k{min-width:78px;font-weight:600;color:var(--text-dark)}
 
-    .contact{ width:100%; margin-top:6px; display:flex; flex-direction:column; gap:8px; font-size:14px; color:var(--muted) }
-    .contact .item{ display:flex; gap:10px; align-items:flex-start }
-    .contact .label{ color:var(--text-dark); font-weight:600; min-width:80px }
+    .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+    .badge{background:rgba(217,138,159,0.12);color:var(--text-dark);padding:6px 10px;border-radius:999px;font-size:13px;font-weight:500}
 
-    .badges{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:6px }
-    .badge{ background:rgba(217,138,159,0.12); color:var(--text-dark); padding:6px 10px; border-radius:999px; font-size:13px; font-weight:500 }
+    /* Right content */
+    .right-panel{padding:22px 30px}
+    .header-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .title-block{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .title-block h2{margin:0;font-family:'Montserrat',sans-serif;font-size:18px}
+    .title-block .sub{color:var(--muted);font-size:13px}
 
-    /* kanan */
-    .right{ padding:28px 32px; }
-    .section{ margin-bottom:18px }
-    .section h2{ margin:0 0 10px 0; font-family:'Montserrat',sans-serif; font-size:16px; color:var(--text-dark) }
-    .card{ padding:8px 0; color:var(--muted); line-height:1.5 }
-    .meta{ font-weight:600; color:var(--text-dark) }
-    .small{ font-size:13px; color:var(--muted) }
+    .download-badge{
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:white;padding:8px 12px;border-radius:10px;font-weight:600;font-size:13px;
+      box-shadow:0 6px 18px rgba(217,138,159,0.12);
+    }
 
-    ul.list{ padding-left:16px; margin:6px 0 0 0 }
-    ul.list li{ margin-bottom:8px }
+    .section{margin-top:16px}
+    .section h3{margin:0 0 8px 0;font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-dark)}
+    .card{
+      background:var(--glass);
+      padding:12px;
+      border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.04);
+      color:var(--muted);
+      line-height:1.5;
+    }
 
-    .two-col{ display:flex; gap:24px; flex-wrap:wrap }
-    .col{ min-width:220px; }
+    .two-col{display:flex;gap:18px;flex-wrap:wrap}
+    .col{flex:1;min-width:220px}
 
-    .accent-line{ height:4px; background:var(--accent); border-radius:4px; margin:8px 0 18px 0 }
+    ul.list{padding-left:16px;margin:6px 0 0 0}
+    ul.list li{margin-bottom:8px}
+
+    .meta{font-weight:600;color:var(--text-dark)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* decorative bullets */
+    .list li::marker{color:var(--accent)}
+
+    /* footer */
+    .footer{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
-  <article class="cv" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
-    <aside class="left" aria-label="Informasi pribadi">
-      <div class="photo" aria-hidden="false">
-        Foto formal sekolah
+  <main class="cv-wrap" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
+    <aside class="left-panel" aria-label="Panel kiri">
+      <div class="diagonal" aria-hidden="true"></div>
+
+      <div class="photo-wrap" aria-hidden="false">
+        <!-- Ganti src dengan foto profil sekolah Anda -->
+        <img src="photo-profile.jpg" alt="Foto Jesslyn">
       </div>
 
       <div class="name">
-        <h1><strong>Jesslyn Angelica Klarise</strong></h1>
-        <p><strong>11A</strong></p>
+        <h1>Jesslyn Angelica Klarise</h1>
+        <p>11A</p>
+      </div>
+
+      <div class="school-card" aria-label="Foto sekolah">
+        <!-- Ganti src dengan foto sekolah asli; jika tidak ada, biarkan placeholder -->
+        <img class="school-photo" src="school-photo.jpg" alt="Foto Sekolah">
+        <div class="school-caption">
+          <div class="label">SMA BPK Penabur Holis</div>
+          <div class="small">Bandung</div>
+        </div>
       </div>
 
       <div class="contact" aria-label="Kontak">
-        <div class="item"><div class="label">Alamat</div><div>Taman Kopo Indah II, Bandung</div></div>
-        <div class="item"><div class="label">Telepon</div><div>0877-2238-2001</div></div>
-        <div class="item"><div class="label">Email</div><div>jxlynak@gmail.com</div></div>
-        <div class="item"><div class="label">TTL</div><div>Bandung, 10 October 2010</div></div>
+        <div class="row"><div class="k">Alamat</div><div>Taman Kopo Indah II, Bandung</div></div>
+        <div class="row"><div class="k">Telepon</div><div>0877-2238-2001</div></div>
+        <div class="row"><div class="k">Email</div><div>jxlynak@gmail.com</div></div>
+        <div class="row"><div class="k">TTL</div><div>Bandung, 10 October 2010</div></div>
       </div>
 
       <div class="badges" aria-hidden="false">
@@ -115,18 +218,24 @@
       </div>
     </aside>
 
-    <main class="right" aria-label="Konten utama">
-      <div class="accent-line" aria-hidden="true"></div>
+    <section class="right-panel" aria-label="Konten utama">
+      <div class="header-top">
+        <div class="title-block">
+          <h2>Curriculum Vitae</h2>
+          <div class="sub">Jesslyn Angelica Klarise — Pelajar SMA</div>
+        </div>
+        <div class="download-badge">Soft Pink Edition</div>
+      </div>
 
-      <section class="section about">
-        <h2>Tentang Saya</h2>
+      <div class="section about">
+        <h3>Tentang Saya</h3>
         <div class="card">
           Saya adalah murid SMA BPK Penabur Holis yang memiliki ketertarikan pada seni, sains, dan mempelajari bahasa baru. Saya dapat menggabungkan kreativitas dan pola berpikir kritis dalam pekerjaan saya. Saya senang mengeksplorasi bagaimana ide-ide artistik dapat terhubung dengan pemikiran ilmiah melalui desain, observasi, dan eksperimen. Saya termotivasi untuk terus belajar, mengembangkan keterampilan, dan memberikan perspektif baru untuk masa depan yang lebih baik.
         </div>
-      </section>
+      </div>
 
-      <section class="section">
-        <h2>Pendidikan</h2>
+      <div class="section">
+        <h3>Pendidikan</h3>
         <div class="card">
           <div class="meta">SMPK BPK Penabur Singgasana & Holis</div>
           <div class="small">Junior High School • 2022–2025</div>
@@ -134,10 +243,10 @@
           <div class="meta">SMA BPK Penabur Holis</div>
           <div class="small">Senior High School • Lulus 2028</div>
         </div>
-      </section>
+      </div>
 
-      <section class="section">
-        <h2>Pengalaman</h2>
+      <div class="section">
+        <h3>Pengalaman</h3>
         <div class="card">
           <ul class="list">
             <li><span class="meta">Elite Mandarin Holis — 2026</span><div class="small">Menyunting atau membuat feed post</div></li>
@@ -145,10 +254,10 @@
             <li><span class="meta">Design Graphics — Gereja — 2024–2026</span><div class="small">Membuat desain untuk story Instagram</div></li>
           </ul>
         </div>
-      </section>
+      </div>
 
-      <section class="section">
-        <h2>Kemampuan & Pencapaian</h2>
+      <div class="section">
+        <h3>Kemampuan & Pencapaian</h3>
         <div class="card two-col">
           <div class="col">
             <div class="meta">Soft skills</div>
@@ -161,7 +270,6 @@
               <li>Pemecahan masalah secara kreatif</li>
             </ul>
           </div>
-
           <div class="col">
             <div class="meta">Hard skills</div>
             <ul class="list">
@@ -185,17 +293,18 @@
           <li>Sampoerna Academy STEAM Inter-School Competition 2025 — Finalist</li>
           <li>Juara Umum 4 di SMP BPK Penabur Holis 2025</li>
         </ul>
-      </section>
+      </div>
 
-      <div style="height:6px"></div>
+      <div class="section">
+        <h3>Bahasa</h3>
+        <div class="card">Indonesia; Inggris; Mandarin (HSK 3)</div>
+      </div>
 
-      <section class="section">
-        <h2>Bahasa</h2>
-        <div class="card">
-          Indonesia; Inggris; Mandarin (HSK 3)
-        </div>
-      </section>
-    </main>
-  </article>
+      <div class="footer">
+        <div class="small">Kontak: 0877-2238-2001 • jxlynak@gmail.com</div>
+        <div class="small">Tanggal lahir: Bandung, 10 October 2010</div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
