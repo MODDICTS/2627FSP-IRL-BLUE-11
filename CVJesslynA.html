@@ -7,146 +7,174 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg-pink: #F3C0C8;
+      --bg-pink: #EEC9D0;
       --card-white: #FFFFFF;
       --muted: #6b6b6b;
-      --text-dark: #222222;
-      --accent: #D98A9F;
+      --text-dark: #1f1f1f;
+      --accent-1: #D98A9F;
       --accent-2: #C86F84;
-      --glass: rgba(255,255,255,0.88);
-      --max-width: 980px;
+      --paper: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence baseFrequency="0.9" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.03" fill="%23ffffff"/></svg>');
+      --max-width: 1000px;
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family:'Roboto',sans-serif;
-      background: linear-gradient(180deg, var(--bg-pink) 0%, #F7E6E9 100%);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(216,138,159,0.06), transparent 12%),
+        linear-gradient(180deg, #F9EEF0 0%, var(--bg-pink) 60%);
       display:flex;
       justify-content:center;
       padding:28px;
       color:var(--text-dark);
     }
-    .cv-wrap{
+
+    /* Container */
+    .cv{
       width:100%;
       max-width:var(--max-width);
-      border-radius:16px;
+      border-radius:18px;
       overflow:hidden;
-      box-shadow:0 14px 40px rgba(0,0,0,0.12);
-      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+      box-shadow:0 18px 50px rgba(0,0,0,0.12);
       display:grid;
-      grid-template-columns: 340px 1fr;
-      gap:0;
-    }
-    @media (max-width:920px){ .cv-wrap{grid-template-columns:1fr} }
-
-    .left-panel{
+      grid-template-columns:360px 1fr;
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
       position:relative;
+    }
+    @media (max-width:920px){ .cv{grid-template-columns:1fr} }
+
+    /* Background decorative layers */
+    .bg-layer {
+      position:absolute; inset:0; pointer-events:none; z-index:0;
+      background-image: var(--paper);
+      opacity:0.9;
+    }
+    .bg-waves{
+      position:absolute; right:-120px; top:-60px; width:520px; height:520px; z-index:0;
+      background: radial-gradient(circle at 30% 30%, rgba(200,120,140,0.06), transparent 20%),
+                  conic-gradient(from 180deg at 50% 50%, rgba(217,138,159,0.06), transparent 30%);
+      transform:rotate(12deg);
+      filter:blur(18px);
+      opacity:0.9;
+    }
+
+    /* Left column */
+    .left{
       padding:28px;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(217,138,159,0.06), transparent 12%),
-        radial-gradient(circle at 90% 80%, rgba(200,120,140,0.04), transparent 12%),
-        linear-gradient(180deg, rgba(217,138,159,0.03), rgba(243,201,208,0.02));
+      position:relative;
+      z-index:2;
       display:flex;
       flex-direction:column;
       align-items:center;
       gap:14px;
-      overflow:hidden;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     }
-    .pattern-svg{ position:absolute; inset:0; opacity:0.12; pointer-events:none; }
 
-    .photo-wrap{
-      width:170px;
-      height:170px;
+    /* corner flourish */
+    .corner-flourish{
+      position:absolute; left:-40px; top:-40px; width:160px; height:160px; z-index:1;
+      background: radial-gradient(circle at 30% 30%, rgba(200,120,140,0.08), transparent 20%);
       border-radius:50%;
-      overflow:hidden;
-      border:6px solid var(--card-white);
-      box-shadow:0 10px 28px rgba(200,100,120,0.12);
-      background:#eee;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      transform:rotate(-20deg);
+      filter:blur(6px);
     }
-    .photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
 
-    .name{text-align:center;margin-top:6px}
+    .photo{
+      width:180px; height:180px; border-radius:50%; overflow:hidden;
+      border:8px solid var(--card-white); box-shadow:0 12px 36px rgba(200,100,120,0.12);
+      background:linear-gradient(180deg,#fff,#f6f0f1);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .name{text-align:center}
     .name h1{margin:6px 0 0 0;font-family:'Montserrat',sans-serif;font-size:20px}
     .name p{margin:4px 0 0 0;color:var(--muted);font-size:14px}
 
-    .school-card{
-      width:100%;
-      margin-top:10px;
-      border-radius:12px;
-      overflow:hidden;
+    /* school photo with decorative frame */
+    .school-frame{
+      width:100%; margin-top:8px; border-radius:12px; overflow:hidden;
       background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.5));
-      box-shadow:0 8px 22px rgba(0,0,0,0.06);
-      border:1px solid rgba(200,120,140,0.06);
+      border:1px solid rgba(200,120,140,0.06); box-shadow:0 8px 22px rgba(0,0,0,0.06);
+      position:relative;
     }
-    .school-photo{width:100%;height:120px;background:#ddd;display:block;object-fit:cover}
-    .school-caption{padding:10px 12px;font-size:13px;color:var(--text-dark);display:flex;justify-content:space-between;align-items:center}
-    .school-caption .label{font-weight:700}
+    .school-frame img{width:100%;height:120px;object-fit:cover;display:block}
+    .school-tag{
+      position:absolute; left:12px; bottom:10px; background:rgba(255,255,255,0.9);
+      padding:6px 10px; border-radius:999px; font-weight:700; font-size:13px; color:var(--text-dark);
+      box-shadow:0 6px 18px rgba(217,138,159,0.08);
+    }
 
-    .contact{width:100%;margin-top:10px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--muted)}
-    .contact .row{display:flex;gap:10px;align-items:flex-start}
-    .contact .k{min-width:78px;font-weight:700;color:var(--text-dark)}
+    .contact{width:100%; margin-top:10px; display:flex; flex-direction:column; gap:8px; font-size:14px; color:var(--muted)}
+    .contact .row{display:flex; gap:10px; align-items:flex-start}
+    .contact .k{min-width:78px; font-weight:700; color:var(--text-dark)}
 
-    .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-    .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 6px 18px rgba(217,138,159,0.12)}
+    .skill-badges{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px}
+    .badge{
+      background:linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      color:white; padding:6px 12px; border-radius:999px; font-weight:700; font-size:13px;
+      box-shadow:0 8px 20px rgba(200,100,120,0.08);
+    }
 
-    .right-panel{padding:26px 34px}
-    .header-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .title-block h2{margin:0;font-family:'Montserrat',sans-serif;font-size:18px}
-    .title-block .sub{color:var(--muted);font-size:13px}
+    /* Right column */
+    .right{padding:26px 34px; position:relative; z-index:2}
+    .controls{display:flex; gap:12px; justify-content:flex-end; margin-bottom:6px}
+    .btn{padding:8px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700}
+    .btn-print{background:transparent; color:var(--accent-2); border:2px solid var(--accent-2)}
+    .btn-pdf{background:linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:white}
 
-    .decorative-strip{margin-top:12px;height:8px;border-radius:8px;background:linear-gradient(90deg, rgba(217,138,159,0.18), rgba(200,120,140,0.12));box-shadow:0 6px 18px rgba(217,138,159,0.06);}
+    .title{display:flex; justify-content:space-between; align-items:center; gap:12px}
+    .title h2{margin:0; font-family:'Montserrat',sans-serif; font-size:18px}
+    .title .sub{color:var(--muted); font-size:13px}
+
+    .decor{height:10px; margin-top:12px; border-radius:10px; background:linear-gradient(90deg, rgba(217,138,159,0.18), rgba(200,120,140,0.12)); box-shadow:0 8px 20px rgba(217,138,159,0.06)}
 
     .section{margin-top:18px}
-    .section h3{margin:0 0 8px 0;font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-dark)}
-    .card{background:var(--glass);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,0.04);color:var(--muted);line-height:1.5;}
+    .section h3{margin:0 0 8px 0; font-family:'Montserrat',sans-serif; font-size:14px; color:var(--text-dark)}
+    .card{
+      background:rgba(255,255,255,0.9); padding:14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.04);
+      color:var(--muted); line-height:1.5;
+    }
 
-    .two-col{display:flex;gap:18px;flex-wrap:wrap}
-    .col{flex:1;min-width:220px}
+    .two-col{display:flex; gap:18px; flex-wrap:wrap}
+    .col{flex:1; min-width:220px}
 
-    ul.list{padding-left:18px;margin:6px 0 0 0}
+    ul.list{padding-left:18px; margin:6px 0 0 0}
     ul.list li{margin-bottom:8px}
 
-    .meta{font-weight:700;color:var(--text-dark)}
-    .small{font-size:13px;color:var(--muted)}
+    .meta{font-weight:700; color:var(--text-dark)}
+    .small{font-size:13px; color:var(--muted)}
 
-    .whimsy{position:relative;margin-top:12px;height:48px;background:radial-gradient(circle at 10% 50%, rgba(217,138,159,0.06), transparent 8%), radial-gradient(circle at 90% 50%, rgba(200,120,140,0.04), transparent 8%);border-radius:12px;}
-
-    .footer{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px}
-
-    /* Controls */
-    .controls{display:flex;gap:12px;align-items:center}
-    .btn{
-      padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
-      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    /* whimsical decorative shapes inside right panel */
+    .whimsy-shapes{
+      position:absolute; right:18px; top:120px; width:160px; height:160px; z-index:1; pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(217,138,159,0.06), transparent 10%),
+        radial-gradient(circle at 80% 80%, rgba(200,120,140,0.04), transparent 10%);
+      transform:rotate(12deg); filter:blur(6px);
     }
-    .btn-print{background:transparent;color:var(--accent);border:2px solid var(--accent)}
-    .btn-pdf{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
 
-    /* Hide controls when printing */
+    /* print rules */
     @media print{
       .controls{display:none}
       body{background:white}
-      .cv-wrap{box-shadow:none;border-radius:0}
+      .cv{box-shadow:none;border-radius:0}
     }
   </style>
 </head>
 <body>
-  <main class="cv-wrap" id="cv-root" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
-    <aside class="left-panel" aria-label="Panel kiri">
-      <svg class="pattern-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <defs>
-          <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-            <circle cx="6" cy="6" r="2.5" fill="#D98A9F"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#dots)"/>
-      </svg>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-waves" aria-hidden="true"></div>
 
-      <div class="photo-wrap">
-        <img id="profile-photo" src="https://drive.google.com/drive/u/0/home" alt="Foto profil">
+  <main class="cv" id="cv-root" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
+    <div class="corner-flourish" aria-hidden="true"></div>
+
+    <aside class="left" aria-label="Informasi pribadi">
+      <div class="photo" title="Foto profil">
+        <!-- Ganti nama file di bawah dengan foto profil Anda -->
+        <img id="profile-photo" src="https://imagetourl.cloud/craj9szrf6yn.jpg" alt="Foto Jesslyn">
       </div>
 
       <div class="name">
@@ -154,47 +182,46 @@
         <p>11A</p>
       </div>
 
-      <div class="school-card">
-        <img class="school-photo" id="school-photo" src="https://drive.google.com/drive/u/0/home" alt="Foto sekolah">
-        <div class="school-caption">
-          <div class="label">SMA BPK Penabur Holis</div>
-          <div class="small">Bandung</div>
-        </div>
+      <div class="school-frame" title="Foto sekolah">
+        <!-- Ganti nama file di bawah dengan foto sekolah Anda -->
+        <img id="school-photo" src="shttps://imagetourl.cloud/craj9szrf6yn.jpg" alt="Foto sekolah">
+        <div class="school-tag">SMA BPK Penabur Holis</div>
       </div>
 
-      <div class="contact">
+      <div class="contact" aria-label="Kontak">
         <div class="row"><div class="k">Alamat</div><div>Taman Kopo Indah II, Bandung</div></div>
         <div class="row"><div class="k">Telepon</div><div>0877-2238-2001</div></div>
         <div class="row"><div class="k">Email</div><div>jxlynak@gmail.com</div></div>
         <div class="row"><div class="k">TTL</div><div>Bandung, 10 October 2010</div></div>
       </div>
 
-      <div class="badges">
-        <span class="badge">Desain Grafis</span>
-        <span class="badge">Ilustrasi Digital</span>
-        <span class="badge">Bahasa Inggris</span>
+      <div class="skill-badges" aria-hidden="false">
+        <div class="badge">Desain Grafis</div>
+        <div class="badge">Ilustrasi Digital</div>
+        <div class="badge">Bahasa Inggris</div>
       </div>
     </aside>
 
-    <section class="right-panel">
-      <div class="header-top">
-        <div class="title-block">
+    <section class="right" aria-label="Konten utama">
+      <div class="controls">
+        <button class="btn btn-print" id="printBtn">Print</button>
+        <button class="btn btn-pdf" id="pdfBtn">Download PDF</button>
+      </div>
+
+      <div class="title">
+        <div>
           <h2>Curriculum Vitae</h2>
           <div class="sub">Pelajar SMA — Tertarik pada desain, riset, dan komunikasi kreatif</div>
         </div>
-
-        <div class="controls" aria-hidden="false">
-          <button class="btn btn-print" id="printBtn" title="Print">Print</button>
-          <button class="btn btn-pdf" id="pdfBtn" title="Download PDF">Download PDF</button>
-        </div>
+        <div style="font-weight:800;color:var(--accent-2)">Soft Pink Whimsy</div>
       </div>
 
-      <div class="decorative-strip" aria-hidden="true"></div>
+      <div class="decor" aria-hidden="true"></div>
 
       <div class="section about">
         <h3>Tentang Saya</h3>
         <div class="card">
-          <strong>Profil profesional singkat</strong>: Saya adalah pelajar di <strong>SMA BPK Penabur Holis</strong> dengan minat kuat pada desain visual, sains terapan, dan pembelajaran bahasa. Saya menggabungkan kreativitas dengan pendekatan analitis untuk menghasilkan solusi desain yang komunikatif dan berbasis data. Saya mencari kesempatan magang atau proyek kolaboratif di bidang desain grafis, komunikasi visual, atau riset kreatif untuk mengembangkan keterampilan praktis dan memberikan kontribusi nyata.
+          <strong>Profil profesional singkat</strong>: Saya adalah pelajar di <strong>SMA BPK Penabur Holis</strong> dengan minat kuat pada desain visual, sains terapan, dan pembelajaran bahasa. Saya menggabungkan kreativitas dengan pendekatan analitis untuk merancang solusi visual yang komunikatif dan berdampak. Saya mencari kesempatan magang atau proyek kolaboratif di bidang desain grafis, komunikasi visual, atau riset kreatif untuk mengembangkan keterampilan praktis dan memberikan kontribusi nyata.
         </div>
       </div>
 
@@ -213,8 +240,8 @@
         <h3>Pengalaman</h3>
         <div class="card">
           <ul class="list">
-            <li><span class="meta">Elite Mandarin Holis — 2026</span><div class="small">Bertanggung jawab menyunting dan membuat konten feed; meningkatkan konsistensi visual dan pesan komunikasi.</div></li>
-            <li><span class="meta">OSIS Volunteer — 2025</span><div class="small">Koordinator dekorasi untuk Festival Moon Cake; bekerja dalam tim untuk perencanaan dan eksekusi acara.</div></li>
+            <li><span class="meta">Elite Mandarin Holis — 2026</span><div class="small">Menyunting dan membuat konten feed; meningkatkan konsistensi visual dan pesan komunikasi.</div></li>
+            <li><span class="meta">OSIS Volunteer — 2025</span><div class="small">Koordinator dekorasi Festival Moon Cake; perencanaan dan eksekusi acara bersama tim.</div></li>
             <li><span class="meta">Design Graphics — Gereja — 2024–2026</span><div class="small">Mendesain materi visual untuk story Instagram dan publikasi komunitas.</div></li>
           </ul>
         </div>
@@ -262,9 +289,31 @@
         <div class="card">Indonesia; Inggris; Mandarin (HSK 3)</div>
       </div>
 
-      <div class="whimsy" aria-hidden="true"></div>
+      <div class="whimsy-shapes" aria-hidden="true"></div>
 
-      <div class="footer">
-        <div class="small">Kontak: 0877-2238-2001 • jxlynak@gmail.com</div>
-        <div class="small">TTL: Bandung, 10 October 2010</div>
+      <div style="height:12px"></div>
+      <div class="footer" style="color:var(--muted);font-size:13px">
+        <div>Kontak: 0877-2238-2001 • jxlynak@gmail.com</div>
+        <div>TTL: Bandung, 10 October 2010</div>
       </div>
+    </section>
+  </main>
+
+  <!-- html2pdf untuk Download PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script>
+    document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+    document.getElementById('pdfBtn').addEventListener('click', function(){
+      const element = document.getElementById('cv-root') || document.querySelector('.cv');
+      const opt = {
+        margin: 0.3,
+        filename: 'CV_Jesslyn_Angelica_Klarise.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    });
+  </script>
+</body>
+</html>
