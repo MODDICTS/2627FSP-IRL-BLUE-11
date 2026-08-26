@@ -1,0 +1,2712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="CV Jesslyn Angelica Klarise — Student, Creative Thinker & Young Designer"
+  >
+
+  <title>Jesslyn Angelica Klarise | CV</title>
+
+  <!-- =========================================
+       GOOGLE FONTS
+  ========================================== -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    /* =========================================
+       VARIABLES
+    ========================================== */
+
+    :root {
+      --pink-bg: #ead4d8;
+      --pink-soft: #f3e2e4;
+      --pink-light: #f8eef0;
+
+      --rose: #9d626f;
+      --rose-dark: #754854;
+      --rose-deep: #54363f;
+
+      --cream: #fffaf7;
+      --text: #3f3337;
+      --muted: #76666b;
+
+      --line: rgba(117, 72, 84, 0.18);
+
+      --white: rgba(255, 250, 247, 0.78);
+
+      --shadow:
+        0 20px 50px rgba(103, 63, 73, 0.13);
+    }
+
+
+    /* =========================================
+       RESET
+    ========================================== */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at 7% 8%,
+          rgba(255,255,255,.8) 0 4px,
+          transparent 5px
+        ),
+
+        radial-gradient(
+          circle at 92% 17%,
+          rgba(255,255,255,.55) 0 3px,
+          transparent 4px
+        ),
+
+        linear-gradient(
+          135deg,
+          #e8cfd4,
+          #f0dfe1 48%,
+          #e5c9cf
+        );
+
+      min-height: 100vh;
+
+      overflow-x: hidden;
+    }
+
+
+    /* =========================================
+       BACKGROUND DECORATIONS
+    ========================================== */
+
+    .background-art {
+      position: fixed;
+      inset: 0;
+
+      overflow: hidden;
+
+      pointer-events: none;
+
+      z-index: -1;
+    }
+
+
+    .blob {
+      position: absolute;
+
+      border-radius: 50%;
+
+      filter: blur(.2px);
+
+      opacity: .45;
+    }
+
+
+    .blob.one {
+      width: 390px;
+      height: 390px;
+
+      background: #f6e8e9;
+
+      top: -170px;
+      right: -100px;
+    }
+
+
+    .blob.two {
+      width: 260px;
+      height: 260px;
+
+      background: #d7afb9;
+
+      bottom: -100px;
+      left: -70px;
+    }
+
+
+    .blob.three {
+      width: 130px;
+      height: 130px;
+
+      background: #c894a0;
+
+      top: 47%;
+      left: -65px;
+
+      opacity: .25;
+    }
+
+
+    .blob.four {
+      width: 170px;
+      height: 170px;
+
+      background: #f7e8e9;
+
+      top: 58%;
+      right: -70px;
+    }
+
+
+    .star {
+      position: absolute;
+
+      color: var(--rose);
+
+      opacity: .5;
+
+      font-size: 20px;
+    }
+
+
+    .star.s1 {
+      top: 10%;
+      left: 8%;
+
+      transform: rotate(15deg);
+    }
+
+
+    .star.s2 {
+      top: 22%;
+      right: 7%;
+
+      font-size: 14px;
+    }
+
+
+    .star.s3 {
+      top: 68%;
+      left: 5%;
+
+      font-size: 15px;
+    }
+
+
+    .star.s4 {
+      top: 84%;
+      right: 8%;
+
+      font-size: 22px;
+    }
+
+
+    .star.s5 {
+      top: 42%;
+      right: 3%;
+
+      font-size: 11px;
+    }
+
+
+    .doodle-line {
+      position: absolute;
+
+      border: 1.5px solid rgba(117,72,84,.18);
+
+      border-radius: 50%;
+    }
+
+
+    .doodle-line.a {
+      width: 180px;
+      height: 70px;
+
+      top: 29%;
+      left: -50px;
+
+      transform: rotate(-25deg);
+    }
+
+
+    .doodle-line.b {
+      width: 170px;
+      height: 65px;
+
+      top: 72%;
+      right: -50px;
+
+      transform: rotate(22deg);
+    }
+
+
+    /* =========================================
+       MAIN PAGE
+    ========================================== */
+
+    .page {
+      width: min(
+        1180px,
+        calc(100% - 36px)
+      );
+
+      margin: 38px auto;
+
+      background:
+        rgba(255, 250, 247, 0.68);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      border:
+        1px solid rgba(255,255,255,.7);
+
+      box-shadow: var(--shadow);
+
+      border-radius: 30px;
+
+      overflow: hidden;
+
+      position: relative;
+    }
+
+
+    .page::before {
+      content: "";
+
+      position: absolute;
+
+      width: 190px;
+      height: 190px;
+
+      border:
+        1px dashed rgba(157,98,111,.22);
+
+      border-radius: 50%;
+
+      top: 35px;
+      right: -95px;
+    }
+
+
+    /* =========================================
+       HERO
+    ========================================== */
+
+    .hero {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1.65fr;
+
+      min-height: 500px;
+    }
+
+
+    /* LEFT */
+
+    .hero-left {
+      background:
+        linear-gradient(
+          145deg,
+          rgba(117,72,84,.94),
+          rgba(157,98,111,.92)
+        );
+
+      color: white;
+
+      padding: 60px 46px;
+
+      position: relative;
+
+      overflow: hidden;
+    }
+
+
+    .hero-left::before {
+      content: "";
+
+      position: absolute;
+
+      width: 280px;
+      height: 280px;
+
+      border:
+        1px solid rgba(255,255,255,.17);
+
+      border-radius: 50%;
+
+      top: -110px;
+      left: -110px;
+    }
+
+
+    .hero-left::after {
+      content: "";
+
+      position: absolute;
+
+      width: 220px;
+      height: 220px;
+
+      background:
+        rgba(255,255,255,.06);
+
+      border-radius: 50%;
+
+      bottom: -120px;
+      right: -90px;
+    }
+
+
+    .mini-label {
+      font-size: 11px;
+
+      letter-spacing: 3px;
+
+      text-transform: uppercase;
+
+      opacity: .72;
+
+      margin-bottom: 20px;
+
+      position: relative;
+
+      z-index: 2;
+    }
+
+
+    /* PHOTO */
+
+    .photo-frame {
+      width: 210px;
+      height: 255px;
+
+      margin:
+        0 auto 28px;
+
+      position: relative;
+
+      z-index: 2;
+    }
+
+
+    .photo-frame::before {
+      content: "";
+
+      position: absolute;
+
+      inset:
+        -10px
+        10px
+        10px
+        -10px;
+
+      border:
+        1px solid rgba(255,255,255,.45);
+
+      border-radius:
+        90px
+        90px
+        18px
+        18px;
+
+      transform:
+        rotate(-4deg);
+    }
+
+
+    .photo-frame::after {
+      content: "✦";
+
+      position: absolute;
+
+      right: -20px;
+      top: -25px;
+
+      font-size: 27px;
+
+      color: #f7dfe3;
+    }
+
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      object-position: center top;
+
+      border-radius:
+        90px
+        90px
+        18px
+        18px;
+
+      display: block;
+
+      border:
+        5px solid rgba(255,255,255,.88);
+
+      box-shadow:
+        0 15px 35px
+        rgba(45,24,30,.2);
+
+      position: relative;
+
+      z-index: 2;
+    }
+
+
+    /* BIRTH */
+
+    .birth {
+      text-align: center;
+
+      position: relative;
+
+      z-index: 2;
+    }
+
+
+    .birth .small {
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 2px;
+
+      opacity: .68;
+
+      margin-bottom: 8px;
+    }
+
+
+    .birth strong {
+      display: block;
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size: 20px;
+
+      letter-spacing: .3px;
+    }
+
+
+    .birth span {
+      display: block;
+
+      font-size: 13px;
+
+      margin-top: 5px;
+
+      opacity: .8;
+    }
+
+
+    /* RIGHT */
+
+    .hero-right {
+      padding: 60px;
+
+      position: relative;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+    }
+
+
+    .availability {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      width: fit-content;
+
+      padding:
+        7px 12px;
+
+      background:
+        rgba(157,98,111,.09);
+
+      border:
+        1px solid
+        rgba(157,98,111,.14);
+
+      border-radius: 999px;
+
+      font-size: 11px;
+
+      color: var(--rose-dark);
+
+      margin-bottom: 18px;
+    }
+
+
+    .availability::before {
+      content: "";
+
+      width: 7px;
+      height: 7px;
+
+      background: #86a477;
+
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 0 4px
+        rgba(134,164,119,.12);
+    }
+
+
+    .hero-right h1 {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size:
+        clamp(48px, 6vw, 78px);
+
+      line-height: .96;
+
+      color: var(--rose-deep);
+
+      font-weight: 500;
+
+      letter-spacing: -2px;
+
+      max-width: 750px;
+    }
+
+
+    .hero-right h1 em {
+      color: var(--rose);
+
+      font-weight: 500;
+    }
+
+
+    .role {
+      margin-top: 18px;
+
+      font-size: 14px;
+
+      color: var(--rose);
+
+      letter-spacing: 2.5px;
+
+      text-transform: uppercase;
+
+      font-weight: 700;
+    }
+
+
+    .hero-intro {
+      margin-top: 24px;
+
+      max-width: 620px;
+
+      color: var(--muted);
+
+      line-height: 1.8;
+
+      font-size: 14px;
+    }
+
+
+    /* =========================================
+       ACTION BUTTONS
+    ========================================== */
+
+    .action-buttons {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 10px;
+
+      margin-top: 25px;
+    }
+
+
+    .action-buttons button {
+      border: none;
+
+      font-family:
+        "DM Sans",
+        sans-serif;
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+      letter-spacing: .4px;
+
+      cursor: pointer;
+
+      padding:
+        11px 17px;
+
+      border-radius: 12px;
+
+      transition:
+        all .25s ease;
+    }
+
+
+    .download-btn {
+      color: white;
+
+      background:
+        var(--rose-dark);
+
+      box-shadow:
+        0 8px 20px
+        rgba(117,72,84,.18);
+    }
+
+
+    .download-btn:hover {
+      transform:
+        translateY(-3px);
+
+      background: #633b46;
+
+      box-shadow:
+        0 12px 25px
+        rgba(117,72,84,.25);
+    }
+
+
+    .download-btn span {
+      font-size: 17px;
+
+      margin-right: 6px;
+    }
+
+
+    .print-btn {
+      color: var(--rose-dark);
+
+      background:
+        rgba(255,255,255,.65);
+
+      border:
+        1px solid
+        rgba(117,72,84,.15) !important;
+    }
+
+
+    .print-btn:hover {
+      transform:
+        translateY(-3px);
+
+      background: white;
+    }
+
+
+    .print-btn span {
+      font-size: 16px;
+
+      margin-right: 5px;
+    }
+
+
+    .download-btn:disabled {
+      opacity: .7;
+
+      cursor: wait;
+
+      transform: none;
+    }
+
+
+    /* CONTACT */
+
+    .contact-row {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 9px;
+
+      margin-top: 18px;
+    }
+
+
+    .contact {
+      padding:
+        9px 13px;
+
+      border-radius: 12px;
+
+      background:
+        rgba(255,255,255,.62);
+
+      border:
+        1px solid
+        rgba(117,72,84,.1);
+
+      color: var(--rose-dark);
+
+      font-size: 11px;
+
+      transition: .25s ease;
+    }
+
+
+    .contact:hover {
+      transform:
+        translateY(-3px);
+
+      background: white;
+
+      box-shadow:
+        0 8px 20px
+        rgba(117,72,84,.1);
+    }
+
+
+    /* =========================================
+       CONTENT
+    ========================================== */
+
+    .content {
+      padding:
+        0 50px 55px;
+    }
+
+
+    .section {
+      padding:
+        43px 0 0;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .section-header {
+      display: flex;
+
+      align-items: center;
+
+      gap: 15px;
+
+      margin-bottom: 24px;
+    }
+
+
+    .section-number {
+      color: var(--rose);
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size: 15px;
+
+      font-style: italic;
+    }
+
+
+    .section-title {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size: 32px;
+
+      font-weight: 500;
+
+      color: var(--rose-deep);
+
+      white-space: nowrap;
+    }
+
+
+    .section-line {
+      height: 1px;
+
+      background:
+        var(--line);
+
+      flex: 1;
+
+      position: relative;
+    }
+
+
+    .section-line::after {
+      content: "✦";
+
+      position: absolute;
+
+      right: 0;
+
+      top: -8px;
+
+      color: var(--rose);
+
+      font-size: 12px;
+
+      background:
+        var(--cream);
+
+      padding-left: 10px;
+    }
+
+
+    /* =========================================
+       ABOUT
+    ========================================== */
+
+    .about-grid {
+      display: grid;
+
+      grid-template-columns:
+        1.6fr 1fr;
+
+      gap: 22px;
+    }
+
+
+    .about-card {
+      background:
+        rgba(255,255,255,.48);
+
+      border:
+        1px solid
+        rgba(117,72,84,.1);
+
+      border-radius: 22px;
+
+      padding: 27px;
+
+      line-height: 1.85;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      break-inside: avoid;
+    }
+
+
+    .about-card strong {
+      color:
+        var(--rose-dark);
+    }
+
+
+    .quote-card {
+      background:
+        var(--rose);
+
+      color: white;
+
+      border-radius: 22px;
+
+      padding: 27px;
+
+      position: relative;
+
+      overflow: hidden;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+      break-inside: avoid;
+    }
+
+
+    .quote-card::before {
+      content: "“";
+
+      position: absolute;
+
+      font-family: Georgia, serif;
+
+      font-size: 130px;
+
+      opacity: .1;
+
+      top: -40px;
+
+      right: 10px;
+    }
+
+
+    .quote-card p {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-style: italic;
+
+      font-size: 20px;
+
+      line-height: 1.45;
+
+      position: relative;
+    }
+
+
+    .quote-card small {
+      margin-top: 18px;
+
+      opacity: .65;
+
+      font-size: 10px;
+
+      letter-spacing: 1.5px;
+
+      text-transform: uppercase;
+    }
+
+
+    /* =========================================
+       SKILLS
+    ========================================== */
+
+    .skills-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 20px;
+    }
+
+
+    .skill-card {
+      background:
+        rgba(255,255,255,.48);
+
+      border:
+        1px solid
+        rgba(117,72,84,.1);
+
+      border-radius: 22px;
+
+      padding: 27px;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .skill-card h3 {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size: 20px;
+
+      color:
+        var(--rose-dark);
+
+      margin-bottom: 20px;
+
+      font-weight: 500;
+    }
+
+
+    .skill {
+      margin-bottom: 17px;
+    }
+
+
+    .skill:last-child {
+      margin-bottom: 0;
+    }
+
+
+    .skill-top {
+      display: flex;
+
+      justify-content: space-between;
+
+      font-size: 11px;
+
+      color: var(--text);
+
+      margin-bottom: 7px;
+    }
+
+
+    .skill-top span:last-child {
+      color: var(--rose);
+
+      font-size: 10px;
+    }
+
+
+    .bar {
+      height: 5px;
+
+      background:
+        #eadbdd;
+
+      border-radius: 999px;
+
+      overflow: hidden;
+    }
+
+
+    .bar span {
+      height: 100%;
+
+      display: block;
+
+      border-radius: inherit;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--rose-dark),
+          #c18491
+        );
+    }
+
+
+    /* =========================================
+       EDUCATION
+    ========================================== */
+
+    .timeline {
+      position: relative;
+
+      margin-left: 10px;
+
+      padding-left: 32px;
+    }
+
+
+    .timeline::before {
+      content: "";
+
+      position: absolute;
+
+      left: 4px;
+
+      top: 7px;
+
+      bottom: 7px;
+
+      width: 1px;
+
+      background:
+        var(--line);
+    }
+
+
+    .timeline-item {
+      position: relative;
+
+      padding-bottom: 27px;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+
+    .timeline-item::before {
+      content: "";
+
+      position: absolute;
+
+      left: -33px;
+
+      top: 4px;
+
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+
+      background:
+        var(--rose);
+
+      border:
+        3px solid
+        var(--pink-soft);
+
+      box-sizing: content-box;
+    }
+
+
+    .timeline-year {
+      color:
+        var(--rose);
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+      letter-spacing: 1px;
+    }
+
+
+    .timeline-item h3 {
+      margin-top: 5px;
+
+      font-size: 16px;
+
+      color:
+        var(--rose-deep);
+    }
+
+
+    .timeline-item p {
+      margin-top: 5px;
+
+      font-size: 12px;
+
+      color:
+        var(--muted);
+    }
+
+
+    /* =========================================
+       EXPERIENCE
+    ========================================== */
+
+    .experience-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 15px;
+    }
+
+
+    .experience-card {
+      background:
+        rgba(255,255,255,.52);
+
+      border:
+        1px solid
+        rgba(117,72,84,.1);
+
+      border-radius: 20px;
+
+      padding: 22px;
+
+      min-height: 170px;
+
+      position: relative;
+
+      overflow: hidden;
+
+      transition: .3s ease;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .experience-card:hover {
+      transform:
+        translateY(-6px);
+
+      box-shadow:
+        0 14px 30px
+        rgba(117,72,84,.12);
+
+      background:
+        rgba(255,255,255,.75);
+    }
+
+
+    .experience-card::after {
+      content: "✦";
+
+      position: absolute;
+
+      right: 18px;
+
+      bottom: 12px;
+
+      color:
+        rgba(157,98,111,.22);
+
+      font-size: 27px;
+    }
+
+
+    .exp-year {
+      color:
+        var(--rose);
+
+      font-size: 10px;
+
+      letter-spacing: 1px;
+
+      font-weight: 700;
+    }
+
+
+    .experience-card h3 {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      color:
+        var(--rose-deep);
+
+      font-size: 18px;
+
+      margin: 8px 0;
+
+      font-weight: 500;
+    }
+
+
+    .experience-card p {
+      color:
+        var(--muted);
+
+      font-size: 11px;
+
+      line-height: 1.7;
+    }
+
+
+    /* =========================================
+       ACHIEVEMENTS
+    ========================================== */
+
+    .achievement-list {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 12px;
+    }
+
+
+    .achievement {
+      display: flex;
+
+      gap: 15px;
+
+      align-items: flex-start;
+
+      background:
+        rgba(255,255,255,.46);
+
+      border-radius: 16px;
+
+      padding:
+        17px 18px;
+
+      border:
+        1px solid
+        rgba(117,72,84,.08);
+
+      transition: .25s ease;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .achievement:hover {
+      transform:
+        translateX(4px);
+
+      background:
+        rgba(255,255,255,.72);
+    }
+
+
+    .achievement-icon {
+      flex:
+        0 0 32px;
+
+      height: 32px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 50%;
+
+      background:
+        var(--pink-soft);
+
+      color:
+        var(--rose);
+
+      font-size: 13px;
+    }
+
+
+    .achievement h4 {
+      font-size: 12px;
+
+      color:
+        var(--rose-deep);
+
+      line-height: 1.5;
+    }
+
+
+    .achievement p {
+      margin-top: 3px;
+
+      font-size: 10px;
+
+      color:
+        var(--muted);
+    }
+
+
+    /* =========================================
+       LANGUAGES
+    ========================================== */
+
+    .language-row {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 15px;
+    }
+
+
+    .language {
+      padding: 20px;
+
+      border-radius: 18px;
+
+      background:
+        rgba(255,255,255,.5);
+
+      border:
+        1px solid
+        rgba(117,72,84,.1);
+
+      text-align: center;
+
+      break-inside: avoid;
+
+      page-break-inside: avoid;
+    }
+
+
+    .language .circle {
+      width: 54px;
+      height: 54px;
+
+      border-radius: 50%;
+
+      margin:
+        0 auto 10px;
+
+      display: grid;
+
+      place-items: center;
+
+      background:
+        var(--pink-soft);
+
+      color:
+        var(--rose);
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size: 15px;
+    }
+
+
+    .language strong {
+      font-size: 12px;
+
+      display: block;
+
+      color:
+        var(--rose-deep);
+    }
+
+
+    .language span {
+      font-size: 10px;
+
+      color:
+        var(--muted);
+    }
+
+
+    /* =========================================
+       FOOTER
+    ========================================== */
+
+    .footer {
+      margin-top: 50px;
+
+      padding:
+        30px 0 5px;
+
+      border-top:
+        1px solid
+        var(--line);
+
+      text-align: center;
+    }
+
+
+    .footer-mark {
+      font-family:
+        "Playfair Display",
+        serif;
+
+      color:
+        var(--rose);
+
+      font-size: 22px;
+
+      font-style: italic;
+    }
+
+
+    .footer p {
+      margin-top: 6px;
+
+      font-size: 10px;
+
+      color:
+        var(--muted);
+
+      letter-spacing: 1px;
+    }
+
+
+    /* =========================================
+       PRINT
+    ========================================== */
+
+    @media print {
+
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+
+      html,
+      body {
+        background: white !important;
+      }
+
+
+      body {
+        margin: 0;
+      }
+
+
+      .background-art {
+        display: none !important;
+      }
+
+
+      .page {
+        width: 100%;
+
+        margin: 0;
+
+        box-shadow: none;
+
+        border-radius: 0;
+
+        border: none;
+
+        background: white;
+
+        backdrop-filter: none;
+
+        -webkit-backdrop-filter: none;
+      }
+
+
+      .action-buttons {
+        display: none !important;
+      }
+
+
+      .contact:hover,
+      .experience-card:hover,
+      .achievement:hover {
+        transform: none;
+
+        box-shadow: none;
+      }
+    }
+
+
+    /* =========================================
+       RESPONSIVE
+    ========================================== */
+
+    @media (max-width: 900px) {
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+
+      .hero-left {
+        padding:
+          45px 30px;
+      }
+
+
+      .hero-right {
+        padding:
+          45px 30px;
+      }
+
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+
+      .experience-grid {
+        grid-template-columns:
+          1fr 1fr;
+      }
+
+
+      .content {
+        padding-left: 30px;
+
+        padding-right: 30px;
+      }
+    }
+
+
+    @media (max-width: 650px) {
+
+      .page {
+        width:
+          calc(100% - 20px);
+
+        margin:
+          10px auto;
+
+        border-radius: 20px;
+      }
+
+
+      .hero-right h1 {
+        font-size: 48px;
+      }
+
+
+      .skills-grid,
+      .experience-grid,
+      .achievement-list,
+      .language-row {
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .section-title {
+        font-size: 27px;
+      }
+
+
+      .content {
+        padding-left: 20px;
+
+        padding-right: 20px;
+      }
+
+
+      .hero-left {
+        padding:
+          40px 25px;
+      }
+
+
+      .hero-right {
+        padding:
+          40px 25px;
+      }
+
+
+      .photo-frame {
+        width: 180px;
+
+        height: 220px;
+      }
+
+
+      .about-card,
+      .quote-card,
+      .skill-card {
+        padding: 22px;
+      }
+
+
+      .action-buttons {
+        width: 100%;
+      }
+
+
+      .action-buttons button {
+        flex: 1;
+      }
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+  <!-- =========================================
+       BACKGROUND ART
+  ========================================== -->
+
+  <div class="background-art">
+
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="blob three"></div>
+    <div class="blob four"></div>
+
+    <span class="star s1">✦</span>
+    <span class="star s2">✧</span>
+    <span class="star s3">✦</span>
+    <span class="star s4">✧</span>
+    <span class="star s5">✦</span>
+
+    <div class="doodle-line a"></div>
+    <div class="doodle-line b"></div>
+
+  </div>
+
+
+  <!-- =========================================
+       MAIN CV
+  ========================================== -->
+
+  <main class="page">
+
+
+    <!-- =======================================
+         HERO
+    ======================================== -->
+
+    <section class="hero">
+
+
+      <!-- LEFT -->
+
+      <div class="hero-left">
+
+        <div class="mini-label">
+          Personal Portfolio / CV
+        </div>
+
+
+        <div class="photo-frame">
+
+          <img
+            src="./foto-jesslyn.jpg"
+            alt="Foto Jesslyn Angelica Klarise"
+          >
+
+        </div>
+
+
+        <div class="birth">
+
+          <div class="small">
+            Tempat & Tanggal Lahir
+          </div>
+
+          <strong>
+            Bandung
+          </strong>
+
+          <span>
+            10 October 2010
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- RIGHT -->
+
+      <div class="hero-right">
+
+
+        <div class="availability">
+          Open to learning & opportunities
+        </div>
+
+
+        <h1>
+          Jesslyn Angelica<br>
+          <em>Klarise</em>
+        </h1>
+
+
+        <div class="role">
+          Student • Creative Thinker • Young Designer
+        </div>
+
+
+        <p class="hero-intro">
+
+          Seorang siswa SMA yang memiliki ketertarikan pada
+          seni, desain, sains, dan pembelajaran kreatif.
+          Saya senang mengubah ide menjadi sesuatu yang visual,
+          terstruktur, dan bermakna.
+
+        </p>
+
+
+        <!-- DOWNLOAD BUTTONS -->
+
+        <div class="action-buttons">
+
+          <button
+            class="download-btn"
+            onclick="downloadPDF()"
+          >
+            <span>↓</span>
+            Download CV PDF
+          </button>
+
+
+          <button
+            class="print-btn"
+            onclick="window.print()"
+          >
+            <span>⌁</span>
+            Print
+          </button>
+
+        </div>
+
+
+        <!-- CONTACT -->
+
+        <div class="contact-row">
+
+          <div class="contact">
+            ☎ 087722382001
+          </div>
+
+          <div class="contact">
+            ✉ jxlynak@gmail.com
+          </div>
+
+          <div class="contact">
+            ⌖ Taman Kopo Indah II, Bandung
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =======================================
+         CONTENT
+    ======================================== -->
+
+    <div class="content">
+
+
+      <!-- ABOUT -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <span class="section-number">
+            01
+          </span>
+
+          <h2 class="section-title">
+            Tentang Saya
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="about-grid">
+
+
+          <div class="about-card">
+
+            Saya adalah murid SMA BPK Penabur Holis yang memiliki
+            ketertarikan pada
+            <strong>
+              seni, sains, dan mempelajari bahasa baru
+            </strong>.
+
+            Saya dapat menggabungkan kreativitas dan pola berpikir
+            kritis dalam pekerjaan saya.
+
+
+            <br><br>
+
+
+            Saya senang mengeksplorasi bagaimana ide-ide artistik
+            dapat terhubung dengan pemikiran ilmiah, baik melalui
+            desain, observasi, maupun eksperimen.
+
+            Saya termotivasi untuk terus belajar, mengembangkan
+            keterampilan, dan memberikan perspektif baru untuk
+            menghasilkan karya yang lebih baik.
+
+          </div>
+
+
+          <div class="quote-card">
+
+            <p>
+              "Curiosity turns simple ideas
+              into meaningful creations."
+            </p>
+
+            <small>
+              Personal philosophy
+            </small>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- SKILLS -->
+
+      <section class="section">
+
+
+        <div class="section-header">
+
+          <span class="section-number">
+            02
+          </span>
+
+          <h2 class="section-title">
+            Kemampuan
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="skills-grid">
+
+
+          <!-- SOFT SKILLS -->
+
+          <div class="skill-card">
+
+            <h3>
+              Soft Skills
+            </h3>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Public Speaking
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:84%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Teamwork & Adaptability
+                </span>
+
+                <span>
+                  Excellent
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:90%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Problem Solving
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:86%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Critical Thinking
+                </span>
+
+                <span>
+                  Excellent
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:89%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Time Management
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:83%"></span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- HARD SKILLS -->
+
+          <div class="skill-card">
+
+            <h3>
+              Hard Skills
+            </h3>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  English
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:82%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Graphic Design
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:85%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Digital Illustration
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:83%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Research & Data Collection
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:81%"></span>
+              </div>
+
+            </div>
+
+
+            <div class="skill">
+
+              <div class="skill-top">
+                <span>
+                  Basic Science Concepts
+                </span>
+
+                <span>
+                  Good
+                </span>
+              </div>
+
+              <div class="bar">
+                <span style="width:86%"></span>
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- EDUCATION -->
+
+      <section class="section">
+
+
+        <div class="section-header">
+
+          <span class="section-number">
+            03
+          </span>
+
+          <h2 class="section-title">
+            Pendidikan
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="timeline">
+
+
+          <div class="timeline-item">
+
+            <div class="timeline-year">
+              2022 — 2025
+            </div>
+
+            <h3>
+              Junior High School
+            </h3>
+
+            <p>
+              SMPK BPK Penabur Singgasana & Holis
+            </p>
+
+          </div>
+
+
+          <div class="timeline-item">
+
+            <div class="timeline-year">
+              2025 — 2028
+            </div>
+
+            <h3>
+              Senior High School
+            </h3>
+
+            <p>
+              SMA BPK Penabur Holis —
+              Expected Graduation 2028
+            </p>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- EXPERIENCE -->
+
+      <section class="section">
+
+
+        <div class="section-header">
+
+          <span class="section-number">
+            04
+          </span>
+
+          <h2 class="section-title">
+            Pengalaman
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="experience-grid">
+
+
+          <article class="experience-card">
+
+            <div class="exp-year">
+              2026
+            </div>
+
+            <h3>
+              Elite Mandarin Holis
+            </h3>
+
+            <p>
+              Membantu membuat feed post untuk kebutuhan
+              komunikasi visual dan media sosial.
+            </p>
+
+          </article>
+
+
+          <article class="experience-card">
+
+            <div class="exp-year">
+              2025
+            </div>
+
+            <h3>
+              OSIS Volunteer
+            </h3>
+
+            <p>
+              Membantu dekorasi dan persiapan visual
+              untuk kegiatan Festival Moon Cake.
+            </p>
+
+          </article>
+
+
+          <article class="experience-card">
+
+            <div class="exp-year">
+              2024 — 2026
+            </div>
+
+            <h3>
+              Design Graphics — Gereja
+            </h3>
+
+            <p>
+              Membuat desain untuk Instagram Story
+              dan kebutuhan visual media sosial.
+            </p>
+
+          </article>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- ACHIEVEMENTS -->
+
+      <section class="section">
+
+
+        <div class="section-header">
+
+          <span class="section-number">
+            05
+          </span>
+
+          <h2 class="section-title">
+            Pencapaian
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="achievement-list">
+
+
+          <div class="achievement">
+
+            <div class="achievement-icon">
+              01
+            </div>
+
+            <div>
+
+              <h4>
+                Tarumanegara Business Plan Competition
+              </h4>
+
+              <p>
+                Top 5 • 2026
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="achievement">
+
+            <div class="achievement-icon">
+              02
+            </div>
+
+            <div>
+
+              <h4>
+                The One Academy Poster Competition
+              </h4>
+
+              <p>
+                Finalist • 2026
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="achievement">
+
+            <div class="achievement-icon">
+              03
+            </div>
+
+            <div>
+
+              <h4>
+                Young Change Maker Summit
+              </h4>
+
+              <p>
+                Semifinalist • 2025
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="achievement">
+
+            <div class="achievement-icon">
+              04
+            </div>
+
+            <div>
+
+              <h4>
+                Sampoerna Academy STEAM
+                Inter-School Competition
+              </h4>
+
+              <p>
+                Finalist • 2025
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="achievement">
+
+            <div class="achievement-icon">
+              05
+            </div>
+
+            <div>
+
+              <h4>
+                Juara Umum 4 —
+                SMP BPK Penabur Holis
+              </h4>
+
+              <p>
+                2025
+              </p>
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- LANGUAGES -->
+
+      <section class="section">
+
+
+        <div class="section-header">
+
+          <span class="section-number">
+            06
+          </span>
+
+          <h2 class="section-title">
+            Bahasa
+          </h2>
+
+          <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="language-row">
+
+
+          <div class="language">
+
+            <div class="circle">
+              ID
+            </div>
+
+            <strong>
+              Indonesia
+            </strong>
+
+            <span>
+              Native
+            </span>
+
+          </div>
+
+
+          <div class="language">
+
+            <div class="circle">
+              EN
+            </div>
+
+            <strong>
+              Inggris
+            </strong>
+
+            <span>
+              Expected B2 level
+            </span>
+
+          </div>
+
+
+          <div class="language">
+
+            <div class="circle">
+              中
+            </div>
+
+            <strong>
+              Mandarin
+            </strong>
+
+            <span>
+              HSK 3
+            </span>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- FOOTER -->
+
+      <footer class="footer">
+
+        <div class="footer-mark">
+          Jesslyn Angelica Klarise
+        </div>
+
+        <p>
+          CREATIVE MIND • CURIOUS HEART • ALWAYS LEARNING
+        </p>
+
+      </footer>
+
+
+    </div>
+
+  </main>
+
+
+
+  <!-- =========================================
+       HTML2PDF LIBRARY
+  ========================================== -->
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+  ></script>
+
+
+
+  <!-- =========================================
+       PDF DOWNLOAD SCRIPT
+  ========================================== -->
+
+  <script>
+
+    async function downloadPDF() {
+
+      const button =
+        document.querySelector(".download-btn");
+
+      const originalText =
+        button.innerHTML;
+
+
+      /*
+       * Change button appearance
+       * while generating PDF
+       */
+
+      button.innerHTML =
+        "<span>⏳</span> Membuat PDF...";
+
+      button.disabled = true;
+
+
+      const element =
+        document.querySelector(".page");
+
+
+      /*
+       * PDF settings
+       */
+
+      const options = {
+
+        margin: [0, 0, 0, 0],
+
+        filename:
+          "CV-Jesslyn-Angelica-Klarise.pdf",
+
+
+        image: {
+          type: "jpeg",
+          quality: 0.98
+        },
+
+
+        html2canvas: {
+
+          scale: 2,
+
+          useCORS: true,
+
+          allowTaint: false,
+
+          backgroundColor:
+            "#f3e2e4",
+
+          logging: false
+
+        },
+
+
+        jsPDF: {
+
+          unit: "mm",
+
+          format: "a4",
+
+          orientation: "portrait",
+
+          compress: true
+
+        },
+
+
+        pagebreak: {
+
+          mode: [
+            "css",
+            "legacy"
+          ]
+
+        }
+
+      };
+
+
+      try {
+
+        /*
+         * Generate PDF
+         */
+
+        await html2pdf()
+
+          .set(options)
+
+          .from(element)
+
+          .save();
+
+
+      } catch (error) {
+
+        console.error(
+          "PDF generation error:",
+          error
+        );
+
+
+        alert(
+          "PDF gagal dibuat otomatis. " +
+          "Silakan gunakan tombol Print " +
+          "dan pilih 'Save as PDF'."
+        );
+
+
+      } finally {
+
+        /*
+         * Restore button
+         */
+
+        button.innerHTML =
+          originalText;
+
+        button.disabled = false;
+
+      }
+
+    }
+
+  </script>
+
+
+</body>
+</html>
