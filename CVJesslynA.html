@@ -39,7 +39,6 @@
     }
     @media (max-width:920px){ .cv-wrap{grid-template-columns:1fr} }
 
-    /* Decorative SVG pattern background */
     .left-panel{
       position:relative;
       padding:28px;
@@ -53,12 +52,7 @@
       gap:14px;
       overflow:hidden;
     }
-    .pattern-svg{
-      position:absolute;
-      inset:0;
-      opacity:0.12;
-      pointer-events:none;
-    }
+    .pattern-svg{ position:absolute; inset:0; opacity:0.12; pointer-events:none; }
 
     .photo-wrap{
       width:170px;
@@ -98,28 +92,16 @@
     .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
     .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 6px 18px rgba(217,138,159,0.12)}
 
-    /* Right panel */
     .right-panel{padding:26px 34px}
     .header-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
     .title-block h2{margin:0;font-family:'Montserrat',sans-serif;font-size:18px}
     .title-block .sub{color:var(--muted);font-size:13px}
 
-    .decorative-strip{
-      margin-top:12px;height:8px;border-radius:8px;background:
-      linear-gradient(90deg, rgba(217,138,159,0.18), rgba(200,120,140,0.12));
-      box-shadow:0 6px 18px rgba(217,138,159,0.06);
-    }
+    .decorative-strip{margin-top:12px;height:8px;border-radius:8px;background:linear-gradient(90deg, rgba(217,138,159,0.18), rgba(200,120,140,0.12));box-shadow:0 6px 18px rgba(217,138,159,0.06);}
 
     .section{margin-top:18px}
     .section h3{margin:0 0 8px 0;font-family:'Montserrat',sans-serif;font-size:14px;color:var(--text-dark)}
-    .card{
-      background:var(--glass);
-      padding:14px;
-      border-radius:12px;
-      box-shadow:0 8px 22px rgba(0,0,0,0.04);
-      color:var(--muted);
-      line-height:1.5;
-    }
+    .card{background:var(--glass);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,0.04);color:var(--muted);line-height:1.5;}
 
     .two-col{display:flex;gap:18px;flex-wrap:wrap}
     .col{flex:1;min-width:220px}
@@ -130,23 +112,30 @@
     .meta{font-weight:700;color:var(--text-dark)}
     .small{font-size:13px;color:var(--muted)}
 
-    /* whimsical accents */
-    .whimsy{
-      position:relative;
-      margin-top:12px;
-      height:48px;
-      background:
-        radial-gradient(circle at 10% 50%, rgba(217,138,159,0.06), transparent 8%),
-        radial-gradient(circle at 90% 50%, rgba(200,120,140,0.04), transparent 8%);
-      border-radius:12px;
-    }
+    .whimsy{position:relative;margin-top:12px;height:48px;background:radial-gradient(circle at 10% 50%, rgba(217,138,159,0.06), transparent 8%), radial-gradient(circle at 90% 50%, rgba(200,120,140,0.04), transparent 8%);border-radius:12px;}
+
     .footer{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+
+    /* Controls */
+    .controls{display:flex;gap:12px;align-items:center}
+    .btn{
+      padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    }
+    .btn-print{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+    .btn-pdf{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+
+    /* Hide controls when printing */
+    @media print{
+      .controls{display:none}
+      body{background:white}
+      .cv-wrap{box-shadow:none;border-radius:0}
+    }
   </style>
 </head>
 <body>
-  <main class="cv-wrap" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
+  <main class="cv-wrap" id="cv-root" role="document" aria-label="Curriculum Vitae Jesslyn Angelica Klarise">
     <aside class="left-panel" aria-label="Panel kiri">
-      <!-- decorative SVG pattern -->
       <svg class="pattern-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
         <defs>
           <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -156,9 +145,8 @@
         <rect width="100%" height="100%" fill="url(#dots)"/>
       </svg>
 
-      <div class="photo-wrap" aria-hidden="false">
-        <!-- Ganti src dengan foto yang Anda unggah -->
-        <img src="PUT_YOUR_PHOTO_HERE" alt="Foto profil">
+      <div class="photo-wrap">
+        <img id="profile-photo" src="https://drive.google.com/drive/u/0/home" alt="Foto profil">
       </div>
 
       <div class="name">
@@ -166,36 +154,39 @@
         <p>11A</p>
       </div>
 
-      <div class="school-card" aria-label="Foto sekolah">
-        <!-- Ganti src dengan foto sekolah jika tersedia; jika tidak, biarkan placeholder -->
-        <img class="school-photo" src="PUT_SCHOOL_PHOTO_HERE" alt="Foto sekolah">
+      <div class="school-card">
+        <img class="school-photo" id="school-photo" src="https://drive.google.com/drive/u/0/home" alt="Foto sekolah">
         <div class="school-caption">
           <div class="label">SMA BPK Penabur Holis</div>
           <div class="small">Bandung</div>
         </div>
       </div>
 
-      <div class="contact" aria-label="Kontak">
+      <div class="contact">
         <div class="row"><div class="k">Alamat</div><div>Taman Kopo Indah II, Bandung</div></div>
         <div class="row"><div class="k">Telepon</div><div>0877-2238-2001</div></div>
         <div class="row"><div class="k">Email</div><div>jxlynak@gmail.com</div></div>
         <div class="row"><div class="k">TTL</div><div>Bandung, 10 October 2010</div></div>
       </div>
 
-      <div class="badges" aria-hidden="false">
+      <div class="badges">
         <span class="badge">Desain Grafis</span>
         <span class="badge">Ilustrasi Digital</span>
         <span class="badge">Bahasa Inggris</span>
       </div>
     </aside>
 
-    <section class="right-panel" aria-label="Konten utama">
+    <section class="right-panel">
       <div class="header-top">
         <div class="title-block">
           <h2>Curriculum Vitae</h2>
           <div class="sub">Pelajar SMA — Tertarik pada desain, riset, dan komunikasi kreatif</div>
         </div>
-        <div style="font-weight:700;color:var(--accent)">Soft Pink Whimsy</div>
+
+        <div class="controls" aria-hidden="false">
+          <button class="btn btn-print" id="printBtn" title="Print">Print</button>
+          <button class="btn btn-pdf" id="pdfBtn" title="Download PDF">Download PDF</button>
+        </div>
       </div>
 
       <div class="decorative-strip" aria-hidden="true"></div>
@@ -203,7 +194,7 @@
       <div class="section about">
         <h3>Tentang Saya</h3>
         <div class="card">
-          **Profil profesional singkat:** Saya adalah pelajar di **SMA BPK Penabur Holis** dengan minat kuat pada desain visual, sains terapan, dan pembelajaran bahasa. Saya menggabungkan kreativitas dengan pendekatan analitis untuk menghasilkan solusi desain yang komunikatif dan berbasis data. Saya mencari kesempatan magang atau proyek kolaboratif di bidang desain grafis, komunikasi visual, atau riset kreatif untuk mengembangkan keterampilan praktis dan kontribusi nyata.
+          <strong>Profil profesional singkat</strong>: Saya adalah pelajar di <strong>SMA BPK Penabur Holis</strong> dengan minat kuat pada desain visual, sains terapan, dan pembelajaran bahasa. Saya menggabungkan kreativitas dengan pendekatan analitis untuk menghasilkan solusi desain yang komunikatif dan berbasis data. Saya mencari kesempatan magang atau proyek kolaboratif di bidang desain grafis, komunikasi visual, atau riset kreatif untuk mengembangkan keterampilan praktis dan memberikan kontribusi nyata.
         </div>
       </div>
 
@@ -277,7 +268,3 @@
         <div class="small">Kontak: 0877-2238-2001 • jxlynak@gmail.com</div>
         <div class="small">TTL: Bandung, 10 October 2010</div>
       </div>
-    </section>
-  </main>
-</body>
-</html>
