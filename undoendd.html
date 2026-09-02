@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UndoEnd - Modern Web Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UndoEnd - Mobile Web Game</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -19,130 +20,137 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px;
         }
 
         #game-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             background: #121629;
-            border: 2px solid #2a3459;
+            border: 1px solid #2a3459;
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-            padding: 30px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         header {
             text-align: center;
-            border-bottom: 2px solid #2a3459;
-            padding-bottom: 15px;
+            border-bottom: 1px solid #2a3459;
+            padding-bottom: 12px;
         }
 
         h1 {
             color: #4db8ff;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(77, 184, 255, 0.5);
+            font-size: 2rem;
+            letter-spacing: 1px;
         }
 
         .subtitle {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #8a99ad;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .screen {
             display: none;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
-        .active {
+        .screen.active {
             display: flex;
         }
 
         p {
-            line-height: 1.6;
+            line-height: 1.5;
             color: #d1d5db;
+            font-size: 0.95rem;
         }
 
-        /* Character Selection Grid */
+        /* Character Grid for Mobile */
         .char-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 480px) {
+            .char-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         .char-card {
             background: #1c233d;
             border: 2px solid #34426e;
             border-radius: 8px;
-            padding: 15px;
+            padding: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
+            touch-action: manipulation;
         }
 
-        .char-card:hover {
+        .char-card:active {
             border-color: #4db8ff;
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(77, 184, 255, 0.2);
+            background: #252e50;
         }
 
         .char-card h3 {
             color: #ffb84d;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
         }
 
         .char-card p {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #a0aec0;
         }
 
         /* Status Bar */
         #status-bar {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 4px;
             background: #1c233d;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-left: 4px solid #4db8ff;
         }
 
-        /* Story Console */
+        /* Story Box */
         #story-text {
             background: #080a14;
-            padding: 20px;
+            padding: 16px;
             border-radius: 8px;
             border: 1px solid #2a3459;
-            min-height: 150px;
+            min-height: 120px;
         }
 
-        /* Options/Buttons */
+        /* Mobile Friendly Buttons */
         .btn-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        button {
+        .game-btn {
             background: #2a3459;
             color: #ffffff;
             border: 1px solid #4db8ff;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            width: 100%;
+            text-align: center;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-            text-align: left;
+            touch-action: manipulation;
         }
 
-        button:hover {
+        .game-btn:active {
             background: #4db8ff;
             color: #0b0d19;
         }
@@ -153,176 +161,7 @@
 <div id="game-container">
     <header>
         <h1>UndoEnd</h1>
-        <div class="subtitle">By Moddicts | Mystery & Post-Apocalyptic Choice-Driven Game</div>
+        <div class="subtitle">By Moddicts | Sci-Fi Choice-Driven Game</div>
     </header>
 
-    <div id="start-screen" class="screen active">
-        <p><strong>Game Premise:</strong> The apocalypse has already happened! Humanity's last survivors have gathered inside a bunker, searching for a way to undo the disaster. Their final hope comes from a mysterious machine that can send one person back into the past—The Chosen One.</p>
-        <button onclick="goToScreen('char-screen')">START MISSION</button>
-    </div>
-
-    <div id="char-screen" class="screen">
-        <h2>Select Your Character</h2>
-        <div class="char-grid">
-            <div class="char-card" onclick="selectCharacter('Zhenya')">
-                <h3>Евгения "Zhenya"</h3>
-                <p><strong>Role:</strong> Art Kid</p>
-                <p><strong>Skill:</strong> Visual Observation & Drawing</p>
-            </div>
-            <div class="char-card" onclick="selectCharacter('Yoru')">
-                <h3>Yoru Shimizu</h3>
-                <p><strong>Role:</strong> Cashier</p>
-                <p><strong>Skill:</strong> Enhanced Hearing & Rhythm</p>
-            </div>
-            <div class="char-card" onclick="selectCharacter('Renee')">
-                <h3>Renée de Valois</h3>
-                <p><strong>Role:</strong> Lil Kid</p>
-                <p><strong>Skill:</strong> Engineering & Hacking</p>
-            </div>
-            <div class="char-card" onclick="selectCharacter('Rocco')">
-                <h3>Rocco</h3>
-                <p><strong>Role:</strong> Gangster</p>
-                <p><strong>Skill:</strong> Combat & Infiltration</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="game-screen" class="screen">
-        <div id="status-bar">
-            <span><strong>Character:</strong> <span id="player-name">-</span></span>
-            <span><strong>Role:</strong> <span id="player-role">-</span></span>
-        </div>
-        <div id="story-text"></div>
-        <div id="choices-container" class="btn-container"></div>
-    </div>
-</div>
-
-<script>
-    // Character database reflecting the PDF data
-    const characters = {
-        Zhenya: {
-            name: "Евгения Петрова (Zhenya)",
-            role: "Art Kid",
-            skill: "Great Visual Observation. Reveals things by drawing.",
-            bg: "Moved abroad to study arts and close the distance with her boyfriend, who is secretly the mastermind behind the apocalypse."
-        },
-        Yoru: {
-            name: "Yoru Shimizu",
-            role: "Cashier",
-            skill: "Enhanced Hearing & Rhythm",
-            bg: "Grew up in financial struggles, using music as an escape, giving him an unnatural sense of rhythm and auditory skills."
-        },
-        Renee: {
-            name: "Renée de Valois",
-            role: "Lil Kid",
-            skill: "Engineering, Programming, and Hacking",
-            bg: "Born into wealth, highly intelligent, arrogant, and extremely skilled with tech, gadgets, and system hacking."
-        },
-        Rocco: {
-            name: "Rocco",
-            role: "Gangster",
-            skill: "Combat, Infiltration, & Intimidation",
-            bg: "Possesses extraordinary reflexes and instincts to fight, break into secure areas, and intimidate threats."
-        }
-    };
-
-    let selectedChar = null;
-
-    function goToScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
-
-    function selectCharacter(charKey) {
-        selectedChar = characters[charKey];
-        document.getElementById('player-name').innerText = selectedChar.name;
-        document.getElementById('player-role').innerText = selectedChar.role;
-        goToScreen('game-screen');
-        startStoryNode('intro');
-    }
-
-    // Story Data with unique pathways based on skills & PDF lore
-    const storyNodes = {
-        intro: {
-            getText: () => You step into the time machine. The machine powers up, and you are sent back into the past before the apocalypse occurred. Armed with your identity as ${selectedChar.name}, you arrive at the central laboratory complex. Inside, Zhenya's boyfriend is secretly orchestrating the end of the world.,
-            getChoices: () => [
-                { text: "Proceed to the main lab terminal", next: "terminal" },
-                { text: "Investigate the facility surroundings", next: "investigate" }
-            ]
-        },
-        terminal: {
-            getText: () => You reach the locked central terminal. The security system demands access to override the apocalypse sequence.,
-            getChoices: () => {
-                let choices = [];
-                if (selectedChar.role === "Lil Kid") {
-                    choices.push({ text: "[Skill] Hack the terminal system directly", next: "hack_win" });
-                } else if (selectedChar.role === "Gangster") {
-                    choices.push({ text: "[Skill] Smash the door panel and force entry", next: "force_win" });
-                } else {
-                    choices.push({ text: "Try to guess the passcode override", next: "fail_node" });
-                }
-                choices.push({ text: "Search the room for clues", next: "investigate" });
-                return choices;
-            }
-        },
-        investigate: {
-            getText: () => You examine the surrounding rooms to gather information about the mastermind's plan.,
-            getChoices: () => {
-                let choices = [];
-                if (selectedChar.role === "Art Kid") {
-                    choices.push({ text: "[Skill] Use visual observation to draw hidden visual patterns", next: "art_win" });
-                } else if (selectedChar.role === "Cashier") {
-                    choices.push({ text: "[Skill] Listen closely to distinct mechanical vibrations in the walls", next: "audio_win" });
-                } else {
-                    choices.push({ text: "Look around blindly for keys", next: "fail_node" });
-                }
-                choices.push({ text: "Head back to the terminal", next: "terminal" });
-                return choices;
-            }
-        },
-        // Win Paths based on character backstory/skills
-        hack_win: {
-            getText: () => Using your extraordinary programming intelligence, you override the mastermind's code completely. You disarm the apocalypse trigger and save history!,
-            getChoices: () => [{ text: "Play Again", next: "restart" }]
-        },
-        force_win: {
-            getText: () => Using your incredible reflexes and strength, you break into the room, overpower the security forces, and neutralize the mastermind before he initiates the sequence!,
-            getChoices: () => [{ text: "Play Again", next: "restart" }]
-        },
-        art_win: {
-            getText: () => Your keen artistic observation reveals a hidden sketch detailing the mastermind's plans. Knowing Zhenya's boyfriend was behind this, you intercept his secret override code and stop the disaster!,
-            getChoices: () => [{ text: "Play Again", next: "restart" }]
-        },
-        audio_win: {
-            getText: () => Your enhanced sense of hearing detects the rhythmic ticking of the hidden bomb sequence behind the wall panel. You dismantle it just in time!,
-            getChoices: () => [{ text: "Play Again", next: "restart" }]
-        },
-        fail_node: {
-            getText: () => Without using your character's specialized skills, you trigger the security alarms! The mastermind accelerates the process, causing the apocalypse...,
-            getChoices: () => [{ text: "Try Again", next: "restart" }]
-        }
-    };
-
-    function startStoryNode(nodeKey) {
-        if (nodeKey === "restart") {
-            goToScreen('start-screen');
-            return;
-        }
-
-        const node = storyNodes[nodeKey];
-        document.getElementById('story-text').innerText = node.getText();
-        
-        const choicesDiv = document.getElementById('choices-container');
-        choicesDiv.innerHTML = '';
-        
-        node.getChoices().forEach(choice => {
-            const btn = document.createElement('button');
-            btn.innerText = choice.text;
-            btn.onclick = () => startStoryNode(choice.next);
-            choicesDiv.appendChild(btn);
-        });
-    }
-</script>
-
-</body>
-</html>
+    <div id="start-screen" class="screen active
