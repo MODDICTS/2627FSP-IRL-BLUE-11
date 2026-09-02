@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluida Dinamis — Laboratorium Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #081821;
+    --panel: #0f2c37;
+    --panel-2: #123444;
+    --line: rgba(159, 205, 210, 0.16);
+    --cyan: #5fd4c6;
+    --cyan-dim: #3a8f88;
+    --amber: #ffb454;
+    --text: #eaf5f4;
+    --muted: #8fb3ba;
+    --good: #74d99a;
+    --bad: #ec6b6b;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, rgba(95,212,198,0.10), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, rgba(255,180,84,0.06), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(5,17,23,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.02rem;}
+  .brand-mark{width:20px;height:20px;flex:none;}
+  .navlinks{display:flex;gap:18px;font-size:0.86rem;color:var(--muted);}
+  .navlinks a{text-decoration:none;transition:color .2s;white-space:nowrap;}
+  .navlinks a:hover{color:var(--cyan);}
+  .navlinks span.done::after{content:" ✓"; color:var(--good);}
+  @media (max-width:900px){ .navlinks{display:none;} }
+  .progress-track{height:3px;background:rgba(159,205,210,0.12);}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--amber));transition:width .5s ease;}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;overflow:hidden;padding:72px 0 60px;}
+  .hero .wrap{position:relative;z-index:2;}
+  .eyebrow{color:var(--cyan);font-size:0.86rem;font-weight:500;margin-bottom:14px;}
+  .hero h1{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.08;max-width:17ch;}
+  .hero p{color:var(--muted);max-width:52ch;margin-top:18px;font-size:1.05rem;}
+  .hero-cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 22px;border-radius:999px;border:1px solid transparent;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:0.95rem;
+    cursor:pointer;transition:transform .15s ease, background .2s ease;
+    text-decoration:none;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--amber);color:#1a1305;}
+  .btn-primary:hover{background:#ffc474;}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .wave-field{position:absolute;inset:0;z-index:1;opacity:0.6;pointer-events:none;}
+  .wave-field svg{width:100%;height:100%;}
+  .bubble{
+    position:absolute;bottom:-40px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(95,212,198,0.05));
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) translateX(0);opacity:0;}
+    10%{opacity:0.5;}
+    100%{transform:translateY(-520px) translateX(20px);opacity:0;}
+  }
+
+  /* roadmap chips */
+  .roadmap{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px;}
+  .chip{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+    font-size:0.82rem;color:var(--muted);background:rgba(255,255,255,0.02);
+    text-decoration:none;transition:border-color .2s;
+  }
+  .chip:hover{border-color:var(--cyan-dim);}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan-dim);flex:none;}
+  .chip.done .dot{background:var(--good);}
+  .chip.done{color:var(--good);}
+
+  /* ---------- SECTION SHELL ---------- */
+  section.station{padding:56px 0;border-top:1px solid var(--line);}
+  .station-head{display:flex;gap:16px;align-items:baseline;
+    opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease;}
+  .station-head.in-view{opacity:1;transform:translateY(0);}
+  .station-num{
+    font-family:'Fraunces',serif;font-size:0.95rem;color:var(--cyan-dim);
+    border:1px solid var(--cyan-dim);border-radius:999px;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .station h2{font-size:1.65rem;}
+  .station-intro{color:var(--muted);max-width:64ch;margin:14px 0 10px;}
+  .station-note{color:var(--muted);max-width:64ch;margin:0 0 26px;font-size:0.84rem;font-style:italic;}
+
+  .panel{
+    background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:26px;
+  }
+  .grid-2{display:grid;grid-template-columns:1.15fr 1fr;gap:26px;align-items:start;}
+  @media (max-width:820px){ .grid-2{grid-template-columns:1fr;} }
+
+  label.field{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:8px;}
+  input[type=range]{width:100%;accent-color:var(--cyan);height:6px;}
+  .stat-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;}
+  .stat{
+    background:rgba(0,0,0,0.18);border:1px solid var(--line);border-radius:10px;
+    padding:12px 16px;min-width:118px;
+  }
+  .stat .k{font-size:0.78rem;color:var(--muted);}
+  .stat .v{font-family:'Fraunces',serif;font-size:1.3rem;margin-top:2px;}
+
+  .feedback{
+    margin-top:18px;padding:12px 16px;border-radius:10px;font-size:0.92rem;
+    border:1px solid var(--line);min-height:20px;transition:all .2s ease;
+  }
+  .feedback.good{border-color:var(--good);color:var(--good);background:rgba(116,217,154,0.08);}
+  .feedback.bad{border-color:var(--bad);color:var(--bad);background:rgba(236,107,107,0.08);}
+  .feedback.neutral{color:var(--muted);}
+
+  /* quiz */
+  .qcard{margin-bottom:18px;}
+  .qcard .qtext{font-weight:600;margin-bottom:12px;}
+  .options{display:grid;gap:10px;}
+  .opt{
+    text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer;font-family:'Inter',sans-serif;
+    font-size:0.94rem;transition:border-color .15s, background .15s;
+  }
+  .opt:hover{border-color:var(--cyan-dim);}
+  .opt.correct{border-color:var(--good);background:rgba(116,217,154,0.10);}
+  .opt.wrong{border-color:var(--bad);background:rgba(236,107,107,0.10);}
+  .opt[disabled]{cursor:default;}
+  .qexplain{margin-top:10px;font-size:0.88rem;color:var(--muted);display:none;}
+  .qexplain.show{display:block;}
+  .quiz-score{margin-top:8px;color:var(--muted);font-size:0.9rem;}
+
+  canvas{display:block;width:100%;height:auto;border-radius:10px;background:rgba(0,0,0,0.22);}
+
+  /* station 4: viscosity race */
+  .tubes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .tube-card{text-align:center;}
+  .tube-card canvas{background:rgba(0,0,0,0.24);}
+  .rank-btn{
+    margin-top:10px;width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(255,255,255,0.02);color:var(--text);font-family:'Inter',sans-serif;font-size:0.88rem;
+    cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  .rank-btn.picked{border-color:var(--amber);background:rgba(255,180,84,0.12);}
+  .rank-btn[disabled]{cursor:default;opacity:0.7;}
+  .result-tag{margin-top:8px;font-size:0.8rem;color:var(--muted);min-height:16px;}
+  .race-controls{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;}
+
+  /* station 5: matching */
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:700px){ .match-grid{grid-template-columns:1fr;} }
+  .match-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .match-item{
+    padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(255,255,255,0.02);cursor:pointer;font-size:0.9rem;
+    transition:border-color .15s,background .15s;
+  }
+  .match-item:hover{border-color:var(--cyan-dim);}
+  .match-item.selected{border-color:var(--amber);background:rgba(255,180,84,0.10);}
+  .match-item.matched{border-color:var(--good);background:rgba(116,217,154,0.10);cursor:default;opacity:0.85;}
+  .match-item.wrong-flash{border-color:var(--bad);background:rgba(236,107,107,0.14);}
+  .match-item[data-disabled="1"]{pointer-events:none;}
+
+  /* dashboard */
+  .dash-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  @media (max-width:900px){ .dash-grid{grid-template-columns:repeat(2,1fr);} }
+  .dash-card{text-align:center;padding:20px 12px;}
+  .dash-card .big{font-family:'Fraunces',serif;font-size:1.7rem;color:var(--cyan);}
+  .dash-card .label{color:var(--muted);font-size:0.8rem;margin-top:6px;}
+  .overall-bar{margin-top:22px;background:rgba(0,0,0,0.2);border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--line);}
+  .overall-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--amber));transition:width .6s ease;}
+  .overall-label{margin-top:8px;font-size:0.82rem;color:var(--muted);text-align:right;}
+  .predikat{
+    margin-top:22px;text-align:center;padding:28px;border-radius:var(--radius);
+    background:linear-gradient(135deg, rgba(95,212,198,0.10), rgba(255,180,84,0.08));
+    border:1px solid var(--line);
+  }
+  .predikat .title{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--amber);}
+  .predikat .sub{color:var(--muted);margin-top:8px;font-size:0.94rem;}
+
+  footer{padding:40px 0 60px;color:var(--muted);font-size:0.85rem;text-align:center;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 8 4 11 4 15.5C4 19.6 7.6 22 12 22C16.4 22 20 19.6 20 15.5C20 11 16 8 12 2Z" stroke="#5fd4c6" stroke-width="1.6"/></svg>
+      Fluida Dinamis
+    </div>
+    <div class="navlinks">
+      <a href="#kontinuitas"><span id="nav1">1 Kontinuitas</span></a>
+      <a href="#bernoulli"><span id="nav2">2 Bernoulli</span></a>
+      <a href="#torricelli"><span id="nav3">3 Torricelli</span></a>
+      <a href="#viskositas"><span id="nav4">4 Viskositas</span></a>
+      <a href="#cocokkan"><span id="nav5">5 Cocokkan</span></a>
+      <a href="#hasil">Hasil</a>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="topProgress"></div></div>
+</nav>
+
+<header class="hero">
+  <div class="wave-field">
+    <svg viewBox="0 0 1000 400" preserveAspectRatio="none">
+      <path d="M0,270 C 150,230 350,310 500,270 C 650,230 850,310 1000,270 L1000,400 L0,400 Z" fill="#5fd4c6" opacity="0.09"/>
+      <path d="M0,300 C 150,340 350,260 500,300 C 650,340 850,260 1000,300 L1000,400 L0,400 Z" fill="#3a8f88" opacity="0.14"/>
+      <path d="M0,330 C 150,300 350,360 500,330 C 650,300 850,360 1000,330 L1000,400 L0,400 Z" fill="#123444" opacity="0.5"/>
+    </svg>
+    <div id="bubbleField"></div>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">Laboratorium fisika interaktif · 5 stasiun</div>
+    <h1>Rasakan cara fluida bergerak, bukan cuma menghafal rumusnya.</h1>
+    <p>Lima permainan singkat menuntunmu memahami kontinuitas, hukum Bernoulli, teorema Torricelli, viskositas, hingga penerapannya di kehidupan sehari-hari — semua lewat simulasi yang bisa kamu utak-atik langsung.</p>
+    <div class="hero-cta">
+      <a href="#kontinuitas" class="btn btn-primary">Mulai dari Stasiun 1</a>
+      <a href="#hasil" class="btn btn-ghost">Lihat papan skor</a>
+    </div>
+    <div class="roadmap">
+      <a class="chip" id="chip1" href="#kontinuitas"><span class="dot"></span>Kontinuitas</a>
+      <a class="chip" id="chip2" href="#bernoulli"><span class="dot"></span>Bernoulli</a>
+      <a class="chip" id="chip3" href="#torricelli"><span class="dot"></span>Torricelli</a>
+      <a class="chip" id="chip4" href="#viskositas"><span class="dot"></span>Viskositas</a>
+      <a class="chip" id="chip5" href="#cocokkan"><span class="dot"></span>Cocokkan Konsep</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= STATION 1: CONTINUITY ================= -->
+<section class="station" id="kontinuitas">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">1</div>
+      <h2>Asas Kontinuitas</h2>
+    </div>
+    <p class="station-intro">Debit air yang masuk pipa harus sama dengan debit yang keluar: <em>A₁v₁ = A₂v₂</em>. Semakin sempit pipanya, semakin cepat airnya mengalir. Tantanganmu: atur lebar pipa sempit supaya kecepatan air tepat menyalakan turbin mini.</p>
+
+    <div class="panel grid-2">
+      <div>
+        <canvas id="pipeCanvas" width="560" height="220"></canvas>
+        <label class="field" style="margin-top:18px;">Lebar pipa sempit (persen dari pipa utama)</label>
+        <input type="range" id="pipeSlider" min="20" max="100" value="100">
+      </div>
+      <div>
+        <div class="stat-row">
+          <div class="stat"><div class="k">Kecepatan masuk v₁</div><div class="v">1,5 m/s</div></div>
+          <div class="stat"><div class="k">Kecepatan di pipa sempit v₂</div><div class="v" id="v2out">1,5 m/s</div></div>
+          <div class="stat"><div class="k">Target turbin</div><div class="v">6,0 m/s</div></div>
+        </div>
+        <div class="feedback neutral" id="pipeFeedback">Geser penampangnya, lalu perhatikan bagaimana air dipercepat saat ruangnya menyempit.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 2: BERNOULLI QUIZ ================= -->
+<section class="station" id="bernoulli">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">2</div>
+      <h2>Tantangan Bernoulli</h2>
+    </div>
+    <p class="station-intro">Hukum Bernoulli menghubungkan kecepatan aliran dengan tekanan: makin cepat fluida bergerak, makin rendah tekanannya. Jawab enam soal berikut untuk menguji pemahamanmu tentang penerapannya di kehidupan sehari-hari.</p>
+
+    <div class="panel">
+      <div id="quizContainer"></div>
+      <div class="quiz-score" id="quizScoreText">Skor: 0 / 6</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 3: TORRICELLI ================= -->
+<section class="station" id="torricelli">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">3</div>
+      <h2>Pancuran Torricelli</h2>
+    </div>
+    <p class="station-intro">Sebuah tangki air setinggi 1 meter dibocorkan di satu titik. Semakin dalam lubangnya, semakin kencang semburannya — tapi semakin sedikit waktu jatuhnya sebelum menyentuh tanah. Cari posisi lubang yang membuat air menyembur paling jauh.</p>
+
+    <div class="panel grid-2">
+      <div>
+        <canvas id="tankCanvas" width="560" height="280"></canvas>
+        <label class="field" style="margin-top:18px;">Tinggi lubang dari dasar tangki</label>
+        <input type="range" id="holeSlider" min="5" max="95" value="90">
+      </div>
+      <div>
+        <div class="stat-row">
+          <div class="stat"><div class="k">Kedalaman air di atas lubang (h)</div><div class="v" id="hOut">0,10 m</div></div>
+          <div class="stat"><div class="k">Kecepatan semburan (v)</div><div class="v" id="vOut">1,40 m/s</div></div>
+          <div class="stat"><div class="k">Jarak mendarat (x)</div><div class="v" id="xOut">0,30 m</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="k">Jarak terjauh yang kamu temukan</div><div class="v" id="bestOut">0,00 m</div></div>
+        </div>
+        <div class="feedback neutral" id="tankFeedback">Geser posisi lubangnya, amati lintasan air, lalu coba temukan titik terjauh.</div>
+        <button class="btn btn-ghost" id="revealBtn" style="margin-top:14px;">Tampilkan posisi optimal</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 4: VISCOSITY RACE ================= -->
+<section class="station" id="viskositas">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">4</div>
+      <h2>Balapan Viskositas</h2>
+    </div>
+    <p class="station-intro">Sebuah kelereng kecil dijatuhkan ke tiga wadah berbeda: air, minyak goreng, dan madu. Viskositas (kekentalan) fluida menghambat gerak benda yang jatuh di dalamnya. Tebak dulu urutan tercepat ke terlambat, baru jalankan balapannya.</p>
+    <p class="station-note">Catatan: kecepatan di sini divisualisasikan sebanding dengan viskositas tiap fluida untuk memperjelas konsepnya, bukan hasil hitungan presisi rumus Stokes yang sesungguhnya berlaku pada aliran yang sangat lambat.</p>
+
+    <div class="panel">
+      <div class="tubes">
+        <div class="tube-card">
+          <canvas id="tubeWater" width="150" height="220"></canvas>
+          <div style="margin-top:6px;font-weight:600;">Air</div>
+          <button class="rank-btn" id="rankWater" data-fluid="water">Pilih urutan</button>
+          <div class="result-tag" id="resultWater"></div>
+        </div>
+        <div class="tube-card">
+          <canvas id="tubeOil" width="150" height="220"></canvas>
+          <div style="margin-top:6px;font-weight:600;">Minyak Goreng</div>
+          <button class="rank-btn" id="rankOil" data-fluid="oil">Pilih urutan</button>
+          <div class="result-tag" id="resultOil"></div>
+        </div>
+        <div class="tube-card">
+          <canvas id="tubeHoney" width="150" height="220"></canvas>
+          <div style="margin-top:6px;font-weight:600;">Madu</div>
+          <button class="rank-btn" id="rankHoney" data-fluid="honey">Pilih urutan</button>
+          <div class="result-tag" id="resultHoney"></div>
+        </div>
+      </div>
+      <div class="race-controls">
+        <button class="btn btn-ghost" id="resetRank">Ulangi tebakan</button>
+        <button class="btn btn-primary" id="startRace" disabled>Mulai Balapan</button>
+      </div>
+      <div class="feedback neutral" id="raceFeedback">Klik ketiga wadah di atas sesuai urutan tebakanmu (dari yang menurutmu paling cepat ke paling lambat).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATION 5: MATCHING ================= -->
+<section class="station" id="cocokkan">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">5</div>
+      <h2>Cocokkan Konsep</h2>
+    </div>
+    <p class="station-intro">Pilih satu fenomena di kolom kiri, lalu pilih penjelasan yang tepat di kolom kanan. Cocokkan semua pasangannya untuk menyelesaikan stasiun ini.</p>
+
+    <div class="panel">
+      <div class="match-grid">
+        <ul class="match-list" id="termList"></ul>
+        <ul class="match-list" id="defList"></ul>
+      </div>
+      <div class="feedback neutral" id="matchFeedback">0 dari 5 pasangan cocok.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section class="station" id="hasil">
+  <div class="wrap">
+    <div class="station-head reveal">
+      <div class="station-num">✓</div>
+      <h2>Papan Skor</h2>
+    </div>
+    <p class="station-intro">Ringkasan hasil dari kelima stasiun. Selesaikan semuanya untuk melihat predikatmu.</p>
+
+    <div class="panel">
+      <div class="dash-grid">
+        <div class="dash-card"><div class="big" id="dashPipe">Belum</div><div class="label">1. Kontinuitas</div></div>
+        <div class="dash-card"><div class="big" id="dashQuiz">0 / 6</div><div class="label">2. Bernoulli</div></div>
+        <div class="dash-card"><div class="big" id="dashTank">0,00 m</div><div class="label">3. Torricelli</div></div>
