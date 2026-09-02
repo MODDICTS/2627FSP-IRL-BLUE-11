@@ -41,8 +41,8 @@ button:active{transform:translate(1px,1px);box-shadow:1px 1px #000}
 .action{width:52px;height:52px;border-radius:50%;font-size:11px;padding:0}
 #interactBtn{border-color:var(--gold)}
 #hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#8e8197;z-index:2}
-#nextArrow{display:none;position:absolute;z-index:5;right:18px;top:50%;transform:translateY(-50%);width:58px;height:58px;border-radius:50%;background:#19131fe8;border:3px solid var(--gold);color:var(--gold);font-size:25px;box-shadow:3px 3px #000;animation:pulse 1.1s infinite}
-#nextArrowLabel{position:absolute;right:17px;top:calc(50% + 35px);z-index:5;color:var(--gold);font-size:10px;display:none;text-shadow:2px 2px #000}
+#nextArrow{display:none;position:absolute;z-index:12;pointer-events:auto;cursor:pointer;right:18px;top:50%;transform:translateY(-50%);width:58px;height:58px;border-radius:50%;background:#19131fe8;border:3px solid var(--gold);color:var(--gold);font-size:25px;box-shadow:3px 3px #000;animation:pulse 1.1s infinite}
+#nextArrowLabel{position:absolute;right:17px;top:calc(50% + 35px);z-index:12;pointer-events:none;color:var(--gold);font-size:10px;display:none;text-shadow:2px 2px #000}
 #pausePanel{display:none;position:absolute;inset:0;z-index:15;background:#0d0a13ed;align-items:center;justify-content:center}
 .panel{background:#17121f;border:3px solid #806c89;padding:22px;min-width:min(420px,88vw);text-align:center;box-shadow:7px 7px #000}
 @keyframes pulse{50%{transform:translateY(-50%) scale(1.08)}}
@@ -297,12 +297,23 @@ function signal(){
  {label:"Keep listening",action:()=>say("YORU","Someone is waiting for us.")}]);
 }
 function nextRoom(){
- if(room==="lab"){room="bunker";chapter=2;player.x=100}
- else if(room==="bunker"){room="observatory";chapter=3;player.x=100}
- else if(room==="observatory"){room="core";chapter=4;player.x=440}
- else return;
- close();updateUI();
- say("SYSTEM",`TIME DISPLACEMENT ACCEPTED.\nDestination locked.\nCHAPTER ${chapter}: ${roomData[room].title}\n\nNew objective: ${roomData[room].objective}`);
+  if(state!=="play")return;
+
+  const ready=(room==="lab"&&["vaccine","drawing","tape"].every(x=>clues.has(x)))||
+    (room==="bunker"&&["records","machine"].every(x=>clues.has(x)))||
+    (room==="observatory"&&clues.has("signal"));
+  if(!ready)return;
+
+  if(room==="lab"){room="bunker";chapter=2;player.x=100}
+  else if(room==="bunker"){room="observatory";chapter=3;player.x=100}
+  else if(room==="observatory"){room="core";chapter=4;player.x=440}
+  else return;
+  close();updateUI();
+  say("SYSTEM",`TIME DISPLACEMENT ACCEPTED.
+Destination locked.
+CHAPTER ${chapter}: ${roomData[room].title}
+
+New objective: ${roomData[room].objective}`);
 }
 function confrontation(){
  say("LEV","So the chosen one finally reaches the last page.\nYou were expecting a monster.",[
@@ -353,7 +364,7 @@ document.getElementById("menuBtn").onclick=()=>{if(state==="play"){document.getE
 document.getElementById("resume").onclick=()=>document.getElementById("pausePanel").style.display="none";
 document.getElementById("restart").onclick=()=>location.reload();
 document.getElementById("interactBtn").onclick=interact;document.getElementById("investigateBtn").onclick=investigate;
-document.getElementById("nextArrow").onclick=nextRoom;
+document.getElementById("nextArrow").addEventListener("click",nextRoom);
 document.querySelectorAll("[data-key]").forEach(b=>{
  const k=b.dataset.key;
  const down=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};
