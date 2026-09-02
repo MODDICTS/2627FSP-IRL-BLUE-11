@@ -1,0 +1,3294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>UNDOEND — Pixel Mystery</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #08090d;
+    color: #fff;
+    font-family: "Courier New", monospace;
+    overflow: hidden;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#game {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background:
+        radial-gradient(circle at center, #202638 0%, #0c0e16 55%, #050609 100%);
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title-card {
+    width: min(900px, 94vw);
+    padding: 35px;
+    border: 4px solid #d7d9ff;
+    background: #10131d;
+    box-shadow:
+        12px 12px 0 #050609,
+        inset 0 0 0 4px #4c526e;
+    text-align: center;
+}
+
+.logo {
+    font-size: clamp(42px, 10vw, 100px);
+    letter-spacing: 12px;
+    margin: 0;
+    color: #f2f1ff;
+    text-shadow:
+        5px 5px 0 #565b7c,
+        9px 9px 0 #171923;
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: #a7aac4;
+    letter-spacing: 5px;
+}
+
+.story-intro {
+    max-width: 700px;
+    margin: 30px auto;
+    color: #d5d6e2;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.pixel-button {
+    border: 3px solid #fff;
+    background: #252a3d;
+    color: white;
+    padding: 14px 25px;
+    font-weight: bold;
+    box-shadow: 5px 5px 0 #000;
+    transition: 0.08s;
+}
+
+.pixel-button:hover {
+    background: #414967;
+}
+
+.pixel-button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 1px 1px 0 #000;
+}
+
+/* =========================================================
+   CHARACTER SELECT
+========================================================= */
+
+.select-box {
+    width: min(1100px, 95vw);
+    height: min(90vh, 760px);
+    overflow-y: auto;
+    padding: 25px;
+    background: #0d1019;
+    border: 4px solid #aaaec7;
+    box-shadow: 10px 10px 0 #000;
+}
+
+.select-title {
+    text-align: center;
+    letter-spacing: 5px;
+    margin-bottom: 8px;
+}
+
+.select-subtitle {
+    text-align: center;
+    color: #888da9;
+    margin-bottom: 25px;
+}
+
+.characters {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.character {
+    min-height: 310px;
+    background: #151a27;
+    border: 3px solid #4e546d;
+    padding: 14px;
+    position: relative;
+    transition: 0.1s;
+}
+
+.character:hover {
+    transform: translateY(-4px);
+    border-color: #fff;
+}
+
+.character.selected {
+    border-color: #fff;
+    box-shadow: 0 0 0 3px #757b9c inset;
+}
+
+.char-art {
+    height: 145px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    image-rendering: pixelated;
+}
+
+.sprite {
+    width: 80px;
+    height: 105px;
+    position: relative;
+}
+
+.head {
+    width: 44px;
+    height: 44px;
+    position: absolute;
+    left: 18px;
+    top: 4px;
+    background: #d9a982;
+    border: 4px solid #171923;
+}
+
+.body {
+    width: 52px;
+    height: 50px;
+    position: absolute;
+    left: 14px;
+    top: 47px;
+    background: #59617f;
+    border: 4px solid #171923;
+}
+
+.legs {
+    width: 45px;
+    height: 22px;
+    position: absolute;
+    left: 17px;
+    top: 92px;
+    background: #292d3e;
+    border: 4px solid #171923;
+}
+
+.hair {
+    width: 50px;
+    height: 21px;
+    position: absolute;
+    left: 15px;
+    top: 1px;
+    background: #1a1b25;
+    border: 4px solid #171923;
+    z-index: 2;
+}
+
+.char-name {
+    font-size: 20px;
+    margin: 5px 0;
+}
+
+.char-role {
+    color: #9297b2;
+    font-size: 12px;
+}
+
+.char-description {
+    color: #c7c9d6;
+    font-size: 12px;
+    line-height: 1.5;
+    min-height: 54px;
+}
+
+.skill {
+    color: #f0f0ff;
+    font-size: 11px;
+    margin-top: 10px;
+    border-top: 1px dashed #50556d;
+    padding-top: 8px;
+}
+
+#startGame {
+    display: block;
+    margin: 25px auto 5px;
+}
+
+/* =========================================================
+   GAME SCREEN
+========================================================= */
+
+#gameScreen {
+    background: #06070a;
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+#hud {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 10px;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.hud-box {
+    background: rgba(7, 8, 13, 0.9);
+    border: 2px solid #777d98;
+    padding: 8px 12px;
+    font-size: 12px;
+    box-shadow: 3px 3px 0 #000;
+}
+
+.clue-counter {
+    color: #e8e9ff;
+}
+
+.relationship {
+    margin-top: 7px;
+    display: inline-block;
+}
+
+.relationship span {
+    color: #e3a9d2;
+}
+
+/* =========================================================
+   MESSAGE BOX
+========================================================= */
+
+#message {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    width: min(850px, 92vw);
+    background: rgba(9, 10, 16, 0.96);
+    border: 3px solid #d9dbee;
+    padding: 15px 18px;
+    box-shadow: 6px 6px 0 #000;
+    display: none;
+    z-index: 20;
+}
+
+#message.visible {
+    display: block;
+}
+
+#messageName {
+    color: #aaaed0;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+#messageText {
+    color: #f0f0f5;
+    line-height: 1.55;
+    font-size: 14px;
+}
+
+.message-hint {
+    color: #777c94;
+    font-size: 10px;
+    margin-top: 8px;
+}
+
+/* =========================================================
+   CHOICE BOX
+========================================================= */
+
+#choices {
+    position: absolute;
+    left: 50%;
+    bottom: 145px;
+    transform: translateX(-50%);
+    width: min(700px, 90vw);
+    display: none;
+    gap: 10px;
+    flex-direction: column;
+    z-index: 25;
+}
+
+.choice {
+    background: #171b2a;
+    color: white;
+    border: 2px solid #777c98;
+    padding: 12px;
+    text-align: left;
+}
+
+.choice:hover {
+    border-color: white;
+    background: #272d43;
+}
+
+/* =========================================================
+   NEXT AREA
+========================================================= */
+
+#nextArea {
+    position: absolute;
+    right: 20px;
+    top: 75px;
+    display: none;
+    z-index: 30;
+}
+
+#nextArea button {
+    border: 3px solid white;
+    background: #292f47;
+    color: white;
+    padding: 14px 18px;
+    box-shadow: 5px 5px 0 #000;
+    font-weight: bold;
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+#controls {
+    position: absolute;
+    left: 20px;
+    bottom: 22px;
+    width: 190px;
+    height: 150px;
+    z-index: 30;
+}
+
+.dpad {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.control-button {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border: 3px solid #d7d9e8;
+    background: rgba(26, 29, 43, 0.92);
+    color: white;
+    font-size: 18px;
+    box-shadow: 4px 4px 0 #000;
+}
+
+.control-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 #000;
+}
+
+.up {
+    left: 49px;
+    top: 0;
+}
+
+.down {
+    left: 49px;
+    bottom: 0;
+}
+
+.left {
+    left: 0;
+    top: 49px;
+}
+
+.right {
+    right: 0;
+    top: 49px;
+}
+
+.action-buttons {
+    position: absolute;
+    right: 18px;
+    bottom: 35px;
+    display: flex;
+    gap: 10px;
+    z-index: 31;
+}
+
+.action {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background: #24293c;
+    color: white;
+    font-weight: bold;
+    box-shadow: 4px 4px 0 #000;
+}
+
+/* =========================================================
+   CLUE POPUP
+========================================================= */
+
+#cluePopup {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(500px, 88vw);
+    background: #111522;
+    border: 4px solid #e0e2f2;
+    padding: 24px;
+    box-shadow: 8px 8px 0 #000;
+    display: none;
+    z-index: 50;
+}
+
+#cluePopup.show {
+    display: block;
+}
+
+.clue-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.clue-text {
+    color: #cfd1dc;
+    line-height: 1.6;
+}
+
+.clue-type {
+    margin-top: 15px;
+    color: #777d9b;
+    font-size: 11px;
+}
+
+/* =========================================================
+   ENDING
+========================================================= */
+
+#endingScreen {
+    text-align: center;
+    padding: 20px;
+}
+
+.ending-card {
+    width: min(800px, 92vw);
+    background: #10131d;
+    border: 4px solid #d7d9ea;
+    padding: 35px;
+    box-shadow: 10px 10px 0 #000;
+}
+
+.ending-title {
+    font-size: clamp(28px, 7vw, 55px);
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+}
+
+.ending-text {
+    color: #cfd1dc;
+    line-height: 1.8;
+}
+
+.stats {
+    margin: 25px 0;
+    color: #a8acc5;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 750px) {
+
+    .characters {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .select-box {
+        height: 94vh;
+        padding: 14px;
+    }
+
+    .character {
+        min-height: 275px;
+    }
+
+    .char-art {
+        height: 120px;
+    }
+
+    .story-intro {
+        font-size: 12px;
+    }
+
+    #message {
+        bottom: 185px;
+    }
+
+    #choices {
+        bottom: 190px;
+    }
+
+    #nextArea {
+        top: 70px;
+        right: 10px;
+    }
+
+    #nextArea button {
+        padding: 10px 12px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 430px) {
+
+    .characters {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .character {
+        padding: 9px;
+        min-height: 260px;
+    }
+
+    .char-description {
+        font-size: 10px;
+    }
+
+    .skill {
+        font-size: 9px;
+    }
+
+    .char-name {
+        font-size: 16px;
+    }
+
+    #controls {
+        transform: scale(0.78);
+        transform-origin: bottom left;
+        left: 5px;
+        bottom: 10px;
+    }
+
+    .action-buttons {
+        transform: scale(0.78);
+        transform-origin: bottom right;
+        right: 5px;
+        bottom: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<!-- =====================================================
+     TITLE SCREEN
+===================================================== -->
+
+<section id="titleScreen" class="screen active">
+
+    <div class="title-card">
+
+        <h1 class="logo">UNDOEND</h1>
+
+        <div class="subtitle">
+            A PIXEL MYSTERY
+        </div>
+
+        <p class="story-intro">
+            The world was supposed to end.
+
+            <br><br>
+
+            But someone changed the ending.
+
+            <br><br>
+
+            Four people wake up inside a forgotten research facility
+            with fragments of memories, strange drawings, corrupted
+            records, and one name appearing everywhere.
+
+            <br><br>
+
+            <strong>LEV.</strong>
+
+            <br><br>
+
+            Find the clues. Discover what happened.
+            And decide whether the world deserves its original ending.
+        </p>
+
+        <button class="pixel-button" onclick="showCharacterSelect()">
+            START INVESTIGATION
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CHARACTER SELECT
+===================================================== -->
+
+<section id="characterScreen" class="screen">
+
+    <div class="select-box">
+
+        <h2 class="select-title">
+            CHOOSE YOUR INVESTIGATOR
+        </h2>
+
+        <div class="select-subtitle">
+            Your choice changes dialogue, clues, and relationships.
+        </div>
+
+        <div class="characters">
+
+            <!-- YORU -->
+
+            <div class="character" data-char="yoru" onclick="selectCharacter('yoru')">
+
+                <div class="char-art">
+                    <div class="sprite">
+                        <div class="head"></div>
+                        <div class="hair"></div>
+                        <div class="body"></div>
+                        <div class="legs"></div>
+                    </div>
+                </div>
+
+                <div class="char-name">YORU</div>
+                <div class="char-role">Cashier / Quiet Observer</div>
+
+                <p class="char-description">
+                    A calm cashier who remembers small details
+                    everyone else ignores.
+                </p>
+
+                <div class="skill">
+                    SKILL: MEMORY<br>
+                    Finds hidden details in ordinary objects.
+                </div>
+
+            </div>
+
+
+            <!-- ZHENYA -->
+
+            <div class="character" data-char="zhenya" onclick="selectCharacter('zhenya')">
+
+                <div class="char-art">
+                    <div class="sprite">
+                        <div class="head"></div>
+                        <div class="hair"></div>
+                        <div class="body"></div>
+                        <div class="legs"></div>
+                    </div>
+                </div>
+
+                <div class="char-name">ZHENYA</div>
+                <div class="char-role">Art Kid</div>
+
+                <p class="char-description">
+                    A strange artist who can recognize patterns
+                    hidden inside drawings and symbols.
+                </p>
+
+                <div class="skill">
+                    SKILL: ART SENSE<br>
+                    Reveals visual clues and hidden symbols.
+                </div>
+
+            </div>
+
+
+            <!-- RENÉE -->
+
+            <div class="character" data-char="renee" onclick="selectCharacter('renee')">
+
+                <div class="char-art">
+                    <div class="sprite">
+                        <div class="head"></div>
+                        <div class="hair"></div>
+                        <div class="body"></div>
+                        <div class="legs"></div>
+                    </div>
+                </div>
+
+                <div class="char-name">RENÉE</div>
+                <div class="char-role">Genius Lil Kid</div>
+
+                <p class="char-description">
+                    A tiny genius who understands machines
+                    much better than adults do.
+                </p>
+
+                <div class="skill">
+                    SKILL: LOGIC<br>
+                    Solves technological puzzles faster.
+                </div>
+
+            </div>
+
+
+            <!-- ROCCO -->
+
+            <div class="character" data-char="rocco" onclick="selectCharacter('rocco')">
+
+                <div class="char-art">
+                    <div class="sprite">
+                        <div class="head"></div>
+                        <div class="hair"></div>
+                        <div class="body"></div>
+                        <div class="legs"></div>
+                    </div>
+                </div>
+
+                <div class="char-name">ROCCO</div>
+                <div class="char-role">Gangster</div>
+
+                <p class="char-description">
+                    Tough, suspicious, and protective.
+                    He knows how dangerous people can be.
+                </p>
+
+                <div class="skill">
+                    SKILL: INTIMIDATION<br>
+                    Gets information from suspicious NPCs.
+                </div>
+
+            </div>
+
+        </div>
+
+        <button id="startGame"
+                class="pixel-button"
+                onclick="startGame()">
+            SELECT A CHARACTER
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GAME SCREEN
+===================================================== -->
+
+<section id="gameScreen" class="screen">
+
+    <canvas id="gameCanvas"
+            width="960"
+            height="640">
+    </canvas>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hud-top">
+
+            <div class="hud-box">
+                <span id="playerName">PLAYER</span>
+                <br>
+                <span id="roomName">UNKNOWN</span>
+            </div>
+
+            <div class="hud-box clue-counter">
+                CLUES:
+                <span id="clueCount">0/3</span>
+            </div>
+
+        </div>
+
+        <div class="hud-box relationship">
+            YORU ♥
+            <span id="yoruRelation">0</span>
+        </div>
+
+    </div>
+
+
+    <!-- NEXT AREA -->
+
+    <div id="nextArea">
+        <button onclick="nextRoom()">
+            NEXT AREA ➜
+        </button>
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div id="message">
+
+        <div id="messageName">
+            SYSTEM
+        </div>
+
+        <div id="messageText">
+            ...
+        </div>
+
+        <div class="message-hint">
+            TAP / ENTER / E to continue
+        </div>
+
+    </div>
+
+
+    <!-- CHOICES -->
+
+    <div id="choices"></div>
+
+
+    <!-- CLUE POPUP -->
+
+    <div id="cluePopup">
+
+        <div class="clue-title"
+             id="popupTitle">
+            CLUE FOUND
+        </div>
+
+        <div class="clue-text"
+             id="popupText">
+        </div>
+
+        <div class="clue-type"
+             id="popupType">
+        </div>
+
+        <button class="pixel-button"
+                style="margin-top:20px"
+                onclick="closeClue()">
+            CLOSE
+        </button>
+
+    </div>
+
+
+    <!-- MOBILE D-PAD -->
+
+    <div id="controls">
+
+        <div class="dpad">
+
+            <button class="control-button up"
+                    data-key="up">
+                ▲
+            </button>
+
+            <button class="control-button left"
+                    data-key="left">
+                ◀
+            </button>
+
+            <button class="control-button right"
+                    data-key="right">
+                ▶
+            </button>
+
+            <button class="control-button down"
+                    data-key="down">
+                ▼
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="action-buttons">
+
+        <button class="action"
+                id="lookButton">
+            LOOK
+        </button>
+
+        <button class="action"
+                id="interactButton">
+            E
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ENDING
+===================================================== -->
+
+<section id="endingScreen" class="screen">
+
+    <div class="ending-card">
+
+        <div class="ending-title"
+             id="endingTitle">
+            THE END
+        </div>
+
+        <div class="ending-text"
+             id="endingText">
+        </div>
+
+        <div class="stats"
+             id="endingStats">
+        </div>
+
+        <button class="pixel-button"
+                onclick="location.reload()">
+            PLAY AGAIN
+        </button>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+ctx.imageSmoothingEnabled = false;
+
+let selectedCharacter = null;
+
+let roomIndex = 0;
+
+let gameRunning = false;
+
+let messageOpen = false;
+
+let cluePopupOpen = false;
+
+let dialogueQueue = [];
+
+let dialogueIndex = 0;
+
+let currentChoiceCallback = null;
+
+let totalCluesFound = 0;
+
+let relationship = {
+    yoru: 0
+};
+
+let player = {
+    x: 480,
+    y: 400,
+    speed: 3,
+    size: 24
+};
+
+let keys = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+};
+
+
+/* =========================================================
+   CHARACTER DATA
+========================================================= */
+
+const characters = {
+
+    yoru: {
+        name: "Yoru",
+        role: "Cashier",
+        color: "#727b9d"
+    },
+
+    zhenya: {
+        name: "Zhenya",
+        role: "Art Kid",
+        color: "#9c718e"
+    },
+
+    renee: {
+        name: "Renée",
+        role: "Genius Kid",
+        color: "#729c9b"
+    },
+
+    rocco: {
+        name: "Rocco",
+        role: "Gangster",
+        color: "#8b735d"
+    }
+
+};
+
+
+/* =========================================================
+   ROOM DATA
+========================================================= */
+
+const rooms = [
+
+    {
+
+        id: "lab",
+
+        name: "ABANDONED LAB",
+
+        color: "#151c27",
+
+        clues: [
+
+            {
+                x: 250,
+                y: 220,
+                title: "VACCINE RECORD",
+                text:
+                    "A damaged medical record lists a vaccine trial " +
+                    "that was never officially approved. " +
+                    "Someone crossed out the name of the final patient.",
+                type: "MEDICAL"
+            },
+
+            {
+                x: 700,
+                y: 250,
+                title: "CHILD'S DRAWING",
+                text:
+                    "A child's drawing shows four people standing " +
+                    "around a machine. A fifth figure watches from behind.",
+                type: "VISUAL"
+            },
+
+            {
+                x: 480,
+                y: 500,
+                title: "BURNED TAPE",
+                text:
+                    "Most of the recording is destroyed. " +
+                    "One sentence remains: \"If the clock starts, don't trust him.\"",
+                type: "AUDIO"
+            }
+
+        ],
+
+        npc: {
+            name: "Yoru",
+            x: 750,
+            y: 500
+        }
+
+    },
+
+    {
+
+        id: "bunker",
+
+        name: "UNDERGROUND BUNKER",
+
+        color: "#1a1718",
+
+        clues: [
+
+            {
+                x: 180,
+                y: 300,
+                title: "MISSING PERSON FILE",
+                text:
+                    "Hundreds of names are listed. " +
+                    "Some disappeared years before the apocalypse.",
+                type: "RECORD"
+            },
+
+            {
+                x: 600,
+                y: 180,
+                title: "STRANGE PHOTOGRAPH",
+                text:
+                    "The photograph shows the same room you are standing in. " +
+                    "But the picture is dated twelve years in the future.",
+                type: "PHOTOGRAPH"
+            },
+
+            {
+                x: 800,
+                y: 470,
+                title: "LOCKED BOX",
+                text:
+                    "Inside the box is a broken watch engraved with the initials L.V.",
+                type: "OBJECT"
+            }
+
+        ],
+
+        npc: {
+            name: "Rocco",
+            x: 180,
+            y: 500
+        }
+
+    },
+
+    {
+
+        id: "observatory",
+
+        name: "DEAD OBSERVATORY",
+
+        color: "#131925",
+
+        clues: [
+
+            {
+                x: 220,
+                y: 180,
+                title: "SOLAR SIGNAL",
+                text:
+                    "A repeating signal is coming from the sun. " +
+                    "Its rhythm matches the machine's activation sequence.",
+                type: "SIGNAL"
+            },
+
+            {
+                x: 520,
+                y: 300,
+                title: "STAR MAP",
+                text:
+                    "The stars have been rearranged into the shape of a clock.",
+                type: "ASTRONOMY"
+            },
+
+            {
+                x: 760,
+                y: 200,
+                title: "HIDDEN SYMBOL",
+                text:
+                    "The symbol is almost identical to the one in Zhenya's drawing.",
+                type: "SYMBOL"
+            }
+
+        ],
+
+        npc: {
+            name: "Renée",
+            x: 740,
+            y: 500
+        }
+
+    },
+
+    {
+
+        id: "core",
+
+        name: "TIME MACHINE CORE",
+
+        color: "#1c1824",
+
+        clues: [
+
+            {
+                x: 180,
+                y: 200,
+                title: "MASTER PLAN",
+                text:
+                    "The machine was not designed to stop the apocalypse. " +
+                    "It was designed to repeat it.",
+                type: "MASTER PLAN"
+            },
+
+            {
+                x: 480,
+                y: 150,
+                title: "THE ORIGINAL TIMELINE",
+                text:
+                    "The world ended once. Someone rewound time and erased the evidence.",
+                type: "TIMELINE"
+            },
+
+            {
+                x: 780,
+                y: 300,
+                title: "LEV'S NOTE",
+                text:
+                    "Only one line is readable: \"They will never understand why.\"",
+                type: "PERSONAL"
+            }
+
+        ],
+
+        npc: {
+            name: "Lev",
+            x: 480,
+            y: 410
+        }
+
+    }
+
+];
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function showCharacterSelect() {
+
+    document
+        .getElementById("titleScreen")
+        .classList.remove("active");
+
+    document
+        .getElementById("characterScreen")
+        .classList.add("active");
+
+}
+
+
+function selectCharacter(id) {
+
+    selectedCharacter = id;
+
+    document
+        .querySelectorAll(".character")
+        .forEach(card => {
+            card.classList.remove("selected");
+        });
+
+    document
+        .querySelector(`[data-char="${id}"]`)
+        .classList.add("selected");
+
+    document.getElementById("startGame").textContent =
+        "PLAY AS " + characters[id].name.toUpperCase();
+
+}
+
+
+function startGame() {
+
+    if (!selectedCharacter) {
+
+        alert("Choose a character first.");
+
+        return;
+
+    }
+
+    document
+        .getElementById("characterScreen")
+        .classList.remove("active");
+
+    document
+        .getElementById("gameScreen")
+        .classList.add("active");
+
+    gameRunning = true;
+
+    roomIndex = 0;
+
+    totalCluesFound = 0;
+
+    relationship.yoru = 0;
+
+    player.x = 480;
+
+    player.y = 400;
+
+    updateHUD();
+
+    openingDialogue();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================================================
+   OPENING
+========================================================= */
+
+function openingDialogue() {
+
+    const char = characters[selectedCharacter];
+
+    showDialogue([
+
+        {
+            name: "SYSTEM",
+            text:
+                "YEAR 0. DAY UNKNOWN."
+        },
+
+        {
+            name: "SYSTEM",
+            text:
+                "The apocalypse happened."
+        },
+
+        {
+            name: "SYSTEM",
+            text:
+                "Then someone pressed rewind."
+        },
+
+        {
+            name: char.name,
+            text:
+                selectedCharacter === "zhenya"
+                    ? "This place feels like a painting someone forgot to finish."
+                    : selectedCharacter === "renee"
+                    ? "The power grid is impossible. Something is still running."
+                    : selectedCharacter === "rocco"
+                    ? "I don't like abandoned places. Too many secrets."
+                    : "Something happened here. I can feel it."
+        },
+
+        {
+            name: "UNKNOWN",
+            text:
+                "Find the six clues."
+        },
+
+        {
+            name: "UNKNOWN",
+            text:
+                "Then you'll remember why you were chosen."
+
+        }
+
+    ]);
+
+}
+
+
+/* =========================================================
+   DIALOGUE SYSTEM
+========================================================= */
+
+function showDialogue(lines) {
+
+    dialogueQueue = lines;
+
+    dialogueIndex = 0;
+
+    messageOpen = true;
+
+    renderDialogue();
+
+}
+
+
+function renderDialogue() {
+
+    if (dialogueIndex >= dialogueQueue.length) {
+
+        closeDialogue();
+
+        return;
+
+    }
+
+    const line = dialogueQueue[dialogueIndex];
+
+    document.getElementById("messageName").textContent =
+        line.name;
+
+    document.getElementById("messageText").textContent =
+        line.text;
+
+    document.getElementById("message")
+        .classList.add("visible");
+
+}
+
+
+function advanceDialogue() {
+
+    if (!messageOpen) return;
+
+    dialogueIndex++;
+
+    if (dialogueIndex >= dialogueQueue.length) {
+
+        closeDialogue();
+
+    } else {
+
+        renderDialogue();
+
+    }
+
+}
+
+
+function closeDialogue() {
+
+    messageOpen = false;
+
+    document.getElementById("message")
+        .classList.remove("visible");
+
+}
+
+
+/* =========================================================
+   CHOICES
+========================================================= */
+
+function showChoices(options, callback) {
+
+    const box = document.getElementById("choices");
+
+    box.innerHTML = "";
+
+    box.style.display = "flex";
+
+    options.forEach(option => {
+
+        const button = document.createElement("button");
+
+        button.className = "choice";
+
+        button.textContent = option.text;
+
+        button.onclick = () => {
+
+            box.style.display = "none";
+
+            callback(option.id);
+
+        };
+
+        box.appendChild(button);
+
+    });
+
+}
+
+
+/* =========================================================
+   CLUE SYSTEM
+========================================================= */
+
+let foundClues = {};
+
+function getRoomKey() {
+
+    return rooms[roomIndex].id;
+
+}
+
+
+function investigateClue(clueIndex) {
+
+    const room = rooms[roomIndex];
+
+    const key =
+        room.id + "_" + clueIndex;
+
+    if (foundClues[key]) {
+
+        showDialogue([
+
+            {
+                name: "SYSTEM",
+                text:
+                    "You've already examined this."
+            }
+
+        ]);
+
+        return;
+
+    }
+
+    foundClues[key] = true;
+
+    totalCluesFound++;
+
+    showClue(
+        room.clues[clueIndex]
+    );
+
+    updateHUD();
+
+    if (roomComplete()) {
+
+        setTimeout(() => {
+
+            showDialogue([
+
+                {
+                    name: "SYSTEM",
+                    text:
+                        "ALL CLUES FOUND."
+                },
+
+                {
+                    name: "SYSTEM",
+                    text:
+                        "The path forward is open."
+                }
+
+            ]);
+
+            document
+                .getElementById("nextArea")
+                .style.display = "block";
+
+        }, 400);
+
+    }
+
+}
+
+
+function showClue(clue) {
+
+    cluePopupOpen = true;
+
+    document
+        .getElementById("popupTitle")
+        .textContent =
+        "CLUE FOUND: " + clue.title;
+
+    document
+        .getElementById("popupText")
+        .textContent =
+        clue.text;
+
+    document
+        .getElementById("popupType")
+        .textContent =
+        "CATEGORY: " + clue.type;
+
+    document
+        .getElementById("cluePopup")
+        .classList.add("show");
+
+}
+
+
+function closeClue() {
+
+    cluePopupOpen = false;
+
+    document
+        .getElementById("cluePopup")
+        .classList.remove("show");
+
+}
+
+
+function roomComplete() {
+
+    const room = rooms[roomIndex];
+
+    return room.clues.every(
+        (_, i) =>
+            foundClues[room.id + "_" + i]
+    );
+
+}
+
+
+function getRoomClueCount() {
+
+    const room = rooms[roomIndex];
+
+    return room.clues.filter(
+        (_, i) =>
+            foundClues[room.id + "_" + i]
+    ).length;
+
+}
+
+
+/* =========================================================
+   NEXT ROOM
+========================================================= */
+
+function nextRoom() {
+
+    if (!roomComplete()) return;
+
+    document
+        .getElementById("nextArea")
+        .style.display = "none";
+
+    roomIndex++;
+
+    player.x = 480;
+
+    player.y = 500;
+
+    if (roomIndex >= rooms.length) {
+
+        finalConfrontation();
+
+        return;
+
+    }
+
+    updateHUD();
+
+    roomEntranceDialogue();
+
+}
+
+
+function roomEntranceDialogue() {
+
+    const room = rooms[roomIndex];
+
+    let lines = [];
+
+    if (room.id === "bunker") {
+
+        lines = [
+
+            {
+                name: "ROCCO",
+                text:
+                    "This place isn't abandoned."
+            },
+
+            {
+                name: "ROCCO",
+                text:
+                    "Someone's been keeping records."
+            }
+
+        ];
+
+    }
+
+    else if (room.id === "observatory") {
+
+        lines = [
+
+            {
+                name: "RENÉE",
+                text:
+                    "Look at the sky."
+            },
+
+            {
+                name: "RENÉE",
+                text:
+                    "Those stars are wrong."
+
+            }
+
+        ];
+
+    }
+
+    else if (room.id === "core") {
+
+        lines = [
+
+            {
+                name: "SYSTEM",
+                text:
+                    "WARNING: TEMPORAL CORE ACTIVE."
+            },
+
+            {
+                name: "SYSTEM",
+                text:
+                    "DO NOT APPROACH THE CENTRAL MACHINE."
+
+            }
+
+        ];
+
+    }
+
+    showDialogue(lines);
+
+}
+
+
+/* =========================================================
+   NPC INTERACTION
+========================================================= */
+
+function interact() {
+
+    if (messageOpen) {
+
+        advanceDialogue();
+
+        return;
+
+    }
+
+    if (cluePopupOpen) {
+
+        closeClue();
+
+        return;
+
+    }
+
+    const room = rooms[roomIndex];
+
+    /* check clues */
+
+    for (let i = 0; i < room.clues.length; i++) {
+
+        const clue = room.clues[i];
+
+        if (
+            Math.abs(player.x - clue.x) < 50 &&
+            Math.abs(player.y - clue.y) < 50
+        ) {
+
+            investigateClue(i);
+
+            return;
+
+        }
+
+    }
+
+    /* check NPC */
+
+    if (room.npc) {
+
+        if (
+            Math.abs(player.x - room.npc.x) < 80 &&
+            Math.abs(player.y - room.npc.y) < 80
+        ) {
+
+            talkToNPC(room.npc.name);
+
+            return;
+
+        }
+
+    }
+
+    showDialogue([
+
+        {
+            name: "SYSTEM",
+            text:
+                "Nothing useful here."
+        }
+
+    ]);
+
+}
+
+
+/* =========================================================
+   NPC DIALOGUE
+========================================================= */
+
+function talkToNPC(name) {
+
+    if (name === "Yoru") {
+
+        relationship.yoru++;
+
+        updateHUD();
+
+        showDialogue([
+
+            {
+                name: "YORU",
+                text:
+                    "You found another clue?"
+            },
+
+            {
+                name: characters[selectedCharacter].name,
+                text:
+                    "Yeah. But it raises more questions."
+            },
+
+            {
+                name: "YORU",
+                text:
+                    "Then don't solve everything alone."
+            },
+
+            {
+                name: "YORU",
+                text:
+                    "Promise?"
+
+            }
+
+        ]);
+
+        return;
+
+    }
+
+
+    if (name === "Rocco") {
+
+        showDialogue([
+
+            {
+                name: "ROCCO",
+                text:
+                    "I don't trust this bunker."
+            },
+
+            {
+                name: "ROCCO",
+                text:
+                    "Someone wanted us to find these records."
+
+            }
+
+        ]);
+
+        return;
+
+    }
+
+
+    if (name === "Renée") {
+
+        showDialogue([
+
+            {
+                name: "RENÉE",
+                text:
+                    "The machine isn't broken."
+            },
+
+            {
+                name: "RENÉE",
+                text:
+                    "It's waiting."
+
+            }
+
+        ]);
+
+        return;
+
+    }
+
+
+    if (name === "Lev") {
+
+        levDialogue();
+
+        return;
+
+    }
+
+}
+
+
+/* =========================================================
+   LEV
+========================================================= */
+
+function levDialogue() {
+
+    showDialogue([
+
+        {
+            name: "LEV",
+            text:
+                "You finally made it."
+        },
+
+        {
+            name: characters[selectedCharacter].name,
+            text:
+                "Who are you?"
+        },
+
+        {
+            name: "LEV",
+            text:
+                "You already know."
+        },
+
+        {
+            name: "LEV",
+            text:
+                "You simply don't remember."
+
+        }
+
+    ]);
+
+    setTimeout(() => {
+
+        showChoices(
+
+            [
+
+                {
+                    id: "trust",
+                    text: "Trust Lev."
+                },
+
+                {
+                    id: "question",
+                    text: "Demand the truth."
+                },
+
+                {
+                    id: "attack",
+                    text: "Refuse to listen."
+                }
+
+            ],
+
+            handleLevChoice
+
+        );
+
+    }, 500);
+
+}
+
+
+function handleLevChoice(choice) {
+
+    if (choice === "trust") {
+
+        relationship.yoru -= 1;
+
+        showDialogue([
+
+            {
+                name: "LEV",
+                text:
+                    "Good."
+            },
+
+            {
+                name: "LEV",
+                text:
+                    "Then you understand why the world had to end."
+
+            }
+
+        ]);
+
+    }
+
+    else if (choice === "question") {
+
+        showDialogue([
+
+            {
+                name: "LEV",
+                text:
+                    "The apocalypse wasn't the mistake."
+            },
+
+            {
+                name: "LEV",
+                text:
+                    "The mistake was saving it."
+
+            }
+
+        ]);
+
+    }
+
+    else {
+
+        showDialogue([
+
+            {
+                name: "LEV",
+                text:
+                    "That's exactly what I expected."
+
+            }
+
+        ]);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOOK SYSTEM
+========================================================= */
+
+function lookAround() {
+
+    const room = rooms[roomIndex];
+
+    let closest = null;
+
+    let distance = Infinity;
+
+    room.clues.forEach((clue, index) => {
+
+        const dx = player.x - clue.x;
+
+        const dy = player.y - clue.y;
+
+        const d = Math.sqrt(dx * dx + dy * dy);
+
+        if (d < distance) {
+
+            distance = d;
+
+            closest = {
+                clue,
+                index
+            };
+
+        }
+
+    });
+
+    if (closest && distance < 160) {
+
+        showDialogue([
+
+            {
+                name: "SYSTEM",
+                text:
+                    "Something catches your attention..."
+            },
+
+            {
+                name: characters[selectedCharacter].name,
+                text:
+                    getCharacterInvestigation(
+                        closest.clue
+                    )
+            }
+
+        ]);
+
+        return;
+
+    }
+
+    showDialogue([
+
+        {
+            name: "SYSTEM",
+            text:
+                "The room is silent."
+        },
+
+        {
+            name: "SYSTEM",
+            text:
+                "But you feel like you're being watched."
+
+        }
+
+    ]);
+
+}
+
+
+function getCharacterInvestigation(clue) {
+
+    if (selectedCharacter === "zhenya") {
+
+        if (
+            clue.type === "VISUAL" ||
+            clue.type === "SYMBOL"
+        ) {
+
+            return "The shapes repeat. This isn't decoration. It's a message.";
+
+        }
+
+        return "There are deliberate marks here. Someone wanted this found.";
+
+    }
+
+    if (selectedCharacter === "renee") {
+
+        if (
+            clue.type === "MACHINE" ||
+            clue.type === "SIGNAL" ||
+            clue.type === "TIMELINE"
+        ) {
+
+            return "The numbers don't make sense... unless time itself is part of the equation.";
+
+        }
+
+        return "Someone organized this information very carefully.";
+
+    }
+
+    if (selectedCharacter === "rocco") {
+
+        return "Someone staged this scene. Nobody leaves evidence this clean by accident.";
+
+    }
+
+    return "I should remember this.";
+
+}
+
+
+/* =========================================================
+   FINAL CONFRONTATION
+========================================================= */
+
+function finalConfrontation() {
+
+    document
+        .getElementById("nextArea")
+        .style.display = "none";
+
+    showDialogue([
+
+        {
+            name: "LEV",
+            text:
+                "Four rooms."
+        },
+
+        {
+            name: "LEV",
+            text:
+                "Nine clues."
+        },
+
+        {
+            name: "LEV",
+            text:
+                "And finally, the truth."
+
+        },
+
+        {
+            name: characters[selectedCharacter].name,
+            text:
+                "You caused the apocalypse."
+
+        },
+
+        {
+            name: "LEV",
+            text:
+                "No."
+        },
+
+        {
+            name: "LEV",
+            text:
+                "I caused the first ending."
+
+        },
+
+        {
+            name: "LEV",
+            text:
+                "You caused the second."
+
+        }
+
+    ]);
+
+    setTimeout(() => {
+
+        showChoices(
+
+            [
+
+                {
+                    id: "save",
+                    text: "Break the machine and save the timeline."
+                },
+
+                {
+                    id: "reset",
+                    text: "Reset everything."
+                },
+
+                {
+                    id: "join",
+                    text: "Join Lev and create a new world."
+                }
+
+            ],
+
+            finalChoice
+
+        );
+
+    }, 1200);
+
+}
+
+
+/* =========================================================
+   FINAL CHOICE
+========================================================= */
+
+function finalChoice(choice) {
+
+    if (choice === "save") {
+
+        showEnding(
+            "THE UNFINISHED DRAWING",
+            "You destroy the machine. The timeline continues without rewinding. The apocalypse cannot be erased anymore, but neither can the memories of the people who survived it. For the first time, the future belongs to everyone.",
+            "TRUE ENDING"
+        );
+
+    }
+
+    else if (choice === "reset") {
+
+        showEnding(
+            "THE PERFECT LIE",
+            "The machine activates. Everything becomes normal. No apocalypse. No bunker. No Lev. No memories. Somewhere, however, a child draws four people standing around a machine.",
+            "LOOP ENDING"
+        );
+
+    }
+
+    else {
+
+        showEnding(
+            "CLEAN CANVAS",
+            "You step beside Lev. Together, you erase the old timeline. The new world begins without rules, history, or certainty. Perhaps it will be better. Perhaps it will be worse.",
+            "SECRET ENDING"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ENDING SCREEN
+========================================================= */
+
+function showEnding(title, text, type) {
+
+    gameRunning = false;
+
+    document
+        .getElementById("gameScreen")
+        .classList.remove("active");
+
+    document
+        .getElementById("endingScreen")
+        .classList.add("active");
+
+    document
+        .getElementById("endingTitle")
+        .textContent =
+        title;
+
+    document
+        .getElementById("endingText")
+        .textContent =
+        text;
+
+    document
+        .getElementById("endingStats")
+        .innerHTML =
+        type +
+        "<br><br>" +
+        "CLUES FOUND: " +
+        totalCluesFound +
+        "<br>" +
+        "YORU RELATIONSHIP: " +
+        relationship.yoru;
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD() {
+
+    const room = rooms[roomIndex];
+
+    document
+        .getElementById("playerName")
+        .textContent =
+        characters[selectedCharacter].name.toUpperCase();
+
+    document
+        .getElementById("roomName")
+        .textContent =
+        room.name;
+
+    document
+        .getElementById("clueCount")
+        .textContent =
+        getRoomClueCount() +
+        "/" +
+        room.clues.length;
+
+    document
+        .getElementById("yoruRelation")
+        .textContent =
+        relationship.yoru;
+
+}
+
+
+/* =========================================================
+   MOVEMENT
+========================================================= */
+
+function updatePlayer() {
+
+    if (!gameRunning) return;
+
+    if (messageOpen || cluePopupOpen) return;
+
+    let dx = 0;
+
+    let dy = 0;
+
+    if (keys.up) dy--;
+
+    if (keys.down) dy++;
+
+    if (keys.left) dx--;
+
+    if (keys.right) dx++;
+
+    if (dx !== 0 && dy !== 0) {
+
+        dx *= 0.707;
+
+        dy *= 0.707;
+
+    }
+
+    player.x += dx * player.speed;
+
+    player.y += dy * player.speed;
+
+    player.x = Math.max(
+        50,
+        Math.min(910, player.x)
+    );
+
+    player.y = Math.max(
+        110,
+        Math.min(575, player.y)
+    );
+
+}
+
+
+/* =========================================================
+   DRAWING
+========================================================= */
+
+function drawRoom() {
+
+    const room = rooms[roomIndex];
+
+    ctx.fillStyle = room.color;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    drawFloor();
+
+    drawWalls();
+
+    drawRoomObjects();
+
+    drawClues();
+
+    drawNPC();
+
+    drawPlayer();
+
+}
+
+
+function drawFloor() {
+
+    ctx.fillStyle = "#222633";
+
+    for (let y = 100; y < 600; y += 32) {
+
+        for (let x = 0; x < 960; x += 32) {
+
+            if (
+                ((x / 32) +
+                (y / 32)) % 2 === 0
+            ) {
+
+                ctx.fillRect(
+                    x,
+                    y,
+                    32,
+                    32
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+
+function drawWalls() {
+
+    ctx.fillStyle = "#090b11";
+
+    ctx.fillRect(
+        0,
+        0,
+        960,
+        95
+    );
+
+    ctx.fillRect(
+        0,
+        600,
+        960,
+        40
+    );
+
+    ctx.fillStyle = "#41475c";
+
+    ctx.fillRect(
+        0,
+        90,
+        960,
+        6
+    );
+
+}
+
+
+function drawRoomObjects() {
+
+    const room = rooms[roomIndex];
+
+    if (room.id === "lab") {
+
+        drawMachine(
+            480,
+            250
+        );
+
+        drawTable(
+            240,
+            220
+        );
+
+        drawCabinet(
+            700,
+            230
+        );
+
+    }
+
+    if (room.id === "bunker") {
+
+        drawCrates();
+
+        drawComputer(
+            600,
+            180
+        );
+
+        drawTable(
+            180,
+            300
+        );
+
+    }
+
+    if (room.id === "observatory") {
+
+        drawTelescope(
+            520,
+            300
+        );
+
+        drawMachine(
+            220,
+            180
+        );
+
+    }
+
+    if (room.id === "core") {
+
+        drawCoreMachine();
+
+    }
+
+}
+
+
+function drawTable(x, y) {
+
+    ctx.fillStyle = "#654e42";
+
+    ctx.fillRect(
+        x - 45,
+        y - 25,
+        90,
+        50
+    );
+
+    ctx.fillStyle = "#2c2020";
+
+    ctx.fillRect(
+        x - 45,
+        y + 25,
+        12,
+        45
+    );
+
+    ctx.fillRect(
+        x + 33,
+        y + 25,
+        12,
+        45
+    );
+
+}
+
+
+function drawCabinet(x, y) {
+
+    ctx.fillStyle = "#373c4d";
+
+    ctx.fillRect(
+        x - 35,
+        y - 70,
+        70,
+        140
+    );
+
+    ctx.fillStyle = "#11131b";
+
+    for (let i = 0; i < 4; i++) {
+
+        ctx.fillRect(
+            x - 25,
+            y - 55 + i * 32,
+            50,
+            20
+        );
+
+    }
+
+}
+
+
+function drawMachine(x, y) {
+
+    ctx.fillStyle = "#4c5368";
+
+    ctx.fillRect(
+        x - 60,
+        y - 50,
+        120,
+        100
+    );
+
+    ctx.fillStyle = "#141722";
+
+    ctx.fillRect(
+        x - 35,
+        y - 30,
+        70,
+        60
+    );
+
+    ctx.fillStyle = "#858ba3";
+
+    ctx.fillRect(
+        x - 8,
+        y - 8,
+        16,
+        16
+    );
+
+}
+
+
+function drawComputer(x, y) {
+
+    ctx.fillStyle = "#42495d";
+
+    ctx.fillRect(
+        x - 45,
+        y - 35,
+        90,
+        65
+    );
+
+    ctx.fillStyle = "#10131c";
+
+    ctx.fillRect(
+        x - 35,
+        y - 25,
+        70,
+        45
+    );
+
+    ctx.fillStyle = "#34394c";
+
+    ctx.fillRect(
+        x - 10,
+        y + 30,
+        20,
+        30
+    );
+
+}
+
+
+function drawCrates() {
+
+    for (let i = 0; i < 5; i++) {
+
+        const x =
+            70 + (i % 3) * 70;
+
+        const y =
+            150 + Math.floor(i / 3) * 70;
+
+        ctx.fillStyle = "#67513e";
+
+        ctx.fillRect(
+            x,
+            y,
+            55,
+            55
+        );
+
+        ctx.strokeStyle = "#2c211a";
+
+        ctx.lineWidth = 4;
+
+        ctx.strokeRect(
+            x,
+            y,
+            55,
+            55
+        );
+
+    }
+
+}
+
+
+function drawTelescope(x, y) {
+
+    ctx.save();
+
+    ctx.translate(x, y);
+
+    ctx.rotate(-0.4);
+
+    ctx.fillStyle = "#656d84";
+
+    ctx.fillRect(
+        -65,
+        -15,
+        120,
+        30
+    );
+
+    ctx.fillStyle = "#202430";
+
+    ctx.fillRect(
+        -70,
+        -22,
+        18,
+        44
+    );
+
+    ctx.restore();
+
+    ctx.fillStyle = "#444a5c";
+
+    ctx.fillRect(
+        x - 5,
+        y + 10,
+        10,
+        100
+    );
+
+}
+
+
+function drawCoreMachine() {
+
+    const cx = 480;
+
+    const cy = 320;
+
+    ctx.strokeStyle = "#666d88";
+
+    ctx.lineWidth = 8;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        cx,
+        cy,
+        140,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.strokeStyle = "#3f4559";
+
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        cx,
+        cy,
+        95,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle = "#151824";
+
+    ctx.fillRect(
+        cx - 35,
+        cy - 35,
+        70,
+        70
+    );
+
+}
+
+
+function drawClues() {
+
+    const room = rooms[roomIndex];
+
+    room.clues.forEach((clue, index) => {
+
+        const key =
+            room.id + "_" + index;
+
+        if (foundClues[key]) {
+
+            return;
+
+        }
+
+        ctx.fillStyle = "#d7d9e8";
+
+        ctx.fillRect(
+            clue.x - 8,
+            clue.y - 8,
+            16,
+            16
+        );
+
+        ctx.fillStyle = "#656b82";
+
+        ctx.fillRect(
+            clue.x - 3,
+            clue.y - 3,
+            6,
+            6
+        );
+
+        if (
+            Math.abs(player.x - clue.x) < 70 &&
+            Math.abs(player.y - clue.y) < 70
+        ) {
+
+            ctx.fillStyle = "#fff";
+
+            ctx.font = "12px monospace";
+
+            ctx.fillText(
+                "!",
+                clue.x + 12,
+                clue.y - 12
+            );
+
+        }
+
+    });
+
+}
+
+
+function drawNPC() {
+
+    const room = rooms[roomIndex];
+
+    if (!room.npc) return;
+
+    const npc = room.npc;
+
+    /* Lev gets darker/mysterious appearance */
+
+    if (npc.name === "Lev") {
+
+        ctx.fillStyle = "#090a10";
+
+        ctx.fillRect(
+            npc.x - 20,
+            npc.y - 45,
+            40,
+            75
+        );
+
+        ctx.fillStyle = "#c3c6db";
+
+        ctx.fillRect(
+            npc.x - 12,
+            npc.y - 35,
+            24,
+            25
+        );
+
+        ctx.fillStyle = "#08090c";
+
+        ctx.fillRect(
+            npc.x - 8,
+            npc.y - 30,
+            5,
+            5
+        );
+
+        ctx.fillRect(
+            npc.x + 3,
+            npc.y - 30,
+            5,
+            5
+        );
+
+        return;
+
+    }
+
+    ctx.fillStyle = "#9a7a67";
+
+    ctx.fillRect(
+        npc.x - 14,
+        npc.y - 35,
+        28,
+        28
+    );
+
+    ctx.fillStyle = "#4c536d";
+
+    ctx.fillRect(
+        npc.x - 20,
+        npc.y - 7,
+        40,
+        50
+    );
+
+    ctx.fillStyle = "#222533";
+
+    ctx.fillRect(
+        npc.x - 15,
+        npc.y + 43,
+        12,
+        25
+    );
+
+    ctx.fillRect(
+        npc.x + 3,
+        npc.y + 43,
+        12,
+        25
+    );
+
+}
+
+
+function drawPlayer() {
+
+    const color =
+        characters[selectedCharacter].color;
+
+    ctx.fillStyle = "#d9a982";
+
+    ctx.fillRect(
+        player.x - 12,
+        player.y - 28,
+        24,
+        24
+    );
+
+    ctx.fillStyle = color;
+
+    ctx.fillRect(
+        player.x - 15,
+        player.y - 4,
+        30,
+        35
+    );
+
+    ctx.fillStyle = "#252837";
+
+    ctx.fillRect(
+        player.x - 11,
+        player.y + 31,
+        9,
+        20
+    );
+
+    ctx.fillRect(
+        player.x + 2,
+        player.y + 31,
+        9,
+        20
+    );
+
+}
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+function gameLoop() {
+
+    if (!gameRunning) return;
+
+    updatePlayer();
+
+    drawRoom();
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if (
+            e.key === "ArrowUp" ||
+            e.key.toLowerCase() === "w"
+        ) {
+
+            keys.up = true;
+
+        }
+
+        if (
+            e.key === "ArrowDown" ||
+            e.key.toLowerCase() === "s"
+        ) {
+
+            keys.down = true;
+
+        }
+
+        if (
+            e.key === "ArrowLeft" ||
+            e.key.toLowerCase() === "a"
+        ) {
+
+            keys.left = true;
+
+        }
+
+        if (
+            e.key === "ArrowRight" ||
+            e.key.toLowerCase() === "d"
+        ) {
+
+            keys.right = true;
+
+        }
+
+        if (
+            e.key.toLowerCase() === "e" ||
+            e.key === "Enter"
+        ) {
+
+            interact();
+
+        }
+
+        if (
+            e.key.toLowerCase() === "q"
+        ) {
+
+            lookAround();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keyup",
+    e => {
+
+        if (
+            e.key === "ArrowUp" ||
+            e.key.toLowerCase() === "w"
+        ) {
+
+            keys.up = false;
+
+        }
+
+        if (
+            e.key === "ArrowDown" ||
+            e.key.toLowerCase() === "s"
+        ) {
+
+            keys.down = false;
+
+        }
+
+        if (
+            e.key === "ArrowLeft" ||
+            e.key.toLowerCase() === "a"
+        ) {
+
+            keys.left = false;
+
+        }
+
+        if (
+            e.key === "ArrowRight" ||
+            e.key.toLowerCase() === "d"
+        ) {
+
+            keys.right = false;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MOBILE BUTTONS
+========================================================= */
+
+document
+    .querySelectorAll(".control-button")
+    .forEach(button => {
+
+        const key =
+            button.dataset.key;
+
+        button.addEventListener(
+            "pointerdown",
+            e => {
+
+                e.preventDefault();
+
+                keys[key] = true;
+
+            }
+        );
+
+        button.addEventListener(
+            "pointerup",
+            e => {
+
+                e.preventDefault();
+
+                keys[key] = false;
+
+            }
+        );
+
+        button.addEventListener(
+            "pointercancel",
+            () => {
+
+                keys[key] = false;
+
+            }
+        );
+
+        button.addEventListener(
+            "pointerleave",
+            () => {
+
+                keys[key] = false;
+
+            }
+        );
+
+    });
+
+
+document
+    .getElementById("interactButton")
+    .addEventListener(
+        "pointerdown",
+        e => {
+
+            e.preventDefault();
+
+            interact();
+
+        }
+    );
+
+
+document
+    .getElementById("lookButton")
+    .addEventListener(
+        "pointerdown",
+        e => {
+
+            e.preventDefault();
+
+            lookAround();
+
+        }
+    );
+
+
+/* =========================================================
+   TAP CANVAS
+========================================================= */
+
+canvas.addEventListener(
+    "pointerdown",
+    () => {
+
+        if (messageOpen) {
+
+            advanceDialogue();
+
+        }
+
+        else if (cluePopupOpen) {
+
+            closeClue();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PREVENT MOBILE SCROLL
+========================================================= */
+
+document.addEventListener(
+    "touchmove",
+    e => {
+
+        e.preventDefault();
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/* =========================================================
+   INITIAL DRAW
+========================================================= */
+
+drawRoom();
+
+</script>
+
+</body>
+</html>
