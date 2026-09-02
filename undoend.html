@@ -23,11 +23,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelate
 button{font:inherit;color:var(--paper);background:#292038;border:2px solid #867395;padding:9px 11px;cursor:pointer;box-shadow:3px 3px #000}
 button:active{transform:translate(1px,1px);box-shadow:1px 1px #000}
 .primary{border-color:var(--gold);background:#44334a}
-#title,#select,#ending{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#302340,#120e19 52%,#07060b);display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:28px 20px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch} #ending > div{margin:auto 0;max-width:760px;padding:20px 0 45px}
+#title,#select,#ending{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#302340,#120e19 52%,#07060b);display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:28px 20px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch} #title{align-items:center;padding:20px} #title > div{width:100%;margin:auto} #ending > div{margin:auto 0;max-width:760px;padding:20px 0 45px}
 .logo{font-size:clamp(42px,8vw,86px);letter-spacing:8px;margin:0;text-shadow:6px 6px #573052,0 0 30px #d56b7933}
 .subtitle{max-width:730px;line-height:1.55;color:#c8b7c9}
-#select{display:none;flex-direction:column;overflow:auto}
-.roster{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:min(900px,96vw);margin:14px auto}
+#select{display:none;flex-direction:column;overflow:auto;justify-content:center;gap:0} #select h2{margin-bottom:4px!important} #select .subtitle{margin-bottom:10px!important}
+.roster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:min(820px,96vw);margin:14px auto}
 .char{min-height:190px;background:#16121e;border:2px solid #4e4059;padding:9px;position:relative}
 .char:hover{border-color:var(--gold)}
 .char .portrait{height:92px;display:flex;align-items:center;justify-content:center}
@@ -440,7 +440,7 @@ Morning arrives anyway.`;
 
 function buildRoster(){
  const r=document.getElementById("roster");r.innerHTML="";
- Object.entries(chars).forEach(([id,c])=>{
+ Object.entries(chars).filter(([id])=>id!=="lev").forEach(([id,c])=>{
   const d=document.createElement("button");d.className="char";
   d.innerHTML=`<div class="portrait"><canvas width="90" height="92" style="width:90px;height:92px"></canvas></div><h3>${c.name}</h3><div class="tag">${c.role}</div><small>${c.desc}</small><small style="color:#e4b95f;margin-top:5px">★ ${c.skill}</small>`;
   d.onclick=()=>choose(id);r.appendChild(d);
