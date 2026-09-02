@@ -23,7 +23,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelate
 button{font:inherit;color:var(--paper);background:#292038;border:2px solid #867395;padding:9px 11px;cursor:pointer;box-shadow:3px 3px #000}
 button:active{transform:translate(1px,1px);box-shadow:1px 1px #000}
 .primary{border-color:var(--gold);background:#44334a}
-#title,#select,#ending{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#302340,#120e19 52%,#07060b);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px}
+#title,#select,#ending{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#302340,#120e19 52%,#07060b);display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:28px 20px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch} #ending > div{margin:auto 0;max-width:760px;padding:20px 0 45px}
 .logo{font-size:clamp(42px,8vw,86px);letter-spacing:8px;margin:0;text-shadow:6px 6px #573052,0 0 30px #d56b7933}
 .subtitle{max-width:730px;line-height:1.55;color:#c8b7c9}
 #select{display:none;flex-direction:column;overflow:auto}
@@ -115,11 +115,11 @@ const W=960,H=640,keys={}; let state="title",room="lab",chapter=1,selected=null,
 let clues=new Set(),flags={},particles=[],time=0;
 
 const chars={
- zhenya:{name:"ZHENYA",role:"ART KID",color:"#6856a8",desc:"Great visual observation. Reveals hidden details by drawing.",skill:"DRAW / RECONSTRUCT",quote:"If I can see it, I can remember it."},
- yoru:{name:"YORU",role:"CASHIER",color:"#39536b",desc:"Unnaturally sharp hearing and rhythm. Notices sounds others ignore.",skill:"LISTEN / RHYTHM",quote:"The quietest sound can tell you the most."},
+ zhenya:{name:"ZHENYA",role:"ART KID",color:"#6856a8",desc:"Great visual observation. Reveals hidden details by drawing.",skill:"DRAW / RECONSTRUCT",quote:"Some things survive because someone remembers them."},
+ yoru:{name:"YORU",role:"CASHIER",color:"#39536b",desc:"A doomsday survivor with sharp hearing and a talent for noticing what others miss.",skill:"LISTEN / RHYTHM",quote:"I survived. That doesn't make me special."},
  renee:{name:"RENÉE",role:"GENIUS LIL KID",color:"#65b8b0",desc:"Engineering and programming prodigy. Hacks systems and repairs machines.",skill:"HACK / INVENT",quote:"I want everything. Especially answers."},
  rocco:{name:"ROCCO",role:"GANGSTER",color:"#9b3f53",desc:"Extraordinary reflexes and instincts. Infiltrates and intimidates.",skill:"FIGHT / INFILTRATE",quote:"Kindness isn't weakness. But it isn't armor either."},
- lev:{name:"LEV",role:"VILLAIN",color:"#d56b79",desc:"The architect behind the false future. Knows the bunker better than anyone.",skill:"MANIPULATE / DECEIVE",quote:"A good ending needs a convincing lie."}
+ lev:{name:"LEV",role:"VILLAIN",color:"#d56b79",desc:"Zhenya’s former lover—and the architect of the false future. Knows the bunker better than anyone.",skill:"MANIPULATE / DECEIVE",quote:"A good ending needs a convincing lie."}
 };
 let player={x:150,y:450,dir:1,speed:2.7};
 
@@ -269,19 +269,19 @@ function labVaccine(){
  else say("LEV","You found the first lie.\nDon't worry. There are worse ones.");
 }
 function labDrawing(){
- addClue("drawing");
- if(selected==="zhenya")say("ZHENYA","I shade the pressure marks in my sketchbook.\nA machine appears.\nTwo silhouettes stand beside it.\nOne is me. The other is Yoru.");
- else say("UNKNOWN NOTE","A torn drawing shows a time machine pointed toward a single person.\nThe face has been scratched out.");
+  addClue("drawing");
+  if(selected==="zhenya")say("ZHENYA","I trace the pressure marks until the image settles.\nA machine. Two silhouettes.\nOne is me.\nThe other is Lev.\n\nI hate that I recognize the way he stands.");
+  else say("UNKNOWN NOTE","A torn drawing shows a time machine beside two figures.\nOne face has been scratched away.\nUnder the graphite: L + Z.");
 }
 function labTape(){
- addClue("tape");
- say("RECORDED VOICE","[static]\nIf Zhenya finds this, tell her the accident wasn't an accident.\nI chose the past because she would never choose herself.\n[click]");
- if(selected!=="yoru")say("ZHENYA","That's Yoru.\nAnd somehow... he sounds like he's saying goodbye.");
+  addClue("tape");
+  say("RECORDED VOICE","[static]\nZhenya, if this reaches you... don't let Lev tell you he did it for you.\nHe always knew exactly which words would make you stay.\n[click]");
+  if(selected!=="zhenya")say("YORU","That's not my voice. And I never knew him before the world ended.\nI'm just another person who got unlucky enough to survive.");
 }
 function archive(){
  addClue("records");
  say("ARCHIVE","SURVIVOR LOG #19\nThe Chosen One was never meant to save everyone.\nThe machine can send one person back.\nBut the volunteer's name was erased.\nUnder the erasure: four tiny music notes.",[
- {label:"Follow the notes",action:()=>say(selected.toUpperCase(),"Yoru. It has to be Yoru.")},
+ {label:"Follow the notes",action:()=>say("ZHENYA","The notes aren't Yoru's signature. They're a route marker. Someone wanted us looking at the wrong survivor.")},
  {label:"Question the record",action:()=>say("RENÉE","Someone edited this after the bunker was sealed.")}]);
 }
 function machine(){
@@ -316,31 +316,126 @@ CHAPTER ${chapter}: ${roomData[room].title}
 New objective: ${roomData[room].objective}`);
 }
 function confrontation(){
- say("LEV","So the chosen one finally reaches the last page.\nYou were expecting a monster.",[
- {label:"Who are you?",action:()=>finalTalk("who")},
- {label:"You caused the apocalypse.",action:()=>finalTalk("accuse")},
- {label:"I don't believe you.",action:()=>finalTalk("doubt")}
+  say("LEV","You made it. I was beginning to think the bunker had finally taught you caution.",[
+  {label:"Why did you bring us here?",action:()=>finalTalk("why")},
+  {label:"You used Zhenya.",action:()=>finalTalk("zhenya")},
+  {label:"Step away from the machine.",action:()=>finalTalk("machine")}
  ]);
 }
+
 function finalTalk(type){
- let b=type==="who"?
- "LEV: I built the lie, not the apocalypse.\nThe future needed a villain because people need a reason for disaster.\nBut the real chain started with a laboratory, then a signal, then the machine.":
- type==="accuse"?
- "LEV: I redirected the catastrophe.\nYoru tried to undo it.\nRenée learned to repair it.\nRocco learned to protect the people around it.\nAnd you learned to see the missing pieces.\nThat is why I needed all five of you.":
- "LEV: Good.\nTrust is exactly what ruins time travel.";
- say("LEV",b,[
- {label:"Trust Yoru",action:()=>ending("together")},
- {label:"Trust Lev",action:()=>ending("lev")},
- {label:"Destroy the machine",action:()=>ending("alone")}
- ]);
+  const lines={
+    why:"LEV: Because the world was already ending, and everyone else was busy pretending survival was a plan. I built a way back. Then I learned what people are willing to become when you give them one more chance.",
+    zhenya:"LEV: I loved her. That is the part nobody likes because it doesn't excuse anything. I loved her, and I still decided I knew better than she did.\\n\\nZHENYA: You didn't save me. You made me smaller so I would fit inside your version of the future.",
+    machine:"LEV: You think breaking it makes you innocent? The machine only gives choices teeth. People do the rest."
+  };
+  say(type==="zhenya"?"ZHENYA":"LEV",lines[type],[
+    {label:"Give Zhenya the choice",action:()=>ending("zhenya")},
+    {label:"Expose Lev and keep the future",action:()=>ending("truth")},
+    {label:"Walk away and leave the past untouched",action:()=>ending("survive")}
+  ]);
 }
+
 function ending(type){
- state="end";document.getElementById("ending").style.display="flex";
- let title,body;
- if(type==="together"){title="ENDING · THE UNFINISHED DRAWING";body="Zhenya redraws the machine's circuit while Renée rewrites its limit. Yoru uses the four-note signal to synchronize the jump. Rocco keeps the chamber standing long enough for all five to escape.\n\nThe machine does not send one Chosen One back.\nIt sends the whole team—and their memories—into the point where the chain began.\n\nIn the new timeline, Zhenya meets Yoru in a tiny café.\nNeither remembers the apocalypse.\nBoth recognize four notes."}
- else if(type==="lev"){title="ENDING · THE PERFECT LIE";body="You believe Lev.\nThe apocalypse disappears from the records—but so do the people who fought it.\nYears later, a museum displays five anonymous portraits.\nA note underneath reads:\n'History is kinder when nobody remembers who paid for it.'"}
- else {title="ENDING · CLEAN CANVAS";body="You destroy the Undo Machine.\nNo chosen one. No mastermind. No guarantee.\nThe survivors rebuild without trying to control the future.\n\nZhenya paints one sentence across the bunker wall:\n\nNO ONE GETS TO DECIDE THE END ALONE."}
- document.getElementById("ending").innerHTML=`<div><div style="color:#e4b95f;letter-spacing:2px">${title}</div><h1 class="logo" style="font-size:48px;margin:10px">UNDOEND</h1><p class="subtitle" style="white-space:pre-line">${body}</p><button class="primary" onclick="location.reload()">PLAY AGAIN</button></div>`;
+  state="end";document.getElementById("ending").style.display="flex";
+  let title,body;
+  if(type==="zhenya"){
+    title="ENDING · THE DOOR SHE CLOSES";
+    body=`The room goes quiet.
+
+Lev waits for Zhenya to ask what he would do.
+
+She doesn't.
+
+"That's the difference," she says. "You always thought the ending belonged to you."
+
+She sends the others out first. Renée removes the machine's memory core. Rocco keeps Lev away from the controls. Yoru, who has no prophecy and no place in their old history, stays by the door.
+
+"Are you coming?" he asks.
+
+Zhenya looks at Lev one last time.
+
+"I did love you."
+
+Lev's expression breaks—not dramatically. Just enough to show that he heard her.
+
+"But love isn't a permission slip."
+
+She leaves.
+
+The machine is shut down without a hero going back to fix everything. Outside, the ruined world is still ruined.
+
+And for the first time, the future belongs to people who are actually there to live it.`;
+  } else if(type==="truth"){
+    title="ENDING · THE RECORD OF LEV";
+    body=`They don't kill Lev.
+
+Renée opens every archive.
+
+Every altered survivor record. Every false signal. Every version of the story where Lev made himself necessary.
+
+The truth spreads through the bunker slowly, then all at once.
+
+Lev watches his perfect narrative collapse into evidence.
+
+Zhenya doesn't speak to him while the files upload.
+
+Yoru sits beside her on the floor.
+
+"Do you want me to say something helpful?" he asks.
+
+"No."
+
+"Good. I had nothing."
+
+She laughs once. It surprises both of them.
+
+Years later, the machine is displayed behind reinforced glass—not as a miracle, but as a warning.
+
+A plaque beneath it reads:
+
+THE FUTURE WAS NEVER SAVED BY ONE PERSON.`;
+  } else {
+    title="ENDING · MORNING, ANYWAY";
+    body=`Zhenya steps away from the controls.
+
+"No," she says.
+
+Lev stares at her. "No?"
+
+"No second timeline. No cleaner version of us. I'm tired of being asked to choose between disasters you designed."
+
+They leave the machine running.
+
+Not activated. Not destroyed.
+
+Just abandoned.
+
+Lev stays behind because he still believes there must be one correct ending.
+
+The others walk into the cold morning.
+
+Yoru has nowhere particular to go.
+
+Neither does Zhenya.
+
+"So," he says, "what now?"
+
+She looks at the horizon.
+
+"I don't know."
+
+He nods. "Honestly? Best answer we've had all week."
+
+They keep walking.
+
+Behind them, the bunker lights go out one by one.
+
+Ahead of them, nothing is promised.
+
+Morning arrives anyway.`;
+  }
+  document.getElementById("ending").innerHTML=`<div><div style="color:#e4b95f;letter-spacing:2px">${title}</div><h1 class="logo" style="font-size:48px;margin:10px">UNDOEND</h1><p class="subtitle" style="white-space:pre-line;margin-bottom:24px">${body}</p><button class="primary" onclick="location.reload()">↻ PLAY AGAIN</button></div>`;
 }
 
 function buildRoster(){
