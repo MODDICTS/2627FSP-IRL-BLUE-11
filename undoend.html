@@ -1,346 +1,1677 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>UNDOEND — Pixel Mystery</title>
+
 <style>
-:root{--bg:#0b0910;--ink:#15121f;--paper:#f4e7ca;--muted:#ad9db6;--pink:#d56b79;--violet:#6856a8;--cyan:#65b8b0;--gold:#e4b95f;--panel:#181320}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;background:#07060b;color:var(--paper);font-family:"Courier New",monospace;overflow:hidden}
-body{display:flex;align-items:center;justify-content:center}
-#gameShell{position:relative;width:min(1100px,100vw);height:min(720px,100vh);background:#08070c;border:3px solid #30263b;box-shadow:0 0 0 4px #120f18,0 20px 70px #000;overflow:hidden}
-canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
-.scan{position:absolute;inset:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px)}
-#topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;justify-content:space-between;z-index:3;pointer-events:none}
-.badge{background:#100d17e8;border:2px solid #554660;padding:7px 9px;font-size:12px;text-shadow:2px 2px #000}
-#menuBtn{pointer-events:auto;cursor:pointer}
-#objective{position:absolute;left:50%;top:58px;transform:translateX(-50%);background:#100d17e8;border:2px solid #695674;padding:6px 12px;font-size:12px;text-align:center;z-index:3;max-width:70%}
-#dialogue{display:none;position:absolute;left:5%;right:5%;bottom:5%;z-index:8;background:#100d17f5;border:3px solid var(--paper);box-shadow:6px 6px #000;padding:14px;max-height:43%;overflow:auto}
-#speaker{font-weight:bold;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
-#text{line-height:1.45;white-space:pre-wrap;font-size:14px}
-#choices{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-button{font:inherit;color:var(--paper);background:#292038;border:2px solid #867395;padding:9px 11px;cursor:pointer;box-shadow:3px 3px #000}
-button:active{transform:translate(1px,1px);box-shadow:1px 1px #000}
-.primary{border-color:var(--gold);background:#44334a}
-#title,#select,#ending{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 40%,#302340,#120e19 52%,#07060b);display:flex;align-items:flex-start;justify-content:center;text-align:center;padding:28px 20px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch} #title{align-items:center;padding:20px} #title > div{width:100%;margin:auto} #ending > div{margin:auto 0;max-width:760px;padding:20px 0 45px}
-.logo{font-size:clamp(42px,8vw,86px);letter-spacing:8px;margin:0;text-shadow:6px 6px #573052,0 0 30px #d56b7933}
-.subtitle{max-width:730px;line-height:1.55;color:#c8b7c9}
-#select{display:none;flex-direction:column;overflow:auto;justify-content:center;gap:0} #select h2{margin-bottom:4px!important} #select .subtitle{margin-bottom:10px!important}
-.roster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:min(820px,96vw);margin:14px auto}
-.char{min-height:190px;background:#16121e;border:2px solid #4e4059;padding:9px;position:relative}
-.char:hover{border-color:var(--gold)}
-.char .portrait{height:92px;display:flex;align-items:center;justify-content:center}
-.char h3{margin:5px 0;color:var(--paper);font-size:15px}
-.char small{color:#ad9db6;line-height:1.3;display:block}
-.char .tag{color:var(--gold);font-size:10px;margin-top:6px}
-#mobileControls{display:none;position:absolute;left:12px;right:12px;bottom:12px;z-index:4;pointer-events:none}
-.dpad{display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:3px;float:left}
-.ctrl{pointer-events:auto;width:44px;height:44px;padding:0;background:#17131fdd;border:2px solid #76657f;box-shadow:2px 2px #000;font-size:18px}
-#actionButtons{float:right;display:flex;gap:7px;align-items:end}
-.action{width:52px;height:52px;border-radius:50%;font-size:11px;padding:0}
-#interactBtn{border-color:var(--gold)}
-#hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:#8e8197;z-index:2}
-#nextArrow{display:none;position:absolute;z-index:12;pointer-events:auto;cursor:pointer;right:18px;top:50%;transform:translateY(-50%);width:58px;height:58px;border-radius:50%;background:#19131fe8;border:3px solid var(--gold);color:var(--gold);font-size:25px;box-shadow:3px 3px #000;animation:pulse 1.1s infinite}
-#nextArrowLabel{position:absolute;right:17px;top:calc(50% + 35px);z-index:12;pointer-events:none;color:var(--gold);font-size:10px;display:none;text-shadow:2px 2px #000}
-#pausePanel{display:none;position:absolute;inset:0;z-index:15;background:#0d0a13ed;align-items:center;justify-content:center}
-.panel{background:#17121f;border:3px solid #806c89;padding:22px;min-width:min(420px,88vw);text-align:center;box-shadow:7px 7px #000}
-@keyframes pulse{50%{transform:translateY(-50%) scale(1.08)}}
-@media(max-width:700px){
- #gameShell{width:100vw;height:100dvh;border:0;box-shadow:none}
- #objective{top:52px;font-size:10px;max-width:82%}
- #hint{display:none}
- #mobileControls{display:block}
- #dialogue{bottom:96px;max-height:43%}
- #text{font-size:12px}
- .roster{grid-template-columns:repeat(2,1fr);width:95vw}
- .char{min-height:175px}
- #topbar .badge{font-size:9px;padding:5px}
+:root{
+  --bg:#0b0910;
+  --ink:#15121f;
+  --paper:#f4e7ca;
+  --muted:#ad9db6;
+  --pink:#d56b79;
+  --violet:#6856a8;
+  --cyan:#65b8b0;
+  --gold:#e4b95f;
+  --panel:#181320
 }
-@media(max-width:390px){.roster{grid-template-columns:1fr}.char{min-height:145px}}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:#07060b;
+  color:var(--paper);
+  font-family:"Courier New",monospace;
+  overflow:hidden
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+
+#gameShell{
+  position:relative;
+  width:min(1100px,100vw);
+  height:min(720px,100vh);
+  background:#08070c;
+  border:3px solid #30263b;
+  box-shadow:0 0 0 4px #120f18,0 20px 70px #000;
+  overflow:hidden
+}
+
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  image-rendering:pixelated;
+  touch-action:none
+}
+
+.scan{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.22;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,.035) 0 1px,
+    transparent 1px 4px
+  )
+}
+
+#topbar{
+  position:absolute;
+  top:10px;
+  left:10px;
+  right:10px;
+  display:flex;
+  gap:8px;
+  justify-content:space-between;
+  z-index:3;
+  pointer-events:none
+}
+
+.badge{
+  background:#100d17e8;
+  border:2px solid #554660;
+  padding:7px 9px;
+  font-size:12px;
+  text-shadow:2px 2px #000
+}
+
+#menuBtn{
+  pointer-events:auto;
+  cursor:pointer
+}
+
+#objective{
+  position:absolute;
+  left:50%;
+  top:58px;
+  transform:translateX(-50%);
+  background:#100d17e8;
+  border:2px solid #695674;
+  padding:6px 12px;
+  font-size:12px;
+  text-align:center;
+  z-index:3;
+  max-width:70%
+}
+
+#dialogue{
+  display:none;
+  position:absolute;
+  left:5%;
+  right:5%;
+  bottom:5%;
+  z-index:8;
+  background:#100d17f5;
+  border:3px solid var(--paper);
+  box-shadow:6px 6px #000;
+  padding:14px;
+  max-height:43%;
+  overflow:auto
+}
+
+#speaker{
+  font-weight:bold;
+  color:var(--gold);
+  letter-spacing:1px;
+  margin-bottom:6px
+}
+
+#text{
+  line-height:1.45;
+  white-space:pre-wrap;
+  font-size:14px
+}
+
+#choices{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px
+}
+
+button{
+  font:inherit;
+  color:var(--paper);
+  background:#292038;
+  border:2px solid #867395;
+  padding:9px 11px;
+  cursor:pointer;
+  box-shadow:3px 3px #000
+}
+
+button:active{
+  transform:translate(1px,1px);
+  box-shadow:1px 1px #000
+}
+
+.primary{
+  border-color:var(--gold);
+  background:#44334a
+}
+
+
+/* =========================================================
+   FULL SCREEN PAGES
+========================================================= */
+
+#title,
+#select,
+#ending{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  background:radial-gradient(
+    circle at 50% 40%,
+    #302340,
+    #120e19 52%,
+    #07060b
+  );
+  text-align:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch
+}
+
+
+/* =========================================================
+   TITLE PAGE — PERFECTLY CENTERED
+========================================================= */
+
+#title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+
+#title > div{
+  width:100%;
+  max-width:760px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center
+}
+
+#title .logo{
+  margin:0 0 18px
+}
+
+#title .subtitle{
+  margin:0 auto 18px
+}
+
+#title .primary{
+  margin-top:6px
+}
+
+
+/* =========================================================
+   CHARACTER SELECT
+========================================================= */
+
+#select{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:0;
+  padding:28px 20px
+}
+
+#select h2{
+  margin-bottom:4px!important
+}
+
+#select .subtitle{
+  margin-bottom:10px!important
+}
+
+
+/* =========================================================
+   ENDING
+========================================================= */
+
+#ending{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:28px 20px
+}
+
+#ending > div{
+  margin:auto 0;
+  max-width:760px;
+  padding:20px 0 45px
+}
+
+
+.logo{
+  font-size:clamp(42px,8vw,86px);
+  letter-spacing:8px;
+  margin:0;
+  text-shadow:
+    6px 6px #573052,
+    0 0 30px #d56b7933
+}
+
+.subtitle{
+  max-width:730px;
+  line-height:1.55;
+  color:#c8b7c9
+}
+
+.roster{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  width:min(820px,96vw);
+  margin:14px auto
+}
+
+.char{
+  min-height:190px;
+  background:#16121e;
+  border:2px solid #4e4059;
+  padding:9px;
+  position:relative
+}
+
+.char:hover{
+  border-color:var(--gold)
+}
+
+.char .portrait{
+  height:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+
+.char h3{
+  margin:5px 0;
+  color:var(--paper);
+  font-size:15px
+}
+
+.char small{
+  color:#ad9db6;
+  line-height:1.3;
+  display:block
+}
+
+.char .tag{
+  color:var(--gold);
+  font-size:10px;
+  margin-top:6px
+}
+
+#mobileControls{
+  display:none;
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  z-index:4;
+  pointer-events:none
+}
+
+.dpad{
+  display:grid;
+  grid-template-columns:44px 44px 44px;
+  grid-template-rows:44px 44px 44px;
+  gap:3px;
+  float:left
+}
+
+.ctrl{
+  pointer-events:auto;
+  width:44px;
+  height:44px;
+  padding:0;
+  background:#17131fdd;
+  border:2px solid #76657f;
+  box-shadow:2px 2px #000;
+  font-size:18px
+}
+
+#actionButtons{
+  float:right;
+  display:flex;
+  gap:7px;
+  align-items:end
+}
+
+.action{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  font-size:11px;
+  padding:0
+}
+
+#interactBtn{
+  border-color:var(--gold)
+}
+
+#hint{
+  position:absolute;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  color:#8e8197;
+  z-index:2
+}
+
+#nextArrow{
+  display:none;
+  position:absolute;
+  z-index:12;
+  pointer-events:auto;
+  cursor:pointer;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:#19131fe8;
+  border:3px solid var(--gold);
+  color:var(--gold);
+  font-size:25px;
+  box-shadow:3px 3px #000;
+  animation:pulse 1.1s infinite
+}
+
+#nextArrowLabel{
+  position:absolute;
+  right:17px;
+  top:calc(50% + 35px);
+  z-index:12;
+  pointer-events:none;
+  color:var(--gold);
+  font-size:10px;
+  display:none;
+  text-shadow:2px 2px #000
+}
+
+#pausePanel{
+  display:none;
+  position:absolute;
+  inset:0;
+  z-index:15;
+  background:#0d0a13ed;
+  align-items:center;
+  justify-content:center
+}
+
+.panel{
+  background:#17121f;
+  border:3px solid #806c89;
+  padding:22px;
+  min-width:min(420px,88vw);
+  text-align:center;
+  box-shadow:7px 7px #000
+}
+
+@keyframes pulse{
+  50%{
+    transform:translateY(-50%) scale(1.08)
+  }
+}
+
+@media(max-width:700px){
+
+  #gameShell{
+    width:100vw;
+    height:100dvh;
+    border:0;
+    box-shadow:none
+  }
+
+  #objective{
+    top:52px;
+    font-size:10px;
+    max-width:82%
+  }
+
+  #hint{
+    display:none
+  }
+
+  #mobileControls{
+    display:block
+  }
+
+  #dialogue{
+    bottom:96px;
+    max-height:43%
+  }
+
+  #text{
+    font-size:12px
+  }
+
+  .roster{
+    grid-template-columns:repeat(2,1fr);
+    width:95vw
+  }
+
+  .char{
+    min-height:175px
+  }
+
+  #title{
+    padding:20px
+  }
+
+  #title .logo{
+    letter-spacing:5px
+  }
+}
+
+@media(max-width:390px){
+
+  .roster{
+    grid-template-columns:1fr
+  }
+
+  .char{
+    min-height:145px
+  }
+
+}
 </style>
+
 </head>
+
 <body>
+
 <div id="gameShell">
-<canvas id="game" width="960" height="640"></canvas><div class="scan"></div>
+
+<canvas id="game" width="960" height="640"></canvas>
+
+<div class="scan"></div>
 
 <div id="topbar">
   <div class="badge" id="chapter">UNDOEND</div>
   <div class="badge" id="clues">CLUES 0/12</div>
   <button class="badge" id="menuBtn">☰</button>
 </div>
+
 <div id="objective">Choose a character.</div>
 
 <div id="mobileControls">
+
   <div class="dpad">
-    <span></span><button class="ctrl" data-key="w">▲</button><span></span>
-    <button class="ctrl" data-key="a">◀</button><button class="ctrl" data-key="s">▼</button><button class="ctrl" data-key="d">▶</button>
-    <span></span><span></span><span></span>
+    <span></span>
+    <button class="ctrl" data-key="w">▲</button>
+    <span></span>
+
+```
+<button class="ctrl" data-key="a">◀</button>
+<button class="ctrl" data-key="s">▼</button>
+<button class="ctrl" data-key="d">▶</button>
+
+<span></span>
+<span></span>
+<span></span>
+```
+
   </div>
+
   <div id="actionButtons">
     <button class="ctrl action" id="investigateBtn">LOOK</button>
     <button class="ctrl action" id="interactBtn">E</button>
   </div>
-</div>
-<div id="nextArrow">➜</div><div id="nextArrowLabel">NEXT AREA</div>
 
-<div id="dialogue"><div id="speaker"></div><div id="text"></div><div id="choices"></div></div>
+</div>
+
+<div id="nextArrow">➜</div>
+<div id="nextArrowLabel">NEXT AREA</div>
+
+<div id="dialogue">
+  <div id="speaker"></div>
+  <div id="text"></div>
+  <div id="choices"></div>
+</div>
+
+<!-- =====================================================
+     TITLE PAGE
+===================================================== -->
 
 <div id="title">
+
   <div>
-    <h1 class="logo">UNDOEND</h1>
-    <p class="subtitle">The apocalypse already happened.<br>Five people. One impossible machine. Twelve clues. No guaranteed happy ending.</p>
-    <p style="color:#e4b95f">MYSTERY · FRIENDSHIP · SCI-FI · A LITTLE ROMANCE</p>
-    <button class="primary" id="start">START</button>
+
+```
+<h1 class="logo">UNDOEND</h1>
+
+<p class="subtitle">
+  The apocalypse already happened.<br>
+  Five people. One impossible machine. Twelve clues.
+  No guaranteed happy ending.
+</p>
+
+<p style="color:#e4b95f">
+  MYSTERY · FRIENDSHIP · SCI-FI · A LITTLE ROMANCE
+</p>
+
+<button class="primary" id="start">START</button>
+```
+
   </div>
+
 </div>
+
+<!-- =====================================================
+     CHARACTER SELECT
+===================================================== -->
 
 <div id="select">
-  <h2 style="margin:3px 0;color:#e4b95f">CHOOSE YOUR CHOSEN ONE</h2>
-  <p class="subtitle" style="margin:4px 0 10px">Each character sees the mystery differently.<br>You can unlock the full team later.</p>
+
+  <h2 style="margin:3px 0;color:#e4b95f">
+    CHOOSE YOUR CHOSEN ONE
+  </h2>
+
+  <p class="subtitle" style="margin:4px 0 10px">
+    Each character sees the mystery differently.<br>
+    You can unlock the full team later.
+  </p>
+
   <div class="roster" id="roster"></div>
+
 </div>
 
-<div id="pausePanel"><div class="panel">
-  <h2>PAUSED</h2><p style="color:#ad9db6">The timeline is waiting.</p>
-  <button id="resume">RESUME</button> <button id="restart">RESTART</button>
-</div></div>
+<!-- =====================================================
+     PAUSE MENU
+===================================================== -->
+
+<div id="pausePanel">
+
+  <div class="panel">
+
+```
+<h2>PAUSED</h2>
+
+<p style="color:#ad9db6">
+  The timeline is waiting.
+</p>
+
+<button id="resume">RESUME</button>
+<button id="restart">RESTART</button>
+```
+
+  </div>
+
+</div>
 
 <div id="ending" style="display:none"></div>
+
 </div>
 
 <script>
-const C=document.getElementById("game"),ctx=C.getContext("2d");ctx.imageSmoothingEnabled=false;
-const W=960,H=640,keys={}; let state="title",room="lab",chapter=1,selected=null,dialogue=false;
-let clues=new Set(),flags={},particles=[],time=0;
+
+const C=document.getElementById("game");
+const ctx=C.getContext("2d");
+
+ctx.imageSmoothingEnabled=false;
+
+const W=960;
+const H=640;
+
+const keys={};
+
+let state="title";
+let room="lab";
+let chapter=1;
+let selected=null;
+let dialogue=false;
+
+let clues=new Set();
+let flags={};
+let particles=[];
+let time=0;
+
 
 const chars={
- zhenya:{name:"ZHENYA",role:"ART KID",color:"#6856a8",desc:"Great visual observation. Reveals hidden details by drawing.",skill:"DRAW / RECONSTRUCT",quote:"Some things survive because someone remembers them."},
- yoru:{name:"YORU",role:"CASHIER",color:"#39536b",desc:"A doomsday survivor with sharp hearing and a talent for noticing what others miss.",skill:"LISTEN / RHYTHM",quote:"I survived. That doesn't make me special."},
- renee:{name:"RENÉE",role:"GENIUS LIL KID",color:"#65b8b0",desc:"Engineering and programming prodigy. Hacks systems and repairs machines.",skill:"HACK / INVENT",quote:"I want everything. Especially answers."},
- rocco:{name:"ROCCO",role:"GANGSTER",color:"#9b3f53",desc:"Extraordinary reflexes and instincts. Infiltrates and intimidates.",skill:"FIGHT / INFILTRATE",quote:"Kindness isn't weakness. But it isn't armor either."},
- lev:{name:"LEV",role:"VILLAIN",color:"#d56b79",desc:"Zhenya’s former lover—and the architect of the false future. Knows the bunker better than anyone.",skill:"MANIPULATE / DECEIVE",quote:"A good ending needs a convincing lie."}
+
+  zhenya:{
+    name:"ZHENYA",
+    role:"ART KID",
+    color:"#6856a8",
+    desc:"Great visual observation. Reveals hidden details by drawing.",
+    skill:"DRAW / RECONSTRUCT",
+    quote:"Some things survive because someone remembers them."
+  },
+
+  yoru:{
+    name:"YORU",
+    role:"CASHIER",
+    color:"#39536b",
+    desc:"A doomsday survivor with sharp hearing and a talent for noticing what others miss.",
+    skill:"LISTEN / RHYTHM",
+    quote:"I survived. That doesn't make me special."
+  },
+
+  renee:{
+    name:"RENÉE",
+    role:"GENIUS LIL KID",
+    color:"#65b8b0",
+    desc:"Engineering and programming prodigy. Hacks systems and repairs machines.",
+    skill:"HACK / INVENT",
+    quote:"I want everything. Especially answers."
+  },
+
+  rocco:{
+    name:"ROCCO",
+    role:"GANGSTER",
+    color:"#9b3f53",
+    desc:"Extraordinary reflexes and instincts. Infiltrates and intimidates.",
+    skill:"FIGHT / INFILTRATE",
+    quote:"Kindness isn't weakness. But it isn't armor either."
+  },
+
+  lev:{
+    name:"LEV",
+    role:"VILLAIN",
+    color:"#d56b79",
+    desc:"Zhenya’s former lover—and the architect of the false future. Knows the bunker better than anyone.",
+    skill:"MANIPULATE / DECEIVE",
+    quote:"A good ending needs a convincing lie."
+  }
+
 };
-let player={x:150,y:450,dir:1,speed:2.7};
+
+
+let player={
+  x:150,
+  y:450,
+  dir:1,
+  speed:2.7
+};
+
 
 const roomData={
- lab:{title:"THE EMPTY LAB",objective:"Investigate the abandoned laboratory.",next:"bunker"},
- bunker:{title:"BUNKER ARCHIVE",objective:"Find out who altered the survivor records.",next:"observatory"},
- observatory:{title:"SOLAR OBSERVATORY",objective:"Trace the four-note signal.",next:"core"},
- core:{title:"THE MACHINE ROOM",objective:"Confront the person who planned the UndoEnd.",next:null}
+
+  lab:{
+    title:"THE EMPTY LAB",
+    objective:"Investigate the abandoned laboratory.",
+    next:"bunker"
+  },
+
+  bunker:{
+    title:"BUNKER ARCHIVE",
+    objective:"Find out who altered the survivor records.",
+    next:"observatory"
+  },
+
+  observatory:{
+    title:"SOLAR OBSERVATORY",
+    objective:"Trace the four-note signal.",
+    next:"core"
+  },
+
+  core:{
+    title:"THE MACHINE ROOM",
+    objective:"Confront the person who planned the UndoEnd.",
+    next:null
+  }
+
 };
 
-function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x|0,y|0,w,h)}
-function txt(s,x,y,size=14,c="#f4e7ca",a="left"){ctx.fillStyle=c;ctx.font=`bold ${size}px "Courier New",monospace`;ctx.textAlign=a;ctx.fillText(s,x,y)}
-function stroke(x,y,w,h,c="#5b4c65"){ctx.strokeStyle=c;ctx.lineWidth=2;ctx.strokeRect(x,y,w,h)}
-function box(x,y,w,h,c,b="#000"){rect(x,y,w,h,c);stroke(x,y,w,h,b)}
-function near(x,y,d=80){return Math.hypot(player.x-x,player.y-y)<d}
-function person(x,y,body,skin="#e6b19e",hair="#241b2b",dir=1,scale=1){
- ctx.save();ctx.translate(x,y);ctx.scale(dir*scale,scale);
- rect(-9,-28,18,12,hair);rect(-8,-16,16,13,skin);rect(-10,-3,20,18,body);
- rect(-8,15,6,13,"#14111b");rect(2,15,6,13,"#14111b");rect(-8,-10,3,3,"#111");
- rect(5,-10,3,3,"#111");ctx.restore()
-}
-function drawPlayer(){
- const c=chars[selected]||chars.zhenya;
- person(player.x,player.y,c.color,selected==="renee"?"#e8c1aa":"#e5ad99",selected==="lev"?"#d56b79":"#33243d",player.dir,selected==="renee"?.85:1);
- if(selected==="zhenya"){rect(player.x+player.dir*12,player.y-7,10,12,"#f4e7ca");rect(player.x+player.dir*15,player.y-4,3,4,"#d56b79")}
- if(selected==="yoru"){rect(player.x-player.dir*14,player.y-1,9,14,"#e4b95f")}
- if(selected==="rocco"){rect(player.x-player.dir*13,player.y-8,8,6,"#17131d")}
- if(selected==="lev"){rect(player.x+player.dir*10,player.y-2,9,5,"#e4b95f")}
-}
-function drawYoru(x,y){person(x,y,"#39536b","#d6a994","#101421",-1,1.05)}
-function drawLev(x,y){person(x,y,"#7b3049","#d8a18e","#211322",-1,1.08);rect(x-14,y-4,8,4,"#e4b95f")}
-function drawRenee(x,y){person(x,y,"#3d7e79","#e8c1aa","#6b3e69",1,.78)}
 
-function noise(){for(let i=0;i<110;i++){rect(Math.random()*W,90+Math.random()*500,1+Math.random()*2,1+Math.random()*2,`rgba(255,255,255,${Math.random()*.045})`)}}
+function rect(x,y,w,h,c){
+  ctx.fillStyle=c;
+  ctx.fillRect(x|0,y|0,w,h)
+}
+
+function txt(s,x,y,size=14,c="#f4e7ca",a="left"){
+  ctx.fillStyle=c;
+  ctx.font=`bold ${size}px "Courier New",monospace`;
+  ctx.textAlign=a;
+  ctx.fillText(s,x,y)
+}
+
+function stroke(x,y,w,h,c="#5b4c65"){
+  ctx.strokeStyle=c;
+  ctx.lineWidth=2;
+  ctx.strokeRect(x,y,w,h)
+}
+
+function box(x,y,w,h,c,b="#000"){
+  rect(x,y,w,h,c);
+  stroke(x,y,w,h,b)
+}
+
+function near(x,y,d=80){
+  return Math.hypot(player.x-x,player.y-y)<d
+}
+
+
+function person(x,y,body,skin="#e6b19e",hair="#241b2b",dir=1,scale=1){
+
+  ctx.save();
+
+  ctx.translate(x,y);
+  ctx.scale(dir*scale,scale);
+
+  rect(-9,-28,18,12,hair);
+  rect(-8,-16,16,13,skin);
+  rect(-10,-3,20,18,body);
+
+  rect(-8,15,6,13,"#14111b");
+  rect(2,15,6,13,"#14111b");
+
+  rect(-8,-10,3,3,"#111");
+  rect(5,-10,3,3,"#111");
+
+  ctx.restore()
+
+}
+
+
+function drawPlayer(){
+
+  const c=chars[selected]||chars.zhenya;
+
+  person(
+    player.x,
+    player.y,
+    c.color,
+    selected==="renee"?"#e8c1aa":"#e5ad99",
+    selected==="lev"?"#d56b79":"#33243d",
+    player.dir,
+    selected==="renee"?.85:1
+  );
+
+  if(selected==="zhenya"){
+    rect(player.x+player.dir*12,player.y-7,10,12,"#f4e7ca");
+    rect(player.x+player.dir*15,player.y-4,3,4,"#d56b79")
+  }
+
+  if(selected==="yoru"){
+    rect(player.x-player.dir*14,player.y-1,9,14,"#e4b95f")
+  }
+
+  if(selected==="rocco"){
+    rect(player.x-player.dir*13,player.y-8,8,6,"#17131d")
+  }
+
+  if(selected==="lev"){
+    rect(player.x+player.dir*10,player.y-2,9,5,"#e4b95f")
+  }
+
+}
+
+
+function drawYoru(x,y){
+  person(x,y,"#39536b","#d6a994","#101421",-1,1.05)
+}
+
+function drawLev(x,y){
+  person(x,y,"#7b3049","#d8a18e","#211322",-1,1.08);
+  rect(x-14,y-4,8,4,"#e4b95f")
+}
+
+function drawRenee(x,y){
+  person(x,y,"#3d7e79","#e8c1aa","#6b3e69",1,.78)
+}
+
+
+function noise(){
+
+  for(let i=0;i<110;i++){
+
+    rect(
+      Math.random()*W,
+      90+Math.random()*500,
+      1+Math.random()*2,
+      1+Math.random()*2,
+      `rgba(255,255,255,${Math.random()*.045})`
+    )
+
+  }
+
+}
+
 
 function drawRoom(){
- let bg={lab:"#151322",bunker:"#101a1c",observatory:"#24161a",core:"#171126"}[room],floor={lab:"#252034",bunker:"#1e302f",observatory:"#3b2022",core:"#2c1e3b"}[room];
- rect(0,0,W,H,bg);
- for(let y=90;y<500;y+=32)for(let x=0;x<W;x+=32)rect(x,y,30,30,((x+y)/32%2===0)?floor:"rgba(255,255,255,.01)");
- rect(0,500,W,140,"#09080d");
- if(room==="lab")lab(); if(room==="bunker")bunker(); if(room==="observatory")observatory(); if(room==="core")core();
- noise();drawPlayer();
+
+  let bg={
+    lab:"#151322",
+    bunker:"#101a1c",
+    observatory:"#24161a",
+    core:"#171126"
+  }[room];
+
+  let floor={
+    lab:"#252034",
+    bunker:"#1e302f",
+    observatory:"#3b2022",
+    core:"#2c1e3b"
+  }[room];
+
+  rect(0,0,W,H,bg);
+
+  for(let y=90;y<500;y+=32){
+    for(let x=0;x<W;x+=32){
+      rect(
+        x,y,30,30,
+        ((x+y)/32%2===0)
+        ?floor
+        :"rgba(255,255,255,.01)"
+      )
+    }
+  }
+
+  rect(0,500,W,140,"#09080d");
+
+  if(room==="lab")lab();
+  if(room==="bunker")bunker();
+  if(room==="observatory")observatory();
+  if(room==="core")core();
+
+  noise();
+  drawPlayer()
+
 }
+
+
 function lab(){
- box(55,135,230,125,"#1b1827","#5b4d64");txt("BIO-OBSERVATION",70,158,11,"#a99bac");
- for(let i=0;i<3;i++){box(78+i*57,184,40,55,"#101a24","#65b8b0");rect(92+i*57,194,9,28,"#65b8b0")}
- box(625,125,260,145,"#1a1725","#604d68");txt("SPECIMEN CHAMBER",755,150,11,"#b8a9ba","center");
- rect(705,184,96,58,"#3a273f");rect(730,194,45,38,"#65b8b0");
- box(350,300,230,90,"#252033","#655572");txt("PROJECTOR",465,326,11,"#b8a9ba","center");rect(420,350,90,8,"#e4b95f");
- box(100,335,180,55,"#17131f","#51415d");txt("OLD RECORDER",190,357,10,"#a99bac","center");
- if(!clues.has("vaccine"))txt("E",805,285,14,"#e4b95f","center");
- if(!clues.has("drawing"))txt("E",465,285,14,"#e4b95f","center");
- if(!clues.has("tape"))txt("E",280,390,14,"#e4b95f","center");
+
+  box(55,135,230,125,"#1b1827","#5b4d64");
+  txt("BIO-OBSERVATION",70,158,11,"#a99bac");
+
+  for(let i=0;i<3;i++){
+    box(78+i*57,184,40,55,"#101a24","#65b8b0");
+    rect(92+i*57,194,9,28,"#65b8b0")
+  }
+
+  box(625,125,260,145,"#1a1725","#604d68");
+  txt("SPECIMEN CHAMBER",755,150,11,"#b8a9ba","center");
+
+  rect(705,184,96,58,"#3a273f");
+  rect(730,194,45,38,"#65b8b0");
+
+  box(350,300,230,90,"#252033","#655572");
+  txt("PROJECTOR",465,326,11,"#b8a9ba","center");
+  rect(420,350,90,8,"#e4b95f");
+
+  box(100,335,180,55,"#17131f","#51415d");
+  txt("OLD RECORDER",190,357,10,"#a99bac","center");
+
+  if(!clues.has("vaccine"))txt("E",805,285,14,"#e4b95f","center");
+  if(!clues.has("drawing"))txt("E",465,285,14,"#e4b95f","center");
+  if(!clues.has("tape"))txt("E",280,390,14,"#e4b95f","center")
+
 }
+
+
 function bunker(){
- box(45,125,330,225,"#152021","#506b69");txt("ARCHIVE // SURVIVORS",210,150,11,"#9dc7c3","center");
- for(let i=0;i<7;i++)box(75,170+i*23,270,15,"#223432");
- box(615,125,280,210,"#15131f","#6d5a79");txt("TIME MACHINE SCHEMATIC",755,150,11,"#c6b5ca","center");
- ctx.strokeStyle="#65b8b0";ctx.lineWidth=5;ctx.beginPath();ctx.arc(755,235,70,0,Math.PI*2);ctx.stroke();
- ctx.strokeStyle="#d56b79";ctx.lineWidth=2;ctx.beginPath();ctx.arc(755,235,88,0,Math.PI*2);ctx.stroke();
- drawRenee(480,445);
- if(!clues.has("records"))txt("E",350,155,14,"#e4b95f","center");
- if(!clues.has("machine"))txt("E",880,350,14,"#e4b95f","center");
+
+  box(45,125,330,225,"#152021","#506b69");
+  txt("ARCHIVE // SURVIVORS",210,150,11,"#9dc7c3","center");
+
+  for(let i=0;i<7;i++){
+    box(75,170+i*23,270,15,"#223432")
+  }
+
+  box(615,125,280,210,"#15131f","#6d5a79");
+  txt("TIME MACHINE SCHEMATIC",755,150,11,"#c6b5ca","center");
+
+  ctx.strokeStyle="#65b8b0";
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.arc(755,235,70,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.strokeStyle="#d56b79";
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(755,235,88,0,Math.PI*2);
+  ctx.stroke();
+
+  drawRenee(480,445);
+
+  if(!clues.has("records"))txt("E",350,155,14,"#e4b95f","center");
+  if(!clues.has("machine"))txt("E",880,350,14,"#e4b95f","center")
+
 }
+
+
 function observatory(){
- rect(0,90,W,410,"#261419");
- for(let i=0;i<30;i++)rect((i*83)%W,110+(i*53)%320,2,2,"#e4b95f");
- ctx.fillStyle="#d56b79";ctx.beginPath();ctx.arc(775,210,95,0,Math.PI*2);ctx.fill();
- ctx.fillStyle="#e4b95f";ctx.beginPath();ctx.arc(775,210,61,0,Math.PI*2);ctx.fill();
- box(80,145,310,180,"#17111b","#765164");txt("SIGNAL RECEIVER",235,170,11,"#cdaeb9","center");
- for(let i=0;i<8;i++){ctx.strokeStyle=i%2?"#65b8b0":"#9b3f53";ctx.beginPath();ctx.arc(235,245,22+i*15,.1*Math.PI,.9*Math.PI);ctx.stroke()}
- if(!clues.has("signal"))txt("E",395,185,14,"#e4b95f","center");
+
+  rect(0,90,W,410,"#261419");
+
+  for(let i=0;i<30;i++){
+    rect(
+      (i*83)%W,
+      110+(i*53)%320,
+      2,2,
+      "#e4b95f"
+    )
+  }
+
+  ctx.fillStyle="#d56b79";
+  ctx.beginPath();
+  ctx.arc(775,210,95,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#e4b95f";
+  ctx.beginPath();
+  ctx.arc(775,210,61,0,Math.PI*2);
+  ctx.fill();
+
+  box(80,145,310,180,"#17111b","#765164");
+  txt("SIGNAL RECEIVER",235,170,11,"#cdaeb9","center");
+
+  for(let i=0;i<8;i++){
+    ctx.strokeStyle=i%2?"#65b8b0":"#9b3f53";
+    ctx.beginPath();
+    ctx.arc(
+      235,
+      245,
+      22+i*15,
+      .1*Math.PI,
+      .9*Math.PI
+    );
+    ctx.stroke()
+  }
+
+  if(!clues.has("signal")){
+    txt("E",395,185,14,"#e4b95f","center")
+  }
+
 }
+
+
 function core(){
- box(75,125,330,240,"#1b1428","#6e5b83");txt("THE UNDO MACHINE",240,153,11,"#c8b9d3","center");
- ctx.strokeStyle="#65b8b0";ctx.lineWidth=8;ctx.beginPath();ctx.arc(240,245,80,0,Math.PI*2);ctx.stroke();
- ctx.strokeStyle="#d56b79";ctx.lineWidth=2;ctx.beginPath();ctx.arc(240,245,105,0,Math.PI*2);ctx.stroke();
- box(600,125,285,210,"#16111e","#6d516e");txt("UNKNOWN SIGNAL",742,152,11,"#caaebd","center");
- for(let i=0;i<12;i++)rect(640+i*18,235-(i%3)*8,9,50+(i%4)*8,i%2?"#d56b79":"#65b8b0");
- drawYoru(720,450);drawLev(805,450);
+
+  box(75,125,330,240,"#1b1428","#6e5b83");
+  txt("THE UNDO MACHINE",240,153,11,"#c8b9d3","center");
+
+  ctx.strokeStyle="#65b8b0";
+  ctx.lineWidth=8;
+  ctx.beginPath();
+  ctx.arc(240,245,80,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.strokeStyle="#d56b79";
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(240,245,105,0,Math.PI*2);
+  ctx.stroke();
+
+  box(600,125,285,210,"#16111e","#6d516e");
+  txt("UNKNOWN SIGNAL",742,152,11,"#caaebd","center");
+
+  for(let i=0;i<12;i++){
+    rect(
+      640+i*18,
+      235-(i%3)*8,
+      9,
+      50+(i%4)*8,
+      i%2?"#d56b79":"#65b8b0"
+    )
+  }
+
+  drawYoru(720,450);
+  drawLev(805,450)
+
 }
+
 
 function update(dt){
- if(state!=="play"||dialogue)return;
- let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
- if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;player.x+=dx*player.speed*dt;player.y+=dy*player.speed*dt;if(dx)player.dir=dx>0?1:-1}
- player.x=Math.max(25,Math.min(935,player.x));player.y=Math.max(105,Math.min(492,player.y));
- particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt});particles=particles.filter(p=>p.life>0);
+
+  if(state!=="play"||dialogue)return;
+
+  let dx=
+    (keys.d||keys.arrowright?1:0)
+    -(keys.a||keys.arrowleft?1:0);
+
+  let dy=
+    (keys.s||keys.arrowdown?1:0)
+    -(keys.w||keys.arrowup?1:0);
+
+  if(dx||dy){
+
+    let l=Math.hypot(dx,dy);
+
+    dx/=l;
+    dy/=l;
+
+    player.x+=dx*player.speed*dt;
+    player.y+=dy*player.speed*dt;
+
+    if(dx){
+      player.dir=dx>0?1:-1
+    }
+
+  }
+
+  player.x=Math.max(25,Math.min(935,player.x));
+  player.y=Math.max(105,Math.min(492,player.y));
+
+  particles.forEach(p=>{
+    p.x+=p.vx*dt;
+    p.y+=p.vy*dt;
+    p.life-=dt
+  });
+
+  particles=particles.filter(p=>p.life>0)
+
 }
-function render(){ctx.clearRect(0,0,W,H);drawRoom();particles.forEach(p=>rect(p.x,p.y,3,3,p.c))}
-function loop(t){let dt=Math.min(2,(t-(window._last||t))/16.67);window._last=t;update(dt);render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+
+
+function render(){
+
+  ctx.clearRect(0,0,W,H);
+
+  drawRoom();
+
+  particles.forEach(p=>{
+    rect(p.x,p.y,3,3,p.c)
+  })
+
+}
+
+
+function loop(t){
+
+  let dt=Math.min(
+    2,
+    (t-(window._last||t))/16.67
+  );
+
+  window._last=t;
+
+  update(dt);
+  render();
+
+  requestAnimationFrame(loop)
+
+}
+
+requestAnimationFrame(loop);
+
 
 function updateUI(){
- document.getElementById("chapter").textContent=`CH ${String(chapter).padStart(2,"0")} · ${roomData[room]?.title||"UNDOEND"}`;
- document.getElementById("clues").textContent=`CLUES ${clues.size}/12`;
- document.getElementById("objective").textContent=roomData[room]?.objective||"";
- updateNextArrow();
+
+  document.getElementById("chapter").textContent=
+    `CH ${String(chapter).padStart(2,"0")} · ${roomData[room]?.title||"UNDOEND"}`;
+
+  document.getElementById("clues").textContent=
+    `CLUES ${clues.size}/12`;
+
+  document.getElementById("objective").textContent=
+    roomData[room]?.objective||"";
+
+  updateNextArrow()
+
 }
+
+
 function updateNextArrow(){
- const ready=(room==="lab"&&["vaccine","drawing","tape"].every(x=>clues.has(x)))||
- (room==="bunker"&&["records","machine"].every(x=>clues.has(x)))||
- (room==="observatory"&&clues.has("signal"));
- const arrow=document.getElementById("nextArrow"),lab=document.getElementById("nextArrowLabel");
- arrow.style.display=ready?"block":"none";lab.style.display=ready?"block":"none";
+
+  const ready=
+
+    (room==="lab"&&
+      ["vaccine","drawing","tape"]
+      .every(x=>clues.has(x)))
+
+    ||
+
+    (room==="bunker"&&
+      ["records","machine"]
+      .every(x=>clues.has(x)))
+
+    ||
+
+    (room==="observatory"&&
+      clues.has("signal"));
+
+  const arrow=document.getElementById("nextArrow");
+  const lab=document.getElementById("nextArrowLabel");
+
+  arrow.style.display=ready?"block":"none";
+  lab.style.display=ready?"block":"none"
+
 }
+
+
 function addClue(id){
- if(clues.has(id))return;clues.add(id);
- for(let i=0;i<16;i++)particles.push({x:player.x,y:player.y,vx:(Math.random()-.5)*2.8,vy:-Math.random()*2.2,life:35+Math.random()*30,c:"#e4b95f"});
- updateUI();
+
+  if(clues.has(id))return;
+
+  clues.add(id);
+
+  for(let i=0;i<16;i++){
+
+    particles.push({
+      x:player.x,
+      y:player.y,
+      vx:(Math.random()-.5)*2.8,
+      vy:-Math.random()*2.2,
+      life:35+Math.random()*30,
+      c:"#e4b95f"
+    })
+
+  }
+
+  updateUI()
+
 }
+
+
 function say(s,b,opts=[]){
- dialogue=true;document.getElementById("dialogue").style.display="block";
- document.getElementById("speaker").textContent=s;document.getElementById("text").textContent=b;
- const c=document.getElementById("choices");c.innerHTML="";
- if(!opts.length){let q=document.createElement("button");q.textContent="CONTINUE ▸";q.onclick=close; c.appendChild(q)}
- else opts.forEach(o=>{let q=document.createElement("button");q.textContent=o.label;q.onclick=()=>{close();o.action()};c.appendChild(q)})
+
+  dialogue=true;
+
+  document.getElementById("dialogue").style.display="block";
+
+  document.getElementById("speaker").textContent=s;
+
+  document.getElementById("text").textContent=b;
+
+  const c=document.getElementById("choices");
+
+  c.innerHTML="";
+
+  if(!opts.length){
+
+    let q=document.createElement("button");
+
+    q.textContent="CONTINUE ▸";
+
+    q.onclick=close;
+
+    c.appendChild(q)
+
+  }
+
+  else{
+
+    opts.forEach(o=>{
+
+      let q=document.createElement("button");
+
+      q.textContent=o.label;
+
+      q.onclick=()=>{
+        close();
+        o.action()
+      };
+
+      c.appendChild(q)
+
+    })
+
+  }
+
 }
-function close(){dialogue=false;document.getElementById("dialogue").style.display="none"}
+
+
+function close(){
+
+  dialogue=false;
+
+  document.getElementById("dialogue").style.display="none"
+
+}
+
 
 function interact(){
- if(state!=="play"||dialogue)return;
- if(room==="lab"){
-  if(near(800,280,95)&&!clues.has("vaccine"))return labVaccine();
-  if(near(465,320,100)&&!clues.has("drawing"))return labDrawing();
-  if(near(190,390,100)&&!clues.has("tape"))return labTape();
- } else if(room==="bunker"){
-  if(near(350,155,110)&&!clues.has("records"))return archive();
-  if(near(880,350,110)&&!clues.has("machine"))return machine();
- } else if(room==="observatory"&&!clues.has("signal")&&near(395,185,100))return signal();
- else if(room==="core"&&near(805,430,120))return confrontation();
+
+  if(state!=="play"||dialogue)return;
+
+  if(room==="lab"){
+
+    if(near(800,280,95)&&!clues.has("vaccine")){
+      return labVaccine()
+    }
+
+    if(near(465,320,100)&&!clues.has("drawing")){
+      return labDrawing()
+    }
+
+    if(near(190,390,100)&&!clues.has("tape")){
+      return labTape()
+    }
+
+  }
+
+  else if(room==="bunker"){
+
+    if(near(350,155,110)&&!clues.has("records")){
+      return archive()
+    }
+
+    if(near(880,350,110)&&!clues.has("machine")){
+      return machine()
+    }
+
+  }
+
+  else if(
+    room==="observatory"&&
+    !clues.has("signal")&&
+    near(395,185,100)
+  ){
+    return signal()
+  }
+
+  else if(
+    room==="core"&&
+    near(805,430,120)
+  ){
+    return confrontation()
+  }
+
 }
+
+
 function investigate(){
- if(state!=="play"||dialogue)return;
- const c=chars[selected];
- if(room==="lab")say(c.name, selected==="zhenya"?"The dust pattern is wrong. Someone carried a heavy object out recently.":"Something happened here recently. The room is pretending to be older than it is.");
- if(room==="bunker")say(c.name, selected==="yoru"?"I hear a second electrical rhythm behind the archive wall.":"The bunker has secrets behind its secrets.");
- if(room==="observatory")say(c.name, selected==="yoru"?"Four notes. Same interval. Someone is calling through the machine.":"The signal is repeating with deliberate timing.");
- if(room==="core")say(c.name,"The machine is not a doorway. It's an edit button.");
+
+  if(state!=="play"||dialogue)return;
+
+  const c=chars[selected];
+
+  if(room==="lab"){
+
+    say(
+      c.name,
+      selected==="zhenya"
+      ?"The dust pattern is wrong. Someone carried a heavy object out recently."
+      :"Something happened here recently. The room is pretending to be older than it is."
+    )
+
+  }
+
+  if(room==="bunker"){
+
+    say(
+      c.name,
+      selected==="yoru"
+      ?"I hear a second electrical rhythm behind the archive wall."
+      :"The bunker has secrets behind its secrets."
+    )
+
+  }
+
+  if(room==="observatory"){
+
+    say(
+      c.name,
+      selected==="yoru"
+      ?"Four notes. Same interval. Someone is calling through the machine."
+      :"The signal is repeating with deliberate timing."
+    )
+
+  }
+
+  if(room==="core"){
+    say(
+      c.name,
+      "The machine is not a doorway. It's an edit button."
+    )
+  }
+
 }
+
 
 function labVaccine(){
- addClue("vaccine");
- if(selected==="zhenya")say("ZHENYA","My sketch reveals a tiny scratch beside V-X22TE.\nThe specimen was opened after the official 'accident'.\nSomeone wanted the outbreak to look inevitable.");
- else if(selected==="yoru")say("YORU","There. Behind the chamber.\nA ventilation fan has a different rhythm from the others.\nSomeone used it to move infected material.");
- else if(selected==="renee")say("RENÉE","The label is encrypted. Cute.\nIt's not a virus sample. It's a delivery prototype.");
- else if(selected==="rocco")say("ROCCO","I don't like clean rooms.\nToo many places for somebody to hide what they did.");
- else say("LEV","You found the first lie.\nDon't worry. There are worse ones.");
+
+  addClue("vaccine");
+
+  if(selected==="zhenya"){
+
+    say(
+      "ZHENYA",
+      "My sketch reveals a tiny scratch beside V-X22TE.\nThe specimen was opened after the official 'accident'.\nSomeone wanted the outbreak to look inevitable."
+    )
+
+  }
+
+  else if(selected==="yoru"){
+
+    say(
+      "YORU",
+      "There. Behind the chamber.\nA ventilation fan has a different rhythm from the others.\nSomeone used it to move infected material."
+    )
+
+  }
+
+  else if(selected==="renee"){
+
+    say(
+      "RENÉE",
+      "The label is encrypted. Cute.\nIt's not a virus sample. It's a delivery prototype."
+    )
+
+  }
+
+  else if(selected==="rocco"){
+
+    say(
+      "ROCCO",
+      "I don't like clean rooms.\nToo many places for somebody to hide what they did."
+    )
+
+  }
+
+  else{
+
+    say(
+      "LEV",
+      "You found the first lie.\nDon't worry. There are worse ones."
+    )
+
+  }
+
 }
+
+
 function labDrawing(){
+
   addClue("drawing");
-  if(selected==="zhenya")say("ZHENYA","I trace the pressure marks until the image settles.\nA machine. Two silhouettes.\nOne is me.\nThe other is Lev.\n\nI hate that I recognize the way he stands.");
-  else say("UNKNOWN NOTE","A torn drawing shows a time machine beside two figures.\nOne face has been scratched away.\nUnder the graphite: L + Z.");
+
+  if(selected==="zhenya"){
+
+    say(
+      "ZHENYA",
+      "I trace the pressure marks until the image settles.\nA machine. Two silhouettes.\nOne is me.\nThe other is Lev.\n\nI hate that I recognize the way he stands."
+    )
+
+  }
+
+  else{
+
+    say(
+      "UNKNOWN NOTE",
+      "A torn drawing shows a time machine beside two figures.\nOne face has been scratched away.\nUnder the graphite: L + Z."
+    )
+
+  }
+
 }
+
+
 function labTape(){
+
   addClue("tape");
-  say("RECORDED VOICE","[static]\nZhenya, if this reaches you... don't let Lev tell you he did it for you.\nHe always knew exactly which words would make you stay.\n[click]");
-  if(selected!=="zhenya")say("YORU","That's not my voice. And I never knew him before the world ended.\nI'm just another person who got unlucky enough to survive.");
+
+  say(
+    "RECORDED VOICE",
+    "[static]\nZhenya, if this reaches you... don't let Lev tell you he did it for you.\nHe always knew exactly which words would make you stay.\n[click]"
+  );
+
+  if(selected!=="zhenya"){
+
+    say(
+      "YORU",
+      "That's not my voice. And I never knew him before the world ended.\nI'm just another person who got unlucky enough to survive."
+    )
+
+  }
+
 }
+
+
 function archive(){
- addClue("records");
- say("ARCHIVE","SURVIVOR LOG #19\nThe Chosen One was never meant to save everyone.\nThe machine can send one person back.\nBut the volunteer's name was erased.\nUnder the erasure: four tiny music notes.",[
- {label:"Follow the notes",action:()=>say("ZHENYA","The notes aren't Yoru's signature. They're a route marker. Someone wanted us looking at the wrong survivor.")},
- {label:"Question the record",action:()=>say("RENÉE","Someone edited this after the bunker was sealed.")}]);
+
+  addClue("records");
+
+  say(
+    "ARCHIVE",
+    "SURVIVOR LOG #19\nThe Chosen One was never meant to save everyone.\nThe machine can send one person back.\nBut the volunteer's name was erased.\nUnder the erasure: four tiny music notes.",
+    [
+
+      {
+        label:"Follow the notes",
+        action:()=>say(
+          "ZHENYA",
+          "The notes aren't Yoru's signature. They're a route marker. Someone wanted us looking at the wrong survivor."
+        )
+      },
+
+      {
+        label:"Question the record",
+        action:()=>say(
+          "RENÉE",
+          "Someone edited this after the bunker was sealed."
+        )
+      }
+
+    ]
+  )
+
 }
+
+
 function machine(){
- addClue("machine");
- say("RENÉE","The machine can undo the outbreak OR the solar event.\nNot both.\nUnless the machine's limitation is another lie.",[
- {label:"Repair it",action:()=>say("RENÉE","Then we need all five perspectives. Not one chosen hero.")},
- {label:"Ask who built it",action:()=>say("RENÉE","The original designer signed it with an L.")}]);
+
+  addClue("machine");
+
+  say(
+    "RENÉE",
+    "The machine can undo the outbreak OR the solar event.\nNot both.\nUnless the machine's limitation is another lie.",
+    [
+
+      {
+        label:"Repair it",
+        action:()=>say(
+          "RENÉE",
+          "Then we need all five perspectives. Not one chosen hero."
+        )
+      },
+
+      {
+        label:"Ask who built it",
+        action:()=>say(
+          "RENÉE",
+          "The original designer signed it with an L."
+        )
+      }
+
+    ]
+  )
+
 }
+
+
 function signal(){
- addClue("signal");
- say(selected==="yoru"?"YORU":"SIGNAL","Four notes.\nA rhythm I recognize.\nThe signal isn't coming from the Sun.\nIt's coming from someone using the Sun as an amplifier.",[
- {label:"Trace it",action:()=>say("ZHENYA","The signal points to the machine room.")},
- {label:"Keep listening",action:()=>say("YORU","Someone is waiting for us.")}]);
+
+  addClue("signal");
+
+  say(
+    selected==="yoru"?"YORU":"SIGNAL",
+    "Four notes.\nA rhythm I recognize.\nThe signal isn't coming from the Sun.\nIt's coming from someone using the Sun as an amplifier.",
+    [
+
+      {
+        label:"Trace it",
+        action:()=>say(
+          "ZHENYA",
+          "The signal points to the machine room."
+        )
+      },
+
+      {
+        label:"Keep listening",
+        action:()=>say(
+          "YORU",
+          "Someone is waiting for us."
+        )
+      }
+
+    ]
+  )
+
 }
+
+
 function nextRoom(){
+
   if(state!=="play")return;
 
-  const ready=(room==="lab"&&["vaccine","drawing","tape"].every(x=>clues.has(x)))||
-    (room==="bunker"&&["records","machine"].every(x=>clues.has(x)))||
-    (room==="observatory"&&clues.has("signal"));
+  const ready=
+
+    (room==="lab"&&
+      ["vaccine","drawing","tape"]
+      .every(x=>clues.has(x)))
+
+    ||
+
+    (room==="bunker"&&
+      ["records","machine"]
+      .every(x=>clues.has(x)))
+
+    ||
+
+    (room==="observatory"&&
+      clues.has("signal"));
+
   if(!ready)return;
 
-  if(room==="lab"){room="bunker";chapter=2;player.x=100}
-  else if(room==="bunker"){room="observatory";chapter=3;player.x=100}
-  else if(room==="observatory"){room="core";chapter=4;player.x=440}
-  else return;
-  close();updateUI();
-  say("SYSTEM",`TIME DISPLACEMENT ACCEPTED.
+  if(room==="lab"){
+    room="bunker";
+    chapter=2;
+    player.x=100
+  }
+
+  else if(room==="bunker"){
+    room="observatory";
+    chapter=3;
+    player.x=100
+  }
+
+  else if(room==="observatory"){
+    room="core";
+    chapter=4;
+    player.x=440
+  }
+
+  else{
+    return
+  }
+
+  close();
+
+  updateUI();
+
+  say(
+    "SYSTEM",
+    `TIME DISPLACEMENT ACCEPTED.
 Destination locked.
 CHAPTER ${chapter}: ${roomData[room].title}
 
-New objective: ${roomData[room].objective}`);
+New objective: ${roomData[room].objective}`
+  )
+
 }
+
+
 function confrontation(){
-  say("LEV","You made it. I was beginning to think the bunker had finally taught you caution.",[
-  {label:"Why did you bring us here?",action:()=>finalTalk("why")},
-  {label:"You used Zhenya.",action:()=>finalTalk("zhenya")},
-  {label:"Step away from the machine.",action:()=>finalTalk("machine")}
- ]);
+
+  say(
+    "LEV",
+    "You made it. I was beginning to think the bunker had finally taught you caution.",
+    [
+
+      {
+        label:"Why did you bring us here?",
+        action:()=>finalTalk("why")
+      },
+
+      {
+        label:"You used Zhenya.",
+        action:()=>finalTalk("zhenya")
+      },
+
+      {
+        label:"Step away from the machine.",
+        action:()=>finalTalk("machine")
+      }
+
+    ]
+  )
+
 }
+
 
 function finalTalk(type){
+
   const lines={
-    why:"LEV: Because the world was already ending, and everyone else was busy pretending survival was a plan. I built a way back. Then I learned what people are willing to become when you give them one more chance.",
-    zhenya:"LEV: I loved her. That is the part nobody likes because it doesn't excuse anything. I loved her, and I still decided I knew better than she did.\\n\\nZHENYA: You didn't save me. You made me smaller so I would fit inside your version of the future.",
-    machine:"LEV: You think breaking it makes you innocent? The machine only gives choices teeth. People do the rest."
+
+    why:
+    "LEV: Because the world was already ending, and everyone else was busy pretending survival was a plan. I built a way back. Then I learned what people are willing to become when you give them one more chance.",
+
+    zhenya:
+    "LEV: I loved her. That is the part nobody likes because it doesn't excuse anything. I loved her, and I still decided I knew better than she did.\n\nZHENYA: You didn't save me. You made me smaller so I would fit inside your version of the future.",
+
+    machine:
+    "LEV: You think breaking it makes you innocent? The machine only gives choices teeth. People do the rest."
+
   };
-  say(type==="zhenya"?"ZHENYA":"LEV",lines[type],[
-    {label:"Give Zhenya the choice",action:()=>ending("zhenya")},
-    {label:"Expose Lev and keep the future",action:()=>ending("truth")},
-    {label:"Walk away and leave the past untouched",action:()=>ending("survive")}
-  ]);
+
+  say(
+    type==="zhenya"?"ZHENYA":"LEV",
+    lines[type],
+    [
+
+      {
+        label:"Give Zhenya the choice",
+        action:()=>ending("zhenya")
+      },
+
+      {
+        label:"Expose Lev and keep the future",
+        action:()=>ending("truth")
+      },
+
+      {
+        label:"Walk away and leave the past untouched",
+        action:()=>ending("survive")
+      }
+
+    ]
+  )
+
 }
 
+
 function ending(type){
-  state="end";document.getElementById("ending").style.display="flex";
-  let title,body;
+
+  state="end";
+
+  document.getElementById("ending").style.display="flex";
+
+  let title;
+  let body;
+
   if(type==="zhenya"){
+
     title="ENDING · THE DOOR SHE CLOSES";
+
     body=`The room goes quiet.
 
 Lev waits for Zhenya to ask what he would do.
@@ -365,9 +1696,14 @@ She leaves.
 
 The machine is shut down without a hero going back to fix everything. Outside, the ruined world is still ruined.
 
-And for the first time, the future belongs to people who are actually there to live it.`;
-  } else if(type==="truth"){
+And for the first time, the future belongs to people who are actually there to live it.`
+
+  }
+
+  else if(type==="truth"){
+
     title="ENDING · THE RECORD OF LEV";
+
     body=`They don't kill Lev.
 
 Renée opens every archive.
@@ -394,9 +1730,14 @@ Years later, the machine is displayed behind reinforced glass—not as a miracle
 
 A plaque beneath it reads:
 
-THE FUTURE WAS NEVER SAVED BY ONE PERSON.`;
-  } else {
+THE FUTURE WAS NEVER SAVED BY ONE PERSON.`
+
+  }
+
+  else{
+
     title="ENDING · MORNING, ANYWAY";
+
     body=`Zhenya steps away from the controls.
 
 "No," she says.
@@ -433,47 +1774,256 @@ Behind them, the bunker lights go out one by one.
 
 Ahead of them, nothing is promised.
 
-Morning arrives anyway.`;
+Morning arrives anyway.`
+
   }
-  document.getElementById("ending").innerHTML=`<div><div style="color:#e4b95f;letter-spacing:2px">${title}</div><h1 class="logo" style="font-size:48px;margin:10px">UNDOEND</h1><p class="subtitle" style="white-space:pre-line;margin-bottom:24px">${body}</p><button class="primary" onclick="location.reload()">↻ PLAY AGAIN</button></div>`;
+
+  document.getElementById("ending").innerHTML=`
+    <div>
+
+      <div style="color:#e4b95f;letter-spacing:2px">
+        ${title}
+      </div>
+
+      <h1 class="logo" style="font-size:48px;margin:10px">
+        UNDOEND
+      </h1>
+
+      <p class="subtitle" style="white-space:pre-line;margin-bottom:24px">
+        ${body}
+      </p>
+
+      <button class="primary" onclick="location.reload()">
+        ↻ PLAY AGAIN
+      </button>
+
+    </div>
+  `
+
 }
 
+
 function buildRoster(){
- const r=document.getElementById("roster");r.innerHTML="";
- Object.entries(chars).filter(([id])=>id!=="lev").forEach(([id,c])=>{
-  const d=document.createElement("button");d.className="char";
-  d.innerHTML=`<div class="portrait"><canvas width="90" height="92" style="width:90px;height:92px"></canvas></div><h3>${c.name}</h3><div class="tag">${c.role}</div><small>${c.desc}</small><small style="color:#e4b95f;margin-top:5px">★ ${c.skill}</small>`;
-  d.onclick=()=>choose(id);r.appendChild(d);
-  const pc=d.querySelector("canvas"),p=pc.getContext("2d");p.imageSmoothingEnabled=false;
-  p.fillStyle="#11101a";p.fillRect(0,0,90,92);
-  p.fillStyle=c.color;p.fillRect(32,40,26,30);p.fillRect(36,25,18,18);p.fillStyle="#e5ad99";p.fillRect(36,26,18,13);
-  p.fillStyle=id==="lev"?"#d56b79":"#33243d";p.fillRect(34,20,22,8);p.fillStyle="#14111b";p.fillRect(35,70,7,15);p.fillRect(49,70,7,15);
- });
+
+  const r=document.getElementById("roster");
+
+  r.innerHTML="";
+
+  Object.entries(chars)
+    .filter(([id])=>id!=="lev")
+    .forEach(([id,c])=>{
+
+      const d=document.createElement("button");
+
+      d.className="char";
+
+      d.innerHTML=`
+
+        <div class="portrait">
+          <canvas
+            width="90"
+            height="92"
+            style="width:90px;height:92px"
+          ></canvas>
+        </div>
+
+        <h3>${c.name}</h3>
+
+        <div class="tag">${c.role}</div>
+
+        <small>${c.desc}</small>
+
+        <small style="color:#e4b95f;margin-top:5px">
+          ★ ${c.skill}
+        </small>
+
+      `;
+
+      d.onclick=()=>choose(id);
+
+      r.appendChild(d);
+
+      const pc=d.querySelector("canvas");
+      const p=pc.getContext("2d");
+
+      p.imageSmoothingEnabled=false;
+
+      p.fillStyle="#11101a";
+      p.fillRect(0,0,90,92);
+
+      p.fillStyle=c.color;
+      p.fillRect(32,40,26,30);
+      p.fillRect(36,25,18,18);
+
+      p.fillStyle="#e5ad99";
+      p.fillRect(36,26,18,13);
+
+      p.fillStyle=
+        id==="lev"
+        ?"#d56b79"
+        :"#33243d";
+
+      p.fillRect(34,20,22,8);
+
+      p.fillStyle="#14111b";
+      p.fillRect(35,70,7,15);
+      p.fillRect(49,70,7,15)
+
+    })
+
 }
+
+
 function choose(id){
- selected=id;document.getElementById("select").style.display="none";state="play";room="lab";chapter=1;player={x:150,y:450,dir:1,speed:id==="rocco"?3.1:2.7};updateUI();
- say(chars[id].name,`You chose ${chars[id].name} — ${chars[id].role}.\n\n${chars[id].quote}\n\nThe world ended once.\nYour job is to find out why.`);
+
+  selected=id;
+
+  document.getElementById("select").style.display="none";
+
+  state="play";
+  room="lab";
+  chapter=1;
+
+  player={
+    x:150,
+    y:450,
+    dir:1,
+    speed:id==="rocco"?3.1:2.7
+  };
+
+  updateUI();
+
+  say(
+    chars[id].name,
+    `You chose ${chars[id].name} — ${chars[id].role}.
+
+${chars[id].quote}
+
+The world ended once.
+Your job is to find out why.`
+  )
+
 }
-document.getElementById("start").onclick=()=>{document.getElementById("title").style.display="none";document.getElementById("select").style.display="flex";buildRoster()};
-document.getElementById("menuBtn").onclick=()=>{if(state==="play"){document.getElementById("pausePanel").style.display="flex"}};
-document.getElementById("resume").onclick=()=>document.getElementById("pausePanel").style.display="none";
-document.getElementById("restart").onclick=()=>location.reload();
-document.getElementById("interactBtn").onclick=interact;document.getElementById("investigateBtn").onclick=investigate;
-document.getElementById("nextArrow").addEventListener("click",nextRoom);
-document.querySelectorAll("[data-key]").forEach(b=>{
- const k=b.dataset.key;
- const down=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};
- b.addEventListener("touchstart",down,{passive:false});b.addEventListener("touchend",up,{passive:false});b.addEventListener("touchcancel",up,{passive:false});
- b.addEventListener("mousedown",down);b.addEventListener("mouseup",up);b.addEventListener("mouseleave",up);
-});
+
+
+document.getElementById("start").onclick=()=>{
+
+  document.getElementById("title").style.display="none";
+
+  document.getElementById("select").style.display="flex";
+
+  buildRoster()
+
+};
+
+
+document.getElementById("menuBtn").onclick=()=>{
+
+  if(state==="play"){
+    document.getElementById("pausePanel").style.display="flex"
+  }
+
+};
+
+
+document.getElementById("resume").onclick=()=>{
+  document.getElementById("pausePanel").style.display="none"
+};
+
+
+document.getElementById("restart").onclick=()=>{
+  location.reload()
+};
+
+
+document.getElementById("interactBtn").onclick=interact;
+
+document.getElementById("investigateBtn").onclick=investigate;
+
+document
+  .getElementById("nextArrow")
+  .addEventListener("click",nextRoom);
+
+
+document
+  .querySelectorAll("[data-key]")
+  .forEach(b=>{
+
+    const k=b.dataset.key;
+
+    const down=e=>{
+      e.preventDefault();
+      keys[k]=true
+    };
+
+    const up=e=>{
+      e.preventDefault();
+      keys[k]=false
+    };
+
+    b.addEventListener(
+      "touchstart",
+      down,
+      {passive:false}
+    );
+
+    b.addEventListener(
+      "touchend",
+      up,
+      {passive:false}
+    );
+
+    b.addEventListener(
+      "touchcancel",
+      up,
+      {passive:false}
+    );
+
+    b.addEventListener("mousedown",down);
+
+    b.addEventListener("mouseup",up);
+
+    b.addEventListener("mouseleave",up)
+
+  });
+
+
 addEventListener("keydown",e=>{
- const k=e.key.toLowerCase();keys[k]=true;
- if(["arrowup","arrowdown","arrowleft","arrowright"," "].includes(k))e.preventDefault();
- if(k==="e")interact();if(k===" ")investigate();
+
+  const k=e.key.toLowerCase();
+
+  keys[k]=true;
+
+  if(
+    [
+      "arrowup",
+      "arrowdown",
+      "arrowleft",
+      "arrowright",
+      " "
+    ].includes(k)
+  ){
+    e.preventDefault()
+  }
+
+  if(k==="e")interact();
+
+  if(k===" ")investigate()
+
 });
-addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+
+
+addEventListener("keyup",e=>{
+  keys[e.key.toLowerCase()]=false
+});
+
+
 addEventListener("resize",()=>{});
+
+
 updateUI();
+
 </script>
+
 </body>
 </html>
