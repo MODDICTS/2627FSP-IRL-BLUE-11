@@ -581,7 +581,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 /* =========================================================
    FESTIVAL DETAIL PASS — richer scenery without changing gameplay
    ========================================================= */
-.knead-action{position:static!important;transform:none!important;left:auto!important;top:auto!important;margin:0;}
+/* knead positioning is controlled by the cooking stage script so its movement mechanic stays intact */
 
 /* A busier, more recognisable traditional kitchen */
 .kitchen{position:relative;overflow:hidden;background:
@@ -1256,7 +1256,7 @@ function setCookStage(stage){
     cookVisual.innerHTML='<div class="knead-dough">🟤</div>';
     let hits=0;
     const target=document.createElement("button");target.className="btn red";target.textContent="揉面 · KNEAD";
-    target.style.position="absolute";target.style.left="50%";target.style.top="47%";
+    target.style.position="absolute";target.style.left="50%";target.style.top="35%";
     target.style.transform="translateX(-50%)";
     target.onclick=()=>{
       hits++;target.style.left=(38+Math.random()*24)+"%";
