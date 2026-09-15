@@ -520,7 +520,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 .claw-room:before{width:420px;height:420px;left:-190px;top:150px}.claw-room:after{width:600px;height:600px;right:-280px;bottom:-220px}
 .machine{position:relative;padding:22px;border-width:10px;background:linear-gradient(100deg,#722536,#c83b4b 28%,#ed6b62 50%,#c83b4b 72%,#722536)}
 .machine:before{content:"抓娃娃 · PRIZE CATCHER";display:block;text-align:center;color:#ffe8ad;font-weight:900;letter-spacing:2px;font-size:15px;margin:-7px 0 10px}
-.machine:after{content:"✦  🏮  ✦  🥮  ✦  🏮  ✦";display:block;text-align:center;color:#ffd76a;font-size:18px;position:absolute;top:8px;left:0;right:0}
+.machine:after{content:"";display:none}
 .machine-screen{height:520px;background:
  radial-gradient(circle at 14% 12%,#ffe58d 0 2px,transparent 3px),
  radial-gradient(circle at 84% 20%,#ffe58d 0 3px,transparent 4px),
@@ -571,6 +571,51 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 .family-table{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(900px,95%);height:46%;background:linear-gradient(#bd704f,#82443f);border-radius:50% 50% 0 0;border-top:12px solid #e5ae6a;box-shadow:0 -20px 40px rgba(25,15,30,.3)}
 .table-cloth{position:absolute;left:4%;right:4%;top:17%;height:15%;border-radius:50%;background:#fff0d4;border:4px solid #d7a15b}
 .served-cake{position:absolute;left:50%;top:4%;transform:translate(-50%,-50%);font-size:88px;filter:drop-shadow(0 12px 5px rgba(40,20,25,.35));animation:cakePop .8s ease-out}
+
+/* The served mooncake is rendered as the player's actual decorated cake,
+   instead of a platform-dependent mooncake emoji. */
+.served-cake{
+  position:absolute;left:50%;top:9%;
+  width:190px;height:112px;
+  transform:translate(-50%,-50%);
+  border-radius:48% 48% 44% 44%;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,238,154,.95) 0 4px,transparent 5px),
+    repeating-radial-gradient(circle at 50% 50%,transparent 0 18px,rgba(154,91,30,.20) 19px 21px),
+    linear-gradient(180deg,#f7cf63,#d99025 72%,#b86c20);
+  border:6px solid #8d4f1f;
+  box-shadow:
+    inset 0 -10px 0 rgba(119,62,25,.18),
+    inset 0 7px 0 rgba(255,241,166,.55),
+    0 16px 9px rgba(40,20,25,.35),
+    0 0 0 5px rgba(255,220,117,.22);
+  z-index:12;
+  animation:cakePop .8s ease-out;
+  display:block;
+}
+.served-cake:before{
+  content:"中秋";
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  font:700 27px "Noto Sans SC",sans-serif;
+  color:#8b4a1d;
+  text-shadow:0 1px rgba(255,240,168,.7);
+}
+.served-cake:after{
+  content:"✦  ✦  ✦";
+  position:absolute;left:50%;bottom:8px;
+  transform:translateX(-50%);
+  color:#8b4a1d;font-size:12px;letter-spacing:5px;
+}
+.served-decor{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  z-index:20;
+  font-size:24px;
+  line-height:1;
+  filter:drop-shadow(0 3px 2px rgba(60,30,15,.3));
+}
+
 @keyframes cakePop{from{transform:translate(-50%,10px) scale(.4);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
 .family-person{position:absolute;bottom:10%;width:150px;height:230px}.person-a{left:5%}.person-b{left:27%}.person-c{right:27%}.person-d{right:5%}
 .pf-head{position:absolute;left:50%;top:0;transform:translateX(-50%);width:72px;height:82px;border-radius:48%;background:#efb38f;z-index:3}.pf-hair{position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:82px;height:65px;border-radius:50% 50% 35% 35%;background:#2a1c2a;z-index:4}.pf-body{position:absolute;left:20px;top:70px;width:110px;height:155px;background:linear-gradient(90deg,#9b304b,#e05f67,#9b304b);clip-path:polygon(25% 0,75% 0,100% 100%,0 100%);z-index:2}.pf-arm{position:absolute;left:92px;top:105px;width:65px;height:22px;background:#efb38f;border-radius:20px;transform:rotate(24deg);z-index:5;transform-origin:left center}
@@ -593,7 +638,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     linear-gradient(90deg,transparent 0 7%,rgba(101,53,47,.18) 7% 7.5%,transparent 7.5% 31%,rgba(101,53,47,.18) 31% 31.5%,transparent 31.5% 68%,rgba(101,53,47,.18) 68% 68.5%,transparent 68.5% 93%,rgba(101,53,47,.18) 93% 93.5%,transparent 93.5%),
     linear-gradient(#c97859 0 12px,transparent 12px),
     linear-gradient(90deg,#b76552 0 18%,#e2a07d 18% 31%,#b76552 31% 33%,#e2a07d 33% 47%,#b76552 47% 49%,#e2a07d 49% 63%,#b76552 63% 65%,#e2a07d 65% 82%,#b76552 82% 84%,#e2a07d 84% 100%);}
-.kitchen:after{content:"🥢     🫖        🥣       🫙       🥢        🍵";position:absolute;top:42px;left:3%;right:3%;height:80px;text-align:center;font-size:34px;letter-spacing:8px;opacity:.9;filter:drop-shadow(0 5px 3px rgba(70,35,30,.2));pointer-events:none;}
+.kitchen:after{content:"✦     ◆        ✧       ◇       ✦        ◆";position:absolute;top:42px;left:3%;right:3%;height:80px;text-align:center;font-size:34px;letter-spacing:8px;opacity:.9;filter:drop-shadow(0 5px 3px rgba(70,35,30,.2));pointer-events:none;}
 .cook-scene{background:
   radial-gradient(circle at 82% 22%,rgba(255,239,183,.7) 0 4px,transparent 5px),
   radial-gradient(circle at 13% 27%,rgba(255,239,183,.55) 0 3px,transparent 4px),
@@ -601,9 +646,14 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
   linear-gradient(180deg,#b9d89b 0 18%,#d88e68 18% 21%,#f5dfc0 21% 73%,#c8795b 73% 100%);}
 .cook-window{height:142px;background:linear-gradient(180deg,#78aa86,#b9dca7);border:8px solid #9b574d;border-top-width:12px;box-shadow:inset 0 0 0 7px rgba(255,240,205,.45),0 8px 0 rgba(102,51,45,.18);}
 .cook-window:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48.5%,rgba(100,75,61,.38) 49% 51%,transparent 51.5%),linear-gradient(180deg,transparent 48%,rgba(100,75,61,.32) 49% 51%,transparent 52%);}
-.cook-window:after{content:"☁︎   🌿   ☼   🌿   ☁︎";inset:25px 10px;text-shadow:0 3px 5px rgba(60,90,60,.18);}
+.cook-window:after{content:"○   ◆   ✦   ◆   ○";inset:34px 10px;text-shadow:0 3px 5px rgba(60,90,60,.18);}
 .counter{height:82px;bottom:8%;background:linear-gradient(#d88c68,#bd684f);border-top:8px solid #f0bc83;box-shadow:0 13px #944b46,0 -4px 0 rgba(255,236,196,.6);}
 .counter:before{content:"";position:absolute;left:7%;right:7%;top:-62px;height:48px;border-radius:12px 12px 5px 5px;background:linear-gradient(90deg,#9f5a4e 0 28%,#e2a26f 28% 31%,#9f5a4e 31% 65%,#e2a26f 65% 68%,#9f5a4e 68%);opacity:.75;}
+
+
+/* Kitchen title clearance: keep the decorative header behind the title, not through it */
+.kitchen .title{margin-top:48px;}
+.kitchen .title h2{position:relative;z-index:4;text-shadow:0 2px 0 rgba(255,240,210,.45);}
 
 /* Richer lantern-launch cutscene */
 .cutscene{background:linear-gradient(180deg,#090d27 0%,#172a4a 46%,#5c3655 78%,#a65b54 100%);}
@@ -640,13 +690,13 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
  radial-gradient(circle at 12% 18%,#fff0a6 0 2px,transparent 3px),radial-gradient(circle at 28% 11%,#ffe890 0 2px,transparent 3px),radial-gradient(circle at 67% 19%,#fff0a6 0 2px,transparent 3px),radial-gradient(circle at 86% 12%,#ffe890 0 2px,transparent 3px),
  linear-gradient(180deg,#11183a 0,#28385b 58%,#6e4650 100%);}
 .serve-sky:before{content:"⌒⌒⌒⌒⌒⌒⌒⌒⌒";position:absolute;left:0;right:0;bottom:38%;font-size:110px;letter-spacing:14px;color:rgba(20,27,49,.55);transform:scaleY(.42);}
-.serve-sky:after{content:"🌿     🏮        🌿     🏮        🌿";position:absolute;left:0;right:0;top:34%;font-size:34px;text-align:center;opacity:.7;}
+.serve-sky:after{content:"❖     ◆        ❖     ◆        ❖";position:absolute;left:0;right:0;top:34%;font-size:34px;text-align:center;opacity:.7;}
 .serve-moon{width:180px;height:180px;background:radial-gradient(circle at 35% 35%,#fff5c5,#ffe18a 70%,#efc65c);box-shadow:0 0 100px rgba(255,224,137,.65);}
 .family-table{height:49%;width:min(980px,96%);background:linear-gradient(180deg,#c37a52,#87443f);border-top-width:14px;box-shadow:0 -28px 55px rgba(12,11,28,.4);}
 .family-table:before{content:"🥟   🍵   🥮   🍵   🥟";position:absolute;left:0;right:0;top:22%;text-align:center;font-size:28px;letter-spacing:10px;filter:drop-shadow(0 5px 3px rgba(50,20,20,.25));}
 .family-table:after{content:"";position:absolute;left:8%;right:8%;bottom:8%;height:18px;border-radius:50%;background:rgba(72,34,38,.28);box-shadow:0 12px 0 rgba(72,34,38,.18);}
 .table-cloth{top:17%;height:18%;background:repeating-linear-gradient(90deg,#fff0d4 0 18px,#f4d5b6 18px 21px);box-shadow:inset 0 0 0 6px rgba(180,108,73,.2);}
-.served-cake{font-size:96px;filter:drop-shadow(0 15px 7px rgba(30,15,25,.42));}
+.served-cake{filter:drop-shadow(0 15px 7px rgba(30,15,25,.42));}
 .family-person{width:165px;height:245px;filter:drop-shadow(0 12px 9px rgba(30,15,25,.3));}
 .pf-head{width:76px;height:86px;box-shadow:inset -8px -7px rgba(130,70,70,.1);}
 .pf-hair{width:90px;height:70px;box-shadow:inset 10px 0 rgba(255,255,255,.04);}
@@ -752,7 +802,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <h3>月圆 · 人团圆</h3>
     <p>
       Sebuah festival interaktif untuk belajar Mandarin, membuat mooncake,
-      bermain claw machine, mendekorasi, dan menerbangkan lantern.
+      mendekorasi, dan menerbangkan lampion ♡
     </p>
     <div class="home-actions">
       <button class="btn gold" onclick="go('quotes')">抽一张签 · Draw a Quote</button>
@@ -767,7 +817,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#c34a5b">Mandarin Fortune Cards</div>
       <h2 style="color:#8c2939">月签 · Moon Quotes</h2>
-      <p>Klik kartu untuk membaliknya. Belajar Hanzi + pinyin + arti Indonesia seperti tarot card.</p>
+      <p>Klik kartu untuk melihat quotes hari ini!</p>
     </div>
     <div class="quote-layout">
       <div class="quote-info">
@@ -814,7 +864,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#c34a5b">Earn Coins</div>
       <h2 style="color:#8c2939">中文挑战 · Mandarin Quiz</h2>
-      <p>Jawab pilihan ganda. Setiap jawaban benar memberi 3 🪙 coins untuk bermain claw machine.</p>
+      <p>Jawab pilihan ganda. Setiap jawaban benar memberi 3 koin untuk bermain claw machine.</p>
     </div>
 
     <div class="quiz-box">
@@ -846,19 +896,19 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#a73b47">Cooking Game</div>
       <h2 style="color:#8c2939">厨房 · Mooncake Kitchen</h2>
-      <p>Semua tahap terjadi di <b>box yang sama</b>. Drag, timing, tombol, dan mini challenge akan berubah setiap tahap.</p>
+      <p>Let's make a mooncake!</b>. Drag, timing, tombol, dan mini challenge akan berubah setiap tahap.</p>
     </div>
 
     <div class="kitchen-room">
       <aside class="kitchen-side">
         <h3>食材</h3>
         <p style="font-size:12px">Drag keenam bahan ke bowl untuk memulai.</p>
-        <div class="ingredient" draggable="true" data-ing="flour"><span>🌾</span><b>面粉<br><small>miànfěn · tepung</small></b></div>
-        <div class="ingredient" draggable="true" data-ing="sugar"><span>🍚</span><b>糖<br><small>táng · gula</small></b></div>
-        <div class="ingredient" draggable="true" data-ing="oil"><span>🫙</span><b>油<br><small>yóu · minyak</small></b></div>
-        <div class="ingredient" draggable="true" data-ing="egg"><span>🥚</span><b>鸡蛋<br><small>jīdàn · telur</small></b></div>
-        <div class="ingredient" draggable="true" data-ing="lotus"><span>🟤</span><b>莲蓉<br><small>liánróng · lotus paste</small></b></div>
-        <div class="ingredient" draggable="true" data-ing="salt"><span>🧂</span><b>盐<br><small>yán · garam</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="flour"><span>✦</span><b>面粉<br><small>miànfěn · tepung</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="sugar"><span>●</span><b>糖<br><small>táng · gula</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="oil"><span>◇</span><b>油<br><small>yóu · minyak</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="egg"><span>○</span><b>鸡蛋<br><small>jīdàn · telur</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="lotus"><span>◆</span><b>莲蓉<br><small>liánróng · lotus paste</small></b></div>
+        <div class="ingredient" draggable="true" data-ing="salt"><span>✧</span><b>盐<br><small>yán · garam</small></b></div>
       </aside>
 
       <div class="cook-box" id="cookBox">
@@ -867,7 +917,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 
         <!-- HINT IS ALWAYS TOP RIGHT -->
         <div class="cook-hint" id="cookHint">
-          <strong>💡 小提示 · Hint</strong>
+          <strong>✦ 小提示 · Hint</strong>
           Drag semua 6 bahan yang diperlukan ke bowl.
         </div>
 
@@ -983,7 +1033,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#ffd970">Old China · 夜花园</div>
       <h2>花灯夜游 · Lantern Night</h2>
-      <p>Desain lantern-mu sendiri, pilih warna dan tulisan Mandarin, lalu lihat cutscene saat seorang gadis berhanfu menerbangkannya.</p>
+      <p>Desain lantern-mu sendiri, pilih warna dan tulisan Mandarin! Terbangkan lanternnya and maybe your wish will come true...</p>
     </div>
 
     <div class="lantern-maker">
@@ -1091,7 +1141,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
   <div class="serve-lantern l1">🏮</div><div class="serve-lantern l2">🏮</div><div class="serve-lantern l3">🏮</div>
   <div class="family-table">
     <div class="table-cloth"></div>
-    <div class="served-cake" id="servedCake">🥮</div>
+    <div class="served-cake" id="servedCake" aria-label="Your decorated mooncake"></div>
     <div class="family-person person-a"><div class="pf-head"></div><div class="pf-hair"></div><div class="pf-body"></div><div class="pf-arm"></div></div>
     <div class="family-person person-b"><div class="pf-head"></div><div class="pf-hair"></div><div class="pf-body"></div><div class="pf-arm"></div></div>
     <div class="family-person person-c"><div class="pf-head"></div><div class="pf-hair"></div><div class="pf-body"></div><div class="pf-arm"></div></div>
@@ -1335,7 +1385,7 @@ function resetKitchen(){
   cookVisual.innerHTML="";cookActions.innerHTML="";
   dropTarget.style.display="grid";cookCounter.textContent=`0 / ${needed.length} ingredients`;
   cookInstruction.textContent="Drag ingredients dari panel kiri ke bowl.";
-  cookHint.innerHTML="<strong>💡 小提示 · Hint</strong>Drag semua 6 bahan yang diperlukan ke bowl.";
+  cookHint.innerHTML="<strong>✦ 小提示 · Hint</strong>Drag semua 6 bahan yang diperlukan ke bowl.";
 }
 
 /* ---------------- CLAW MACHINE PHYSICS ---------------- */
@@ -1428,11 +1478,31 @@ function addDecor(symbol){
 }
 function clearDecor(){document.querySelectorAll(".decor-item").forEach(x=>x.remove())}
 function serveMooncake(){
-  if(!document.querySelector(".decor-item")) toast("Tambahkan minimal satu dekorasi dulu! 🥮");
-  else{
-    document.getElementById("servedCake").textContent="🥮";
-    document.getElementById("serveScene").classList.add("show");
-  }
+  const playerDecor=[...document.querySelectorAll(".decor-item")];
+  if(!playerDecor.length){ toast("Tambahkan minimal satu dekorasi dulu!"); return; }
+
+  const served=document.getElementById("servedCake");
+  const cake=document.querySelector("#cakeTable .cake");
+  served.innerHTML="";
+
+  // Keep the same decoration symbols and approximately the same positions
+  // the player created, translated from the cake in the Decor section
+  // onto the mooncake shown in the reunion cutscene.
+  const cakeRect=cake.getBoundingClientRect();
+  playerDecor.forEach(item=>{
+    const r=item.getBoundingClientRect();
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const px=Math.max(10,Math.min(90,((cx-cakeRect.left)/cakeRect.width)*100));
+    const py=Math.max(18,Math.min(78,((cy-cakeRect.top)/cakeRect.height)*100));
+    const d=document.createElement("span");
+    d.className="served-decor";
+    d.textContent=item.textContent;
+    d.style.left=px+"%";
+    d.style.top=py+"%";
+    served.appendChild(d);
+  });
+
+  document.getElementById("serveScene").classList.add("show");
 }
 function closeServeScene(){document.getElementById("serveScene").classList.remove("show")}
 /* ---------------- LANTERN ---------------- */
