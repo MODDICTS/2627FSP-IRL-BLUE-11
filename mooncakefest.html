@@ -108,6 +108,147 @@ button{cursor:pointer}
 .red{background:var(--red);color:#fff4dc}.gold{background:var(--yellow);color:#683b2e}
 .white{background:#fff5e1;color:var(--darkred)}
 
+/* ============ MEANING — DETAILED FESTIVAL DESIGN ============ */
+.meaning{
+  position:relative;overflow:hidden;
+  min-height:calc(100vh - 86px);
+  background:
+    radial-gradient(circle at 12% 18%,rgba(255,219,132,.16) 0 2px,transparent 3px),
+    radial-gradient(circle at 86% 24%,rgba(255,219,132,.14) 0 2px,transparent 3px),
+    radial-gradient(circle at 72% 82%,rgba(255,188,174,.12) 0 3px,transparent 4px),
+    linear-gradient(145deg,#471725 0%,#741f35 43%,#351329 100%);
+}
+.meaning:before,.meaning:after{
+  content:"";position:absolute;pointer-events:none;z-index:0;
+}
+.meaning:before{
+  width:360px;height:360px;right:-120px;top:70px;border-radius:50%;
+  border:1px solid rgba(255,220,145,.22);
+  box-shadow:0 0 0 24px rgba(255,220,145,.035),0 0 0 48px rgba(255,220,145,.025);
+}
+.meaning:after{
+  width:250px;height:250px;left:-115px;bottom:30px;border-radius:50%;
+  border:1px solid rgba(255,220,145,.15);
+  box-shadow:0 0 0 20px rgba(255,220,145,.03),0 0 0 40px rgba(255,220,145,.02);
+}
+.meaning .room-inner{position:relative;z-index:2}
+.meaning .title{
+  position:relative;text-align:center;max-width:820px;margin:0 auto 26px;
+  padding:10px 20px 8px;
+}
+.meaning .title:before,.meaning .title:after{
+  content:"";position:absolute;top:50%;width:115px;height:1px;background:linear-gradient(90deg,transparent,#eac16d);
+}
+.meaning .title:before{left:-10px}.meaning .title:after{right:-10px;transform:scaleX(-1)}
+.meaning .title h2{
+  text-shadow:0 4px 18px rgba(0,0,0,.22);margin:6px 0 8px;
+}
+.meaning .title p{color:#ffe9d6;max-width:700px;margin:auto;line-height:1.65}
+.meaning-grid{
+  display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+  gap:24px;align-items:stretch;position:relative;
+}
+.meaning-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(255,248,231,.98),rgba(255,225,207,.96));
+  border:3px solid #e7bc73;border-radius:30px;padding:30px;
+  box-shadow:0 24px 60px rgba(20,5,13,.34),inset 0 0 0 1px rgba(255,255,255,.65);
+}
+.meaning-card:before{
+  content:"中 秋";position:absolute;right:20px;top:13px;
+  font:400 38px "Ma Shan Zheng";letter-spacing:8px;color:rgba(171,54,61,.09);
+  transform:rotate(-8deg);pointer-events:none;
+}
+.meaning-card:after{
+  content:"✦  ·  ✧  ·  ✦";position:absolute;right:24px;bottom:14px;
+  color:rgba(173,69,77,.18);font-size:18px;letter-spacing:5px;pointer-events:none;
+}
+.meaning-card h3{
+  position:relative;z-index:1;color:#8f293b;font:400 37px "Ma Shan Zheng";
+  margin:0 0 13px;padding-bottom:12px;border-bottom:1px solid #e5b77c;
+}
+.meaning-card>p{position:relative;z-index:1;color:#69434a;line-height:1.75;margin:10px 0}
+.meaning-points{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:19px;
+}
+.meaning-point{
+  position:relative;min-height:115px;padding:16px 15px 14px;
+  border:2px solid #eccba9;border-radius:19px;
+  background:rgba(255,249,235,.78);
+  box-shadow:0 7px 16px rgba(103,48,50,.08);
+}
+.meaning-point:before{
+  content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;
+  border-radius:9px;background:#c78a43;
+}
+.meaning-point b{display:block;color:#9b3342;font-size:15px;margin-bottom:7px;padding-left:6px}
+.meaning-point span{display:block;color:#725159;font-size:12px;line-height:1.6;padding-left:6px}
+.meaning-moon{
+  position:relative;min-height:100%;border-radius:30px;overflow:hidden;
+  border:3px solid rgba(238,195,111,.8);
+  background:
+    radial-gradient(circle at 20% 22%,rgba(255,238,169,.9) 0 1px,transparent 2px),
+    radial-gradient(circle at 78% 30%,rgba(255,238,169,.8) 0 2px,transparent 3px),
+    radial-gradient(circle at 65% 75%,rgba(255,238,169,.65) 0 1px,transparent 2px),
+    linear-gradient(160deg,#21142d,#48203d 55%,#1c1427);
+  box-shadow:0 24px 60px rgba(15,5,18,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 24px;
+}
+.meaning-moon:before{
+  content:"";position:absolute;width:265px;height:265px;border-radius:50%;
+  border:1px solid rgba(255,220,144,.2);
+  box-shadow:0 0 0 18px rgba(255,220,144,.04),0 0 0 36px rgba(255,220,144,.025);
+}
+.meaning-moon:after{
+  content:"✦     ✧     ✦";position:absolute;top:22px;left:0;right:0;text-align:center;
+  color:#f4cf83;font-size:15px;letter-spacing:14px;opacity:.75;
+}
+.meaning-moon-disc{
+  position:relative;z-index:2;width:205px;height:205px;border-radius:50%;
+  display:grid;place-items:center;
+  font:400 96px "Ma Shan Zheng";color:#9b3b48;
+  background:
+    radial-gradient(circle at 34% 29%,rgba(255,255,255,.62) 0 5px,transparent 6px),
+    radial-gradient(circle at 67% 64%,rgba(188,130,78,.22) 0 18px,transparent 19px),
+    radial-gradient(circle at 42% 72%,rgba(188,130,78,.16) 0 12px,transparent 13px),
+    linear-gradient(145deg,#fff4bf,#e9bf76);
+  border:7px double #c68b46;
+  box-shadow:0 0 45px rgba(255,215,125,.28),inset -16px -18px 35px rgba(146,77,54,.16);
+}
+.meaning-caption{
+  position:relative;z-index:2;text-align:center;margin-top:28px;color:#fff3d0;
+  max-width:290px;
+}
+.meaning-caption strong{
+  display:block;font:400 34px "Ma Shan Zheng";color:#f4ce82;margin-bottom:7px;
+}
+.meaning-caption small{display:block;line-height:1.65;color:#f5dfc9}
+.meaning-ribbon{
+  position:relative;z-index:3;left:auto;top:auto;bottom:auto;transform:none;
+  margin-top:18px;border:1px solid rgba(238,195,111,.55);border-radius:99px;
+  padding:7px 17px;color:#f5d28b;font-size:11px;letter-spacing:2px;
+  background:rgba(35,17,30,.58);white-space:nowrap;
+}
+@media(max-width:900px){
+  .meaning-grid{grid-template-columns:1fr}
+  .meaning-moon{min-height:390px}
+  .meaning-card{padding:24px}
+  .meaning .title:before,.meaning .title:after{width:60px}
+}
+@media(max-width:620px){
+  .meaning .title{padding:5px 8px}
+  .meaning .title:before,.meaning .title:after{display:none}
+  .meaning-card{padding:20px;border-radius:24px}
+  .meaning-card h3{font-size:31px}
+  .meaning-points{grid-template-columns:1fr}
+  .meaning-point{min-height:auto}
+  .meaning-moon{min-height:350px;padding:25px 16px}
+  .meaning-moon-disc{width:165px;height:165px;font-size:78px}
+  .meaning-caption strong{font-size:29px}
+  .meaning-ribbon{top:auto;bottom:auto;font-size:9px;margin-top:14px}
+}
+
 /* ============ QUOTES ONLY ============ */
 .quotes{background:linear-gradient(180deg,#fff0dc,#f4b09b)}
 .quote-layout{display:grid;grid-template-columns:290px 1fr;gap:28px;align-items:center}
@@ -361,6 +502,73 @@ button{cursor:pointer}
 .cake-word{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);z-index:5;font:400 34px "Ma Shan Zheng";color:#ffe5a0}
 .decor-item{position:absolute;z-index:8;font-size:46px;cursor:grab;user-select:none}
 .decor-tip{font-size:12px;line-height:1.5;color:#80505a}
+
+/* ============ DETAILED MOONCAKE MOLD ============ */
+.cake-table{position:relative;isolation:isolate}
+.cake-table:after{
+  content:"";position:absolute;left:50%;top:48%;width:335px;height:205px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  border:2px dashed rgba(255,241,194,.38);
+  box-shadow:0 0 0 10px rgba(126,65,43,.06),0 0 0 18px rgba(255,241,194,.14);
+  pointer-events:none;z-index:1;
+}
+.cake{
+  z-index:3;width:285px;height:158px;border:9px solid #8e512f;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,237,159,.95) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 50% 12%,rgba(120,65,35,.25) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 82% 25%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 88% 55%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 72% 82%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 28% 82%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 12% 55%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(ellipse at 18% 25%,rgba(120,65,35,.22) 0 3px,transparent 4px),
+    radial-gradient(circle at 50% 50%,transparent 0 42%,rgba(126,67,33,.18) 43% 45%,transparent 46% 58%,rgba(126,67,33,.14) 59% 61%,transparent 62%),
+    linear-gradient(155deg,#ffe08a 0%,#e8aa4f 42%,#c77a35 78%,#9d592e 100%);
+  background-size:auto,34px 27px,34px 27px,34px 27px,34px 27px,34px 27px,34px 27px,34px 27px,auto,auto;
+  box-shadow:
+    inset 0 7px 0 rgba(255,244,180,.72),
+    inset 0 -12px 0 rgba(113,57,29,.22),
+    inset 10px 0 0 rgba(255,224,133,.22),
+    0 14px 0 #8f5038,
+    0 24px 28px rgba(80,35,34,.28),
+    0 0 0 5px rgba(255,220,127,.28);
+  filter:saturate(1.08);
+}
+.cake:before{
+  content:"";position:absolute;left:50%;top:50%;width:94px;height:94px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,#f8d879 0 35%,#d8943f 36% 39%,#f5c765 40% 56%,#b96b2d 57% 60%,transparent 61%),
+    repeating-conic-gradient(from 0deg,rgba(126,66,31,.45) 0 7deg,transparent 7deg 15deg);
+  border:5px solid #a45e2c;
+  box-shadow:inset 0 4px 0 rgba(255,240,169,.7),0 2px 5px rgba(105,48,25,.28);
+  z-index:1;pointer-events:none;
+}
+.cake:after{
+  content:"✦  ❀  ✦  ❀  ✦";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);width:230px;text-align:center;
+  color:rgba(118,61,30,.38);font-size:13px;letter-spacing:8px;
+  z-index:2;pointer-events:none;white-space:nowrap;
+}
+.cake-word{
+  top:48%;z-index:6;width:66px;height:66px;display:grid;place-items:center;
+  border-radius:50%;font-size:25px;color:#7c431f;
+  background:radial-gradient(circle,#ffe9a1 0 54%,#d99a43 55% 62%,#a85f2b 63% 67%,#f2c665 68%);
+  box-shadow:0 3px 7px rgba(91,43,27,.24),inset 0 2px 0 rgba(255,247,190,.7);
+  text-shadow:0 1px rgba(255,242,173,.75);
+}
+.cake-word:before,.cake-word:after{content:"";position:absolute;left:50%;top:50%;border:1px solid rgba(119,61,30,.32);transform:translate(-50%,-50%) rotate(45deg);pointer-events:none}
+.cake-word:before{width:82px;height:82px}.cake-word:after{width:72px;height:72px;border-radius:50%}
+@media(max-width:700px){
+  .cake-table:after{width:280px;height:175px}
+  .cake{width:245px;height:138px}
+  .cake:before{width:80px;height:80px}
+  .cake:after{font-size:10px;letter-spacing:5px;width:195px}
+  .cake-word{width:58px;height:58px;font-size:22px}
+  .cake-word:before{width:72px;height:72px}.cake-word:after{width:63px;height:63px}
+}
+
 
 /* ============ GARDEN ONLY ============ */
 .garden{
@@ -783,6 +991,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 
 <nav class="topbar">
   <button class="active" data-room="home" onclick="go('home')">首页 · Home</button>
+  <button data-room="meaning" onclick="go('meaning')">中秋 · Meaning</button>
   <button data-room="quotes" onclick="go('quotes')">月签 · Quotes</button>
   <button data-room="quiz" onclick="go('quiz')">中文 · Quiz</button>
   <button data-room="kitchen" onclick="go('kitchen')">厨房 · Kitchen</button>
@@ -807,6 +1016,38 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="home-actions">
       <button class="btn gold" onclick="go('quotes')">抽一张签 · Draw a Quote</button>
       <button class="btn white" onclick="go('kitchen')">去厨房 · Kitchen</button>
+    </div>
+  </div>
+</section>
+
+<section class="room meaning" id="meaning">
+  <div class="room-inner">
+    <div class="title">
+      <div class="kicker" style="color:#ffe39a">中秋节 · Mid-Autumn Festival</div>
+      <h2 style="color:#fff1c9">中秋的意义 · The Meaning</h2>
+      <p>Kenapa Moon Festival dirayakan? Halaman ini mengenalkan makna di balik bulan purnama, mooncake, dan kebersamaan.</p>
+    </div>
+
+    <div class="meaning-grid">
+      <article class="meaning-card">
+        <h3>月圆 · Bulan Purnama</h3>
+        <p>Mid-Autumn Festival atau 中秋节 (Zhōngqiū Jié) identik dengan bulan purnama. Bulan yang terlihat bulat dan terang menjadi simbol keutuhan, harapan, dan momen untuk berkumpul dengan orang-orang yang kita sayangi.</p>
+        <p>Karena itu, festival ini juga sering dikaitkan dengan <b>团圆 · tuányuán</b>, yaitu reuni atau berkumpul kembali bersama keluarga dan orang terdekat.</p>
+        <div class="meaning-points">
+          <div class="meaning-point"><b>🥮 Mooncake · 月饼</b><span>Melambangkan kebersamaan dan bentuk bulan purnama. Mooncake sering dibagikan kepada keluarga, teman, dan orang yang dihargai.</span></div>
+          <div class="meaning-point"><b>🏮 Lantern · 花灯</b><span>Lantern membuat suasana malam festival semakin meriah dan dapat menjadi bagian dari tradisi, harapan, serta perayaan bersama.</span></div>
+          <div class="meaning-point"><b>👥 团圆 · Tuányuán</b><span>Inti suasananya adalah berkumpul, berbagi makanan, berbincang, dan menikmati waktu bersama.</span></div>
+          <div class="meaning-point"><b>🌕 月亮 · Yuèliang</b><span>Bulan menjadi pusat visual festival dan mengingatkan bahwa orang-orang yang berjauhan tetap dapat melihat bulan yang sama.</span></div>
+        </div>
+      </article>
+
+      <aside class="meaning-moon">
+        <div class="meaning-moon-disc">月</div>
+        <div class="meaning-caption">
+          <strong>月圆人团圆</strong>
+          <small>Yuè yuán rén tuán yuán · When the moon is full, people gather together.</small>
+        </div><div class="meaning-ribbon">中秋 · UNITY · TOGETHER</div>
+      </aside>
     </div>
   </div>
 </section>
@@ -1111,6 +1352,12 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 <footer>
   <div class="hanzi">中秋快乐 · 月圆人团圆</div>
   <p>Happy Mid-Autumn Festival · 月饼 · 花灯 · 团圆 🌸🥮🏮</p>
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px;align-items:center">
+    <span style="font-weight:900">Instagram ·</span>
+    <a href="https://www.instagram.com/smabpkpenaburholis/" target="_blank" rel="noopener" style="color:#ffe9cf;text-decoration:none;font-weight:900">@smabpkpenaburholis</a>
+    <span style="opacity:.55">·</span>
+    <a href="https://www.instagram.com/holismandarinnetwork/" target="_blank" rel="noopener" style="color:#ffe9cf;text-decoration:none;font-weight:900">@holismandarinnetwork</a>
+  </div>
 </footer>
 
 <!-- Lantern launch cutscene -->
