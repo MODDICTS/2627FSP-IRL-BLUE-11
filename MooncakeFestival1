@@ -283,13 +283,6 @@ button{cursor:pointer}
   font-weight:900;
 }
 @media(max-width:520px){.finish-content p{font-size:16px}.finish-content .finish-title{font-size:20px}}
-.finish-content .btn{display:block;width:min(235px,86%);max-width:100%;margin:12px auto 0;padding:10px 12px;font-size:clamp(11px,2.5vw,14px);line-height:1.15;white-space:normal;box-sizing:border-box}
-.mixing-track{position:absolute;z-index:22;left:50%;top:58%;transform:translate(-50%,-50%);width:min(360px,78%);height:34px;background:rgba(255,246,226,.88);border:3px solid #b97962;border-radius:999px;box-shadow:0 6px 14px rgba(75,35,43,.22),inset 0 2px 5px rgba(100,45,50,.12)}
-.mixing-gold{position:absolute;left:40%;top:2px;width:20%;height:24px;border-radius:999px;background:#f5c84b;box-shadow:0 0 0 3px rgba(255,232,130,.75),0 0 15px rgba(245,200,75,.65)}
-.mixing-marker{position:absolute;left:0;top:3px;width:27px;height:22px;border-radius:50%;background:#8c2939;border:3px solid #fff0d8;box-shadow:0 3px 7px rgba(58,25,36,.35);transform:translateX(-50%)}
-.mixing-marker.perfect{background:#4e8b55;box-shadow:0 0 15px rgba(255,220,100,.95)}
-.mixing-status{position:absolute;z-index:23;left:50%;top:67%;transform:translateX(-50%);font-weight:900;font-size:13px;color:#7b3441;background:rgba(255,247,226,.9);padding:5px 12px;border-radius:999px;white-space:nowrap}
-@media(max-width:520px){.mixing-track{height:30px;width:78%}.mixing-gold{height:20px}.mixing-marker{height:18px;width:23px}.mixing-status{font-size:11px;top:68%}}
 
 .finish-content{font-size:100px}.finish-content h3{font:400 50px "Ma Shan Zheng";color:var(--red);margin:0}
 
@@ -1114,26 +1107,26 @@ function setCookStage(stage){
   const hint=document.getElementById("cookHint"),inst=document.getElementById("cookInstruction");
   cookCounter.textContent="";
   if(stage===2){
-    inst.textContent="Aduk: tunggu indikator bergerak dari kiri ke kanan, lalu klik ADUK saat indikator masuk ke GOLD LINE!";
-    hint.innerHTML="<strong>💡 搅拌 · Mixing</strong>Indikator akan bolak-balik dari samping ke samping. Klik hanya ketika titik berada di garis GOLD. Kamu butuh 7 hit yang tepat.";
-    cookVisual.innerHTML='<div class="bowl-mix" style="position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-size:105px;z-index:10">🥣</div><div class="mixing-bits"></div>';
-    const track=document.createElement("div");track.className="mixing-track";track.innerHTML='<div class="mixing-gold"></div><div class="mixing-marker" id="mixMarker"></div>';cookBox.appendChild(track);
-    const status=document.createElement("div");status.className="mixing-status";status.textContent="0 / 7 PERFECT";cookBox.appendChild(status);
-    let perfect=0,markerX=0,direction=1,running=true,lastFrame=performance.now();
-    const marker=document.getElementById("mixMarker"),goldStart=40,goldEnd=60;
-    function animateMix(now){if(!running)return;const dt=Math.min(32,now-lastFrame);lastFrame=now;markerX+=direction*(dt*0.075);if(markerX>=100){markerX=100;direction=-1}if(markerX<=0){markerX=0;direction=1}marker.style.left=markerX+"%";requestAnimationFrame(animateMix)}
-    requestAnimationFrame(animateMix);
-    const b=document.createElement("button");b.className="btn gold";b.textContent="搅拌 · ADUK";b.setAttribute("aria-label","Klik saat indikator berada di garis gold");
+    inst.textContent="Aduk mengikuti arah panah. Klik tombol hanya saat indikator berada di zona GOLD!";
+    hint.innerHTML="<strong>💡 小提示 · Hint</strong>Tekan <b>搅拌</b> ketika timing tepat. Semakin banyak perfect, adonan semakin bagus.";
+    let turns=0,perfect=0;
+    const meter=document.createElement("div");
+    meter.style="position:absolute;z-index:20;left:50%;top:55%;transform:translate(-50%,-50%);width:300px;height:25px;background:#efd6ca;border-radius:99px;overflow:hidden";
+    meter.innerHTML='<span style="display:block;height:100%;width:28%;margin-left:60%;background:#ffd85c;border-radius:99px"></span>';
+    cookBox.appendChild(meter);
+    const b=document.createElement("button");b.className="btn gold";b.textContent="搅拌 · ADUK";
     b.onclick=()=>{
-      const inside=markerX>=goldStart&&markerX<=goldEnd;
-      if(!inside){toast("Belum tepat! Tunggu titik masuk GOLD LINE 🟡");return}
-      perfect++;marker.classList.add("perfect");status.textContent=`${perfect} / 7 PERFECT`;toast(`Perfect! ${perfect}/7 ⭐`);
-      const bits=cookVisual.querySelector(".mixing-bits");if(bits){const s=document.createElement("span");s.className="bit";s.textContent=perfect%2?"✨":"✦";s.style.left=(42+Math.random()*16)+"%";s.style.top=(31+Math.random()*18)+"%";bits.appendChild(s);setTimeout(()=>s.remove(),900)}
-      setTimeout(()=>marker.classList.remove("perfect"),180);
-      if(perfect>=7){running=false;track.remove();status.remove();cookVisual.innerHTML='<div class="bowl-mix" style="position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:120px;z-index:10;animation:spinbit 1.1s ease-out 1">🥣</div><div class="bit" style="left:46%;top:35%">✨</div><div class="bit" style="left:55%;top:43%">✦</div>';toast("Adonan tercampur sempurna! ✨");setTimeout(()=>setCookStage(3),650)}
+      turns++;
+      const x=Math.random()*100;
+      if(x>65){perfect++;toast("Perfect timing! ⭐")}else toast("Aduk! Teruskan.");
+      cookVisual.innerHTML+=`<span class="bit" style="left:${45+Math.random()*12}%;top:${38+Math.random()*22}%">✨</span>`;
+      if(turns>=7){
+        meter.remove();cookVisual.innerHTML="";
+        toast(`Adonan siap! ${perfect} perfect timing ✨`);setCookStage(3);
+      }
     };
     cookActions.appendChild(b);
-  }  }else if(stage===3){
+  }else if(stage===3){
     inst.textContent="Uleni adonan: klik saat lingkaran kecil berada tepat di dalam lingkaran besar.";
     hint.innerHTML="<strong>💡 揉面 · Knead</strong>Target bergerak. 6 hit tepat untuk membuat dough elastis.";
     cookVisual.innerHTML='<div class="knead-dough">🟤</div>';
