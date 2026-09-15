@@ -54,7 +54,7 @@ button{cursor:pointer}
   min-height:calc(100vh - 62px);position:relative;overflow:hidden;padding:105px 5vw 65px;
   isolation:isolate;
 }
-.room.active-room{display:block}.home.active-room{display:grid}
+.room.active-room{display:block}.home.active-room{display:grid}\nbody:not(.home-view) footer{display:none}.home-view footer{display:block}
 .room-inner{width:min(1120px,100%);margin:auto;position:relative;z-index:3}
 /* Each room is an independent screen: only the selected section exists visually. */
 .room:not(.active-room){display:none!important}
@@ -317,6 +317,7 @@ button{cursor:pointer}
 .claw-hand{font-size:44px;line-height:.5;filter:drop-shadow(0 5px 3px #37243a)}
 .claw.grabbing{animation:grab .8s ease}
 @keyframes grab{50%{transform:translate(-50%,12px) scale(1.05)}}
+.machine-screen{touch-action:none}
 .claw-controls{display:flex;justify-content:center;gap:8px;margin-top:14px}
 .key{width:47px;height:44px;border:0;border-radius:11px;background:#fff0d8;color:#8c303a;font-weight:900;box-shadow:0 4px #b06057}
 .key:active{transform:translateY(3px);box-shadow:none}
@@ -415,7 +416,7 @@ button{cursor:pointer}
 }
 .cinematic-lantern{position:absolute;bottom:17%;left:50%;width:90px;height:120px;border-radius:45%;border:5px solid #edc65c;display:grid;place-items:center;font:400 32px "Ma Shan Zheng";color:#ffe99d;box-shadow:0 0 60px #ffcf5e;animation:launchUp 5s 1.5s ease-in forwards}
 @keyframes launchUp{to{bottom:110%;transform:scale(.5)}}
-.hanfu-girl{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:210px;height:330px}
+.hanfu-person{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:210px;height:330px}
 .girl-hair{position:absolute;left:66px;top:0;width:80px;height:115px;background:#241b2c;border-radius:50% 50% 35% 35%}
 .girl-face{position:absolute;left:76px;top:35px;width:60px;height:75px;background:#f5c0a7;border-radius:48%}
 .girl-hair:after{content:"🌸";position:absolute;right:-10px;top:18px;font-size:30px}
@@ -743,7 +744,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
           <div class="prize-row">🍡 Dango <b>团子</b></div>
         </div>
         <h3 style="margin-top:20px">我的装饰</h3>
-        <div class="inventory" id="inventory">🌸 ⭐ 🌙</div>
+        <div class="inventory" id="inventory">— belum ada hadiah —</div>
         <p style="font-size:12px">2 coins = 1 play. Hadiah yang tertangkap bisa dipakai di Decor.</p>
       </aside>
     </div>
@@ -800,7 +801,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#ffd970">Old China · 夜花园</div>
       <h2>花灯夜游 · Lantern Night</h2>
-      <p>Desain lantern-mu sendiri, pilih warna dan tulisan Mandarin, lalu lihat cutscene saat seorang gadis berhanfu menerbangkannya.</p>
+      <p>Desain lantern-mu sendiri, pilih warna dan tulisan Mandarin, lalu lihat cutscene saat seorang tokoh berhanfu menerbangkannya.</p>
     </div>
 
     <div class="lantern-maker">
@@ -858,7 +859,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <p id="cutsceneWish">愿你的愿望成真 ✨</p>
   </div>
 
-  <div class="hanfu-girl">
+  <div class="hanfu-person">
     <div class="girl-hair"></div>
     <div class="girl-face"></div>
     <div class="girl-body"></div>
@@ -899,11 +900,13 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
    ========================================================= */
 
 function go(id){
-  document.querySelectorAll(".room").forEach(r=>r.classList.remove("active-room"));
   const room=document.getElementById(id);
-  if(room) room.classList.add("active-room");
+  if(!room || !room.classList.contains("room")) return;
+  document.querySelectorAll(".room").forEach(r=>r.classList.remove("active-room"));
+  room.classList.add("active-room");
+  document.body.classList.toggle("home-view", id==="home");
   document.querySelectorAll(".topbar button[data-room]").forEach(b=>b.classList.toggle("active",b.dataset.room===id));
-  window.scrollTo({top:0,behavior:"instant"});
+  window.scrollTo({top:0,behavior:"auto"});
 }
 
 /* ---------------- QUOTES ---------------- */
@@ -980,8 +983,6 @@ function nextQuiz(){if(!answered)return;qi=(qi+1)%quizData.length;renderQuiz()}
 /* ---------------- KITCHEN: ONE BOX, MULTIPLE GAMEPLAY STAGES ---------------- */
 const needed=["flour","sugar","oil","egg","lotus"];
 let chosen=new Set(),cookStage=1,cookProgress=0,dragItem=null;
-const dropTarget=document.getElementById("dropTarget");
-
 document.querySelectorAll(".ingredient").forEach(el=>{
   el.addEventListener("dragstart",e=>{
     if(el.classList.contains("used"))return;
@@ -1086,7 +1087,18 @@ function setCookStage(stage){
       taps++;
       if(taps<3)toast(taps===2?"Sekarang HOLD!":"TAP lagi!");
       else{toast("Motif mooncake tercetak jelas! ✨");setCookStage(7)}
-      if(taps===2){b.textContent="HOLD";b.onmousedown=()=>{taps=3;setTimeout(()=>setCookStage(7),450)}}
+      if(taps===2){
+        b.textContent="HOLD";
+        let holdTimer=null;
+        const startHold=()=>{
+          if(holdTimer!==null)return;
+          holdTimer=setTimeout(()=>{taps=3;holdTimer=null;setCookStage(7)},450);
+        };
+        const cancelHold=()=>{if(holdTimer!==null){clearTimeout(holdTimer);holdTimer=null;}};
+        b.addEventListener("pointerdown",startHold);
+        b.addEventListener("pointerup",cancelHold);
+        b.addEventListener("pointerleave",cancelHold);
+      }
     };
     cookActions.appendChild(b);
   }else if(stage===7){
@@ -1238,10 +1250,14 @@ function closeCutscene(){cutscene.classList.remove("show")}
 /* ---------------- START ---------------- */
 const globalCoins=document.getElementById("globalCoins"),quizCoins=document.getElementById("quizCoins"),
 clawCoins=document.getElementById("clawCoins"),inventoryEl=document.getElementById("inventory"),
-options=document.getElementById("options"),qNumber=document.getElementById("qNumber"),
+quoteCard=document.getElementById("quoteCard"),quoteHanzi=document.getElementById("quoteHanzi"),
+quotePinyin=document.getElementById("quotePinyin"),quoteMeaning=document.getElementById("quoteMeaning"),
+quoteExplain=document.getElementById("quoteExplain"),options=document.getElementById("options"),
+qNumber=document.getElementById("qNumber"),
 qHanzi=document.getElementById("qHanzi"),qPinyin=document.getElementById("qPinyin"),
 quizProgress=document.getElementById("quizProgress"),quizScore=document.getElementById("quizScore"),
 quizMessage=document.getElementById("quizMessage"),nextBtn=document.getElementById("nextBtn"),
+cookBox=document.getElementById("cookBox"),dropTarget=document.getElementById("dropTarget"),
 cookActions=document.getElementById("cookActions"),cookVisual=document.getElementById("cookVisual"),
 cookCounter=document.getElementById("cookCounter"),cookHint=document.getElementById("cookHint"),
 cookInstruction=document.getElementById("cookInstruction"),machineScreen=document.getElementById("machineScreen"),
@@ -1249,7 +1265,7 @@ clawRig=document.getElementById("clawRig"),cakeTable=document.getElementById("ca
 lanternPreview=document.getElementById("lanternPreview"),lanternColor=document.getElementById("lanternColor"),
 lanternText=document.getElementById("lanternText"),cutscene=document.getElementById("cutscene"),
 cinematicLantern=document.getElementById("cinematicLantern"),cutsceneWish=document.getElementById("cutsceneWish"),
-wishText=document.getElementById("wishText"),ovenLight=document.getElementById("ovenLight");
+wishText=document.getElementById("wishText");
 
 updateCoins();renderQuiz();resetKitchen();spawnBalls();renderInventory();refreshDecorUnlocks();updateLantern();go("home");
 </script>
