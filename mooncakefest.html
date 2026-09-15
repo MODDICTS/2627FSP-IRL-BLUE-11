@@ -577,6 +577,98 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 .person-b .pf-body{background:linear-gradient(90deg,#58728a,#9eb4bc,#58728a)}.person-c .pf-body{background:linear-gradient(90deg,#b57a38,#e1a55b,#b57a38)}.person-d .pf-body{background:linear-gradient(90deg,#6f526f,#b887a0,#6f526f)}
 .serve-caption{position:absolute;left:50%;top:8%;transform:translateX(-50%);width:min(700px,90%);text-align:center;color:#fff2d1;z-index:10;text-shadow:0 3px 10px #17132a}.serve-caption h2{font:400 clamp(44px,7vw,75px) "Ma Shan Zheng";margin:2px 0}.serve-caption p{font-size:16px;line-height:1.6}.serve-kicker{letter-spacing:3px;font-size:11px;font-weight:900;color:#ffd66f}
 
+
+/* =========================================================
+   FESTIVAL DETAIL PASS — richer scenery without changing gameplay
+   ========================================================= */
+.knead-action{position:static!important;transform:none!important;left:auto!important;top:auto!important;margin:0;}
+
+/* A busier, more recognisable traditional kitchen */
+.kitchen{position:relative;overflow:hidden;background:
+  linear-gradient(180deg,#d98b68 0 9%,#f4c29f 9% 11%,transparent 11%),
+  repeating-linear-gradient(90deg,rgba(124,67,58,.08) 0 2px,transparent 2px 82px),
+  linear-gradient(180deg,#f6d2ad 0,#fff0d5 58%,#d78b68 58%,#b96755 100%);}
+.kitchen:before{content:"";position:absolute;left:0;right:0;top:0;height:190px;pointer-events:none;opacity:.9;
+  background:
+    linear-gradient(90deg,transparent 0 7%,rgba(101,53,47,.18) 7% 7.5%,transparent 7.5% 31%,rgba(101,53,47,.18) 31% 31.5%,transparent 31.5% 68%,rgba(101,53,47,.18) 68% 68.5%,transparent 68.5% 93%,rgba(101,53,47,.18) 93% 93.5%,transparent 93.5%),
+    linear-gradient(#c97859 0 12px,transparent 12px),
+    linear-gradient(90deg,#b76552 0 18%,#e2a07d 18% 31%,#b76552 31% 33%,#e2a07d 33% 47%,#b76552 47% 49%,#e2a07d 49% 63%,#b76552 63% 65%,#e2a07d 65% 82%,#b76552 82% 84%,#e2a07d 84% 100%);}
+.kitchen:after{content:"🥢     🫖        🥣       🫙       🥢        🍵";position:absolute;top:42px;left:3%;right:3%;height:80px;text-align:center;font-size:34px;letter-spacing:8px;opacity:.9;filter:drop-shadow(0 5px 3px rgba(70,35,30,.2));pointer-events:none;}
+.cook-scene{background:
+  radial-gradient(circle at 82% 22%,rgba(255,239,183,.7) 0 4px,transparent 5px),
+  radial-gradient(circle at 13% 27%,rgba(255,239,183,.55) 0 3px,transparent 4px),
+  linear-gradient(90deg,transparent 0 72%,rgba(91,50,47,.13) 72% 73%,transparent 73%),
+  linear-gradient(180deg,#b9d89b 0 18%,#d88e68 18% 21%,#f5dfc0 21% 73%,#c8795b 73% 100%);}
+.cook-window{height:142px;background:linear-gradient(180deg,#78aa86,#b9dca7);border:8px solid #9b574d;border-top-width:12px;box-shadow:inset 0 0 0 7px rgba(255,240,205,.45),0 8px 0 rgba(102,51,45,.18);}
+.cook-window:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48.5%,rgba(100,75,61,.38) 49% 51%,transparent 51.5%),linear-gradient(180deg,transparent 48%,rgba(100,75,61,.32) 49% 51%,transparent 52%);}
+.cook-window:after{content:"☁︎   🌿   ☼   🌿   ☁︎";inset:25px 10px;text-shadow:0 3px 5px rgba(60,90,60,.18);}
+.counter{height:82px;bottom:8%;background:linear-gradient(#d88c68,#bd684f);border-top:8px solid #f0bc83;box-shadow:0 13px #944b46,0 -4px 0 rgba(255,236,196,.6);}
+.counter:before{content:"";position:absolute;left:7%;right:7%;top:-62px;height:48px;border-radius:12px 12px 5px 5px;background:linear-gradient(90deg,#9f5a4e 0 28%,#e2a26f 28% 31%,#9f5a4e 31% 65%,#e2a26f 65% 68%,#9f5a4e 68%);opacity:.75;}
+
+/* Richer lantern-launch cutscene */
+.cutscene{background:linear-gradient(180deg,#090d27 0%,#172a4a 46%,#5c3655 78%,#a65b54 100%);}
+.cutscene-sky{background:
+  radial-gradient(circle at 77% 18%,#fff2b0 0 3px,transparent 4px),
+  radial-gradient(circle at 21% 24%,#fff2b0 0 2px,transparent 3px),
+  radial-gradient(circle at 47% 10%,#fff2b0 0 2px,transparent 3px),
+  radial-gradient(circle at 63% 31%,#fff2b0 0 2px,transparent 3px),
+  radial-gradient(circle at 9% 53%,#fff2b0 0 2px,transparent 3px),
+  radial-gradient(circle at 91% 62%,#fff2b0 0 2px,transparent 3px),
+  radial-gradient(circle at 76% 11%,rgba(255,235,160,.25) 0 70px,transparent 72px),
+  linear-gradient(180deg,transparent 0 63%,rgba(31,25,52,.4) 63% 67%,transparent 67%);}
+.cutscene-sky:before{content:"";position:absolute;right:10%;top:8%;width:150px;height:150px;border-radius:50%;background:#fff0ad;box-shadow:0 0 75px rgba(255,222,128,.45);opacity:.9;}
+.cutscene-sky:after{content:"⌁  ⌁  ⌁  ⌁  ⌁";position:absolute;left:0;right:0;bottom:17%;font-size:70px;letter-spacing:25px;color:rgba(29,31,53,.72);text-align:center;transform:scaleY(.55);}
+.hanfu-girl{width:250px;height:370px;filter:drop-shadow(0 18px 14px rgba(10,10,30,.38));}
+.girl-hair{left:79px;top:0;width:94px;height:130px;background:linear-gradient(90deg,#171323,#342039,#171323);border-radius:52% 52% 35% 35%;box-shadow:inset 12px 0 rgba(255,255,255,.06);}
+.girl-hair:before{content:"";position:absolute;left:-18px;top:35px;width:28px;height:74px;border-radius:50%;background:#21172a;transform:rotate(18deg);}
+.girl-hair:after{content:"✿";right:-18px;top:8px;font-size:34px;color:#ffd76d;text-shadow:0 0 12px #ffbd55;}
+.girl-face{left:91px;top:43px;width:70px;height:82px;background:linear-gradient(135deg,#ffd0b2,#eaa889);border-radius:48% 48% 44% 44%;box-shadow:inset -8px -5px rgba(168,91,82,.12);}
+.girl-face:before{content:"•   •";position:absolute;left:17px;top:28px;font-size:11px;letter-spacing:8px;color:#432a38;}
+.girl-face:after{content:"⌣";position:absolute;left:29px;top:42px;font-size:15px;color:#9d4f58;}
+.girl-body{left:25px;top:116px;width:200px;height:254px;background:linear-gradient(90deg,#742b48 0%,#d75d72 35%,#f0a06f 50%,#d75d72 65%,#742b48 100%);clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);box-shadow:inset 0 0 0 3px rgba(255,223,159,.28);}
+.girl-body:before{content:"◇";position:absolute;left:91px;top:25px;color:#ffe39a;font-size:25px;}
+.girl-body:after{content:"〰 〰 〰";position:absolute;left:48px;bottom:38px;color:#ffd97a;font-size:18px;letter-spacing:4px;}
+.girl-sleeve{top:132px;width:88px;height:158px;background:linear-gradient(135deg,#d85c73,#9c3454);border:2px solid rgba(255,220,157,.3);box-shadow:0 12px 16px rgba(20,10,30,.2);}
+.girl-sleeve.left{left:-5px}.girl-sleeve.right{right:-5px;}
+.girl-hand{left:108px;top:174px;font-size:38px;filter:drop-shadow(0 3px 2px rgba(60,25,35,.2));}
+.cinematic-lantern{width:98px;height:130px;background:linear-gradient(90deg,rgba(119,24,44,.92),rgba(225,91,82,.98),rgba(119,24,44,.92));border-width:6px;box-shadow:0 0 20px #ffd15b,0 0 75px rgba(255,194,77,.55);}
+.cinematic-lantern:before{content:"";position:absolute;top:-24px;width:35px;height:25px;border:3px solid #e7c15e;border-bottom:0;border-radius:50% 50% 0 0;}
+
+/* Richer serving cutscene: moonlit courtyard, architecture and table details */
+.serve-scene{background:linear-gradient(180deg,#090d27,#24345a 55%,#6d3f4e 100%);}
+.serve-sky{background:
+ radial-gradient(circle at 12% 18%,#fff0a6 0 2px,transparent 3px),radial-gradient(circle at 28% 11%,#ffe890 0 2px,transparent 3px),radial-gradient(circle at 67% 19%,#fff0a6 0 2px,transparent 3px),radial-gradient(circle at 86% 12%,#ffe890 0 2px,transparent 3px),
+ linear-gradient(180deg,#11183a 0,#28385b 58%,#6e4650 100%);}
+.serve-sky:before{content:"⌒⌒⌒⌒⌒⌒⌒⌒⌒";position:absolute;left:0;right:0;bottom:38%;font-size:110px;letter-spacing:14px;color:rgba(20,27,49,.55);transform:scaleY(.42);}
+.serve-sky:after{content:"🌿     🏮        🌿     🏮        🌿";position:absolute;left:0;right:0;top:34%;font-size:34px;text-align:center;opacity:.7;}
+.serve-moon{width:180px;height:180px;background:radial-gradient(circle at 35% 35%,#fff5c5,#ffe18a 70%,#efc65c);box-shadow:0 0 100px rgba(255,224,137,.65);}
+.family-table{height:49%;width:min(980px,96%);background:linear-gradient(180deg,#c37a52,#87443f);border-top-width:14px;box-shadow:0 -28px 55px rgba(12,11,28,.4);}
+.family-table:before{content:"🥟   🍵   🥮   🍵   🥟";position:absolute;left:0;right:0;top:22%;text-align:center;font-size:28px;letter-spacing:10px;filter:drop-shadow(0 5px 3px rgba(50,20,20,.25));}
+.family-table:after{content:"";position:absolute;left:8%;right:8%;bottom:8%;height:18px;border-radius:50%;background:rgba(72,34,38,.28);box-shadow:0 12px 0 rgba(72,34,38,.18);}
+.table-cloth{top:17%;height:18%;background:repeating-linear-gradient(90deg,#fff0d4 0 18px,#f4d5b6 18px 21px);box-shadow:inset 0 0 0 6px rgba(180,108,73,.2);}
+.served-cake{font-size:96px;filter:drop-shadow(0 15px 7px rgba(30,15,25,.42));}
+.family-person{width:165px;height:245px;filter:drop-shadow(0 12px 9px rgba(30,15,25,.3));}
+.pf-head{width:76px;height:86px;box-shadow:inset -8px -7px rgba(130,70,70,.1);}
+.pf-hair{width:90px;height:70px;box-shadow:inset 10px 0 rgba(255,255,255,.04);}
+.pf-hair:after{content:"✦";position:absolute;right:-12px;top:12px;color:#ffd76d;font-size:20px;}
+.pf-body{width:122px;height:170px;top:74px;border:2px solid rgba(255,224,161,.28);}
+.pf-arm{width:72px;height:24px;box-shadow:0 4px 5px rgba(40,20,30,.18);}
+.serve-caption{background:linear-gradient(180deg,rgba(8,12,33,.25),transparent);padding:15px 20px 8px;border-radius:24px;}
+
+/* Make decoration-heavy areas feel intentionally filled, not empty */
+.decor-area:before,.lantern-maker:before{content:"✦   ❀   ✧   ☾   ✦   ❀   ✧";position:absolute;left:3%;right:3%;top:4%;text-align:center;font-size:25px;color:rgba(173,72,72,.22);letter-spacing:14px;pointer-events:none;}
+.decor-area{position:relative;overflow:hidden;}
+.lantern-maker{position:relative;overflow:hidden;}
+
+@media(max-width:620px){
+  .knead-action{width:auto;max-width:88%;}
+  .cook-window{height:112px}.kitchen:after{font-size:24px;letter-spacing:2px;}
+  .hanfu-girl{transform:translateX(-50%) scale(.78);transform-origin:bottom center;}
+  .girl-hair:after{font-size:28px}.cutscene-caption h2{font-size:40px;}
+  .family-person{transform:scale(.68);}
+  .serve-moon{width:120px;height:120px;}
+}
+
 /* ============ responsive ============ */
 @media(max-width:900px){
   .room{padding-left:3vw;padding-right:3vw}.arcade-panel{order:2}.machine{order:1}
@@ -584,10 +676,25 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 
   .topbar{justify-content:flex-start;overflow-x:auto;padding-left:8px}.coin-pill{display:none}
   .quote-layout,.kitchen-room,.arcade,.decor-layout{grid-template-columns:1fr}
-  .kitchen-side{display:none}
-  .cook-box{height:650px}
+  /* Keep ingredients visible on tablets/phones */
+  .kitchen-side{display:block;order:1;padding:14px;margin-bottom:4px}
+  .kitchen-side h3{font-size:28px}
+  .kitchen-side > p{margin:4px 0 10px}
+  .kitchen-side .ingredient{display:flex;min-width:0;margin:0;padding:9px 8px;gap:8px}
+  .kitchen-side .ingredient span{font-size:25px;flex:0 0 auto}
+  .kitchen-side .ingredient b{font-size:12px;line-height:1.15}
+  .kitchen-side .ingredient small{font-size:9px}
+  .cook-box{height:650px;order:2}
 }
 @media(max-width:620px){
+  .kitchen-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px;border-radius:20px}
+  .kitchen-side h3{grid-column:1/-1;margin:0;font-size:27px}
+  .kitchen-side > p{grid-column:1/-1;font-size:10px !important;margin:0 0 3px}
+  .kitchen-side .ingredient{margin:0;min-height:58px;border-radius:12px;padding:7px 6px}
+  .kitchen-side .ingredient span{font-size:23px}
+  .kitchen-side .ingredient b{font-size:11px}
+  .kitchen-side .ingredient small{font-size:8px}
+  .cook-box{margin-top:0}
   .topbar{height:58px}.topbar button{padding:8px 11px;font-size:11px}.room{padding-top:80px}
   .machine{padding:13px;border-width:7px}.machine-screen{height:430px}.claw-rope{height:110px}.claw-controls{gap:6px}.key{width:43px;height:42px}
   .cake-table{height:520px}.cake-plate{width:300px}.cake{width:220px}.decor-grid{gap:6px}.decor-btn{min-height:66px;padding:8px}
@@ -771,7 +878,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
         <div class="bowl" id="ingredientTarget"></div>
         <div class="drop-target" id="dropTarget">DROP INGREDIENTS HERE<br>放这里</div>
         <div class="counter"></div>
-        <div class="cook-counter" id="cookCounter">0 / 5 ingredients</div>
+        <div class="cook-counter" id="cookCounter">0 / 6 ingredients</div>
 
         <div class="cook-actions" id="cookActions"></div>
         <div id="cookVisual"></div>
@@ -1149,7 +1256,7 @@ function setCookStage(stage){
     cookVisual.innerHTML='<div class="knead-dough">🟤</div>';
     let hits=0;
     const target=document.createElement("button");target.className="btn red";target.textContent="揉面 · KNEAD";
-    target.style.position="absolute";target.style.left="50%";target.style.top="61%";
+    target.style.position="absolute";target.style.left="50%";target.style.top="47%";
     target.style.transform="translateX(-50%)";
     target.onclick=()=>{
       hits++;target.style.left=(38+Math.random()*24)+"%";
