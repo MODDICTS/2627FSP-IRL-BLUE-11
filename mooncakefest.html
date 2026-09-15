@@ -1228,6 +1228,8 @@ function addIngredient(ing){
 function setCookStage(stage){
   cookStage=stage;dropTarget.style.display="none";cookVisual.innerHTML="";
   cookActions.innerHTML="";
+  // Remove temporary controls from the previous gameplay stage.
+  document.querySelectorAll(".mixing-track,.mixing-status,.knead-target").forEach(el=>el.remove());
   const hint=document.getElementById("cookHint"),inst=document.getElementById("cookInstruction");
   cookCounter.textContent="";
   if(stage===2){
@@ -1255,15 +1257,17 @@ function setCookStage(stage){
     hint.innerHTML="<strong>💡 揉面 · Knead</strong>Target bergerak. 6 hit tepat untuk membuat dough elastis.";
     cookVisual.innerHTML='<div class="knead-dough">🟤</div>';
     let hits=0;
-    const target=document.createElement("button");target.className="btn red";target.textContent="揉面 · KNEAD";
-    target.style.position="absolute";target.style.left="50%";target.style.top="35%";
-    target.style.transform="translateX(-50%)";
+    const target=document.createElement("button");target.className="btn red knead-target";target.textContent="揉面 · KNEAD";
+    // The KNEAD button belongs to the same cooking box as the other gameplay,
+    // but sits higher so it is clearly visible instead of being trapped at the bottom action bar.
+    target.style.position="absolute";target.style.left="50%";target.style.top="45%";
+    target.style.transform="translate(-50%,-50%)";target.style.zIndex="30";
     target.onclick=()=>{
       hits++;target.style.left=(38+Math.random()*24)+"%";
       toast(`Knead ${hits}/6 💪`);
       if(hits>=6)setCookStage(4);
     };
-    cookActions.appendChild(target);
+    cookBox.appendChild(target);
   }else if(stage===4){
     inst.textContent="Roll dough bolak-balik. Jaga bar tetap di area hijau!";
     hint.innerHTML="<strong>💡 擀面皮 · Roll</strong>Tekan ROLL berulang. Panjang dough bertambah kalau timing bagus.";
