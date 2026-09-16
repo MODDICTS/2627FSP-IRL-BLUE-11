@@ -600,14 +600,32 @@ button{cursor:pointer}
   content:"";position:absolute;left:-25px;top:-58px;border-left:120px solid transparent;
   border-right:120px solid transparent;border-bottom:70px solid #7c3442
 }
-.old-house:after{content:"🏮  🏮";position:absolute;left:35px;top:40px;font-size:30px}
+.old-house:after{
+  content:"";position:absolute;left:38px;top:36px;width:42px;height:58px;
+  border:3px solid #e2b451;border-radius:48% 48% 42% 42%;
+  background:linear-gradient(90deg,#74283a,#d44c51 48%,#74283a);
+  box-shadow:0 0 18px rgba(255,207,94,.45), inset 0 0 0 7px rgba(255,218,117,.12);
+}
+.old-house:before{content:"";position:absolute;left:-25px;top:-58px;border-left:120px solid transparent;border-right:120px solid transparent;border-bottom:70px solid #7c3442}
+.old-house{overflow:visible}
+.old-house .garden-house-lantern{}
 .garden-title{position:relative;z-index:5}
 .lantern-cables{position:absolute;top:85px;left:0;right:0;display:flex;justify-content:space-around;z-index:4}
 .hanging-lantern{
-  width:45px;height:64px;background:#cf3b47;border:3px solid #e5b74e;border-radius:45%;
-  box-shadow:0 0 25px rgba(255,205,86,.5);animation:sway 3s ease-in-out infinite
+  position:relative;width:66px;height:92px;background:linear-gradient(90deg,#6f2337,#c83e4b 22%,#e05a55 50%,#c83e4b 78%,#6f2337);
+  border:4px solid #e5b74e;border-radius:47% 47% 42% 42%;
+  box-shadow:0 0 30px rgba(255,205,86,.55),inset 0 0 0 7px rgba(255,226,143,.08);
+  animation:sway 3s ease-in-out infinite;
 }
-.hanging-lantern:after{content:"";position:absolute;width:3px;height:28px;background:#e5b74e;top:61px;left:50%}
+.hanging-lantern:before{
+  content:"中秋";position:absolute;inset:13px 9px;border:2px solid rgba(255,224,145,.65);
+  border-radius:45%;display:grid;place-items:center;color:#ffe8a6;font:400 18px "Ma Shan Zheng";
+  text-shadow:0 2px 4px rgba(60,15,25,.55);
+}
+.hanging-lantern:after{
+  content:"";position:absolute;width:4px;height:34px;background:#e5b74e;top:88px;left:50%;
+  box-shadow:0 34px 0 0 #c93d4a;
+}
 @keyframes sway{50%{transform:rotate(5deg) translateY(4px)}}
 .flower-bed{position:absolute;z-index:3;bottom:15%;right:7%;font-size:30px;letter-spacing:8px}
 .lantern-maker{
@@ -1574,19 +1592,19 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 
 
 
-/* ============ FESTIVAL HANGING LANTERNS — ALL PAGES EXCEPT KITCHEN & GARDEN ============ */
+/* ============ FESTIVAL HANGING LANTERNS — FESTIVAL PAGES ============ */
 .page-hanging-lanterns{
   position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;
 }
 .page-hanging-lantern{
-  position:absolute;top:20px;width:132px;height:190px;
+  position:absolute;top:18px;width:158px;height:220px;
   display:flex;flex-direction:column;align-items:center;
   transform-origin:50% 0;
   animation:pageLanternSwing 4.8s ease-in-out infinite;
   filter:drop-shadow(0 12px 18px rgba(65,20,32,.18));
 }
-.page-hanging-lantern.left{left:1.4%}
-.page-hanging-lantern.right{right:1.4%;animation-delay:-2.1s}
+.page-hanging-lantern.left{left:0.2%}
+.page-hanging-lantern.right{right:0.2%;animation-delay:-2.1s}
 .page-hanging-lantern .wire{
   width:3px;height:44px;background:linear-gradient(#8e6532,#e6bc62,#8e6532);
   box-shadow:0 0 0 1px rgba(76,35,29,.12);
@@ -1603,7 +1621,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 .page-hanging-lantern .cap:before{width:12px;height:7px;top:-8px}
 .page-hanging-lantern .cap:after{width:8px;height:5px;bottom:-7px}
 .page-hanging-lantern .body{
-  position:relative;width:104px;height:104px;margin-top:-1px;
+  position:relative;width:122px;height:122px;margin-top:-1px;
   border:5px solid #e3b74e;border-radius:48% 48% 42% 42%;
   background:
     radial-gradient(circle at 50% 48%,rgba(255,232,151,.92) 0 3px,transparent 4px),
@@ -1638,8 +1656,8 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
   clip-path:polygon(0 0,100% 0,82% 100%,65% 75%,50% 100%,34% 75%,18% 100%);
 }
 .page-hanging-lantern .ornament{
-  position:absolute;top:65px;left:50%;transform:translateX(-50%);
-  width:124px;height:124px;border:1px solid rgba(226,181,73,.28);border-radius:50%;
+  position:absolute;top:70px;left:50%;transform:translateX(-50%);
+  width:142px;height:142px;border:1px solid rgba(226,181,73,.28);border-radius:50%;
 }
 .page-hanging-lantern .ornament:before,
 .page-hanging-lantern .ornament:after{
@@ -1655,22 +1673,25 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 /* Keep every lantern safely outside the reading/gameplay column. */
 .page-hanging-lanterns + .room-inner{z-index:3}
 @media(max-width:900px){
-  .page-hanging-lantern{width:98px;height:155px;top:22px}
-  .page-hanging-lantern.left{left:-4px}.page-hanging-lantern.right{right:-4px}
+  .page-hanging-lantern{width:112px;height:175px;top:18px}
+  .page-hanging-lantern.left{left:-20px}.page-hanging-lantern.right{right:-20px}
   .page-hanging-lantern .wire{height:34px}
   .page-hanging-lantern .cap{width:54px;height:14px;border-width:2px}
-  .page-hanging-lantern .body{width:78px;height:82px;border-width:4px}
+  .page-hanging-lantern .body{width:88px;height:92px;border-width:4px}
   .page-hanging-lantern .body:before{font-size:16px;inset:9px 7px;border-width:1px}
   .page-hanging-lantern .body:after{left:10px;right:10px;top:16px;bottom:16px}
   .page-hanging-lantern .bottom-cap{width:50px;height:13px;border-width:2px}
   .page-hanging-lantern .tassel{height:28px}
   .page-hanging-lantern .tassel:before{top:17px;width:24px;height:34px}
-  .page-hanging-lantern .ornament{width:94px;height:94px;top:53px}
+  .page-hanging-lantern .ornament{width:106px;height:106px;top:58px}
 }
 @media(max-width:560px){
-  .page-hanging-lantern{top:18px;opacity:.96}
-  .page-hanging-lantern.left{left:-25px}.page-hanging-lantern.right{right:-25px}
-  .page-hanging-lantern .body{width:70px;height:75px}
+  .page-hanging-lantern{top:14px;width:92px;height:150px;opacity:.98}
+  .page-hanging-lantern.left{left:-38px}.page-hanging-lantern.right{right:-38px}
+  .page-hanging-lantern .body{width:76px;height:80px}
+  .page-hanging-lantern .cap{width:50px}
+  .page-hanging-lantern .bottom-cap{width:48px}
+  .page-hanging-lantern .ornament{display:none}
   .page-hanging-lantern .ornament{display:none}
 }
 
@@ -2533,9 +2554,9 @@ wishText=document.getElementById("wishText"),ovenLight=document.getElementById("
 
 
 /* Add the same large, gently moving hanging-lantern treatment to every page
-   except Garden and Kitchen. These are decorative only and never intercept clicks. */
+   except Garden. These are decorative only and never intercept clicks. */
 function addPageHangingLanterns(){
-  document.querySelectorAll('.room:not(#garden):not(#kitchen)').forEach(room=>{
+  document.querySelectorAll('.room:not(#garden)').forEach(room=>{
     if(room.querySelector('.page-hanging-lanterns')) return;
     const wrap=document.createElement('div');
     wrap.className='page-hanging-lanterns';
