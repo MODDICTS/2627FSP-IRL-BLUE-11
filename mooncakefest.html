@@ -329,7 +329,7 @@ button{cursor:pointer}
 .ingredient{
   display:flex;gap:10px;align-items:center;padding:10px;margin:8px 0;
   border:2px solid #efd0bd;background:#fff5e4;border-radius:14px;cursor:grab;
-  user-select:none;transition:.15s;touch-action:none;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:.15s
 }
 .ingredient:hover{transform:translateX(3px);border-color:var(--pink)}
 .ingredient.dragging{opacity:.45;transform:scale(.95)}
@@ -980,759 +980,171 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
 }
 
 
-/* ============ QUOTES FINAL VISUAL FIX ============ */
-/* Keep the title safely above the card and make the tarot flip fully isolated. */
-.quotes .room-inner{position:relative;z-index:5}
-.quotes .title{position:relative;z-index:10}
-.quotes .quote-layout{
-  position:relative;
-  z-index:4;
-  align-items:center;
-  gap:24px;
+/* ============ TAROT CARD VISUAL FIX — DETAILED ORNATE VERSION ============ */
+/* Only the visual styling is changed. Existing card content and .75s flip remain intact. */
+.tarot-stage{
+  min-height:570px;display:grid;place-items:center;padding:28px;
 }
-.quotes .quote-info{
-  position:relative;
-  z-index:6;
+.card{
+  width:278px;height:402px;perspective:1100px;cursor:pointer;flex:0 0 auto;
+  filter:drop-shadow(0 22px 30px rgba(81,31,43,.18));
 }
-.quotes .tarot-stage{
-  position:relative;
-  z-index:5;
-  min-height:570px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  isolation:isolate;
-  overflow:hidden;
+.card-inner{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  transition:.75s;
 }
-.quotes .card{
-  position:relative;
-  z-index:7;
-  width:310px;
-  height:470px;
-  flex:0 0 310px;
-  perspective:1200px;
-  -webkit-perspective:1200px;
-  cursor:pointer;
-}
-.quotes .card-inner{
-  width:100%;
-  height:100%;
-  position:relative;
-  transform-style:preserve-3d;
-  -webkit-transform-style:preserve-3d;
-  transition:transform .75s ease;
-  -webkit-transition:-webkit-transform .75s ease;
-}
-.quotes .card.flipped .card-inner{
-  transform:rotateY(180deg);
-  -webkit-transform:rotateY(180deg);
-}
-.quotes .face{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  box-sizing:border-box;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  border-radius:25px;
-  border:7px double var(--gold);
-  overflow:hidden;
-}
-.quotes .front{
-  transform:rotateY(0deg);
-  -webkit-transform:rotateY(0deg);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  text-align:center;
-}
-.quotes .front .big{
-  font-size:82px;
-  line-height:1;
-}
-.quotes .front h3{
-  margin:0;
-  line-height:1.1;
-}
-.quotes .front small{
-  display:block;
-  line-height:1.3;
-}
-.quotes .back{
-  transform:rotateY(180deg);
-  -webkit-transform:rotateY(180deg);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  gap:0;
-  padding:28px;
-}
-.quotes .back .hanzi,
-.quotes .back .pinyin,
-.quotes .back .meaning,
-.quotes .back .explain{
-  position:relative;
-  z-index:2;
-  max-width:100%;
-}
-.quotes .back .hanzi{line-height:1.25}
-.quotes .back .meaning{line-height:1.45}
-.quotes .back .explain{line-height:1.55}
-
-/* Smaller but still detailed card on phones; no title/card collision. */
-@media(max-width:900px){
-  .quotes .quote-layout{
-    grid-template-columns:1fr;
-    max-width:620px;
-    margin:auto;
-  }
-  .quotes .quote-info{order:1}
-  .quotes .tarot-stage{
-    order:2;
-    min-height:510px;
-  }
-}
-@media(max-width:520px){
-  .quotes .title{margin-bottom:18px}
-  .quotes .tarot-stage{
-    min-height:470px;
-    padding:10px 0 18px;
-  }
-  .quotes .card{
-    width:min(285px,82vw);
-    height:min(432px,124vw);
-    flex-basis:auto;
-  }
-  .quotes .face{
-    border-width:6px;
-    border-radius:22px;
-    padding:18px;
-  }
-  .quotes .front .big{font-size:72px}
-  .quotes .front h3{font-size:39px}
-  .quotes .back .hanzi{font-size:40px}
-  .quotes .back .meaning{font-size:17px}
-  .quotes .back .explain{font-size:12px}
+.card.flipped .card-inner{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;
+  border-radius:21px;border:5px double var(--gold);
+  box-shadow:
+    0 18px 38px rgba(81,31,43,.28),
+    inset 0 0 0 2px rgba(255,248,220,.72),
+    inset 0 0 0 8px rgba(130,39,53,.18);
+  padding:16px;
 }
 
-
-/* ============ QUOTES NEAT / NO-OVERLAP REDESIGN ============ */
-/* The card stays completely inside its cream panel; no 3D face can leak
-   outside the card or collide with the title. */
-.quotes .title{
-  margin:0 auto 24px;
-  padding:0 12px;
-  position:relative;
-  z-index:20;
+/* FRONT — rich traditional Mid-Autumn / tarot ornament */
+.front{
+  position:absolute;color:#fff1d0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;text-align:center;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,225,151,.16) 0 2px,transparent 3px),
+    radial-gradient(circle at 12% 12%,#f6c968 0 1px,transparent 2px),
+    radial-gradient(circle at 88% 12%,#f6c968 0 1px,transparent 2px),
+    radial-gradient(circle at 12% 88%,#f6c968 0 1px,transparent 2px),
+    radial-gradient(circle at 88% 88%,#f6c968 0 1px,transparent 2px),
+    radial-gradient(circle at 25% 34%,rgba(255,222,157,.20) 0 2px,transparent 3px),
+    radial-gradient(circle at 76% 66%,rgba(255,222,157,.18) 0 2px,transparent 3px),
+    repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,221,146,.045) 0deg 5deg,transparent 5deg 15deg),
+    radial-gradient(ellipse at 50% 48%,rgba(255,225,151,.09) 0 31%,transparent 32%),
+    linear-gradient(145deg,#65182f 0%,#8e2440 38%,#ad324c 62%,#64172f 100%);
 }
-.quotes .title h2{
-  margin:2px 0 8px;
-  line-height:1.05;
-  color:#8c2939;
-  text-shadow:none;
+.front:before{
+  content:"";position:absolute;inset:10px;border:1px solid rgba(255,231,171,.62);
+  border-radius:15px;pointer-events:none;
+  box-shadow:
+    0 0 0 5px rgba(255,239,194,.08),
+    0 0 0 9px rgba(255,211,122,.13),
+    inset 0 0 22px rgba(24,5,20,.30);
+  background:
+    linear-gradient(45deg,transparent 47%,rgba(255,220,140,.17) 48%,transparent 50%) 0 0/22px 22px,
+    linear-gradient(-45deg,transparent 47%,rgba(255,220,140,.12) 48%,transparent 50%) 0 0/22px 22px;
 }
-.quotes .title p{
-  margin:0;
-  color:#744d55;
+.front:after{
+  content:"";position:absolute;width:318px;height:318px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,228,163,.30);
+  box-shadow:
+    0 0 0 10px rgba(255,228,163,.045),
+    0 0 0 21px rgba(255,228,163,.07),
+    0 0 0 35px rgba(255,228,163,.025),
+    inset 0 0 35px rgba(35,5,24,.12);
+  background:
+    repeating-conic-gradient(from 15deg,transparent 0deg 12deg,rgba(255,224,151,.055) 12deg 13deg,transparent 13deg 25deg);
 }
-
-.quotes .quote-layout{
-  display:grid;
-  grid-template-columns:minmax(270px,310px) minmax(0,1fr);
-  gap:24px;
-  align-items:stretch;
-  width:min(940px,100%);
-  margin:0 auto;
-}
-.quotes .quote-info,
-.quotes .tarot-stage{
-  box-sizing:border-box;
-  background:rgba(255,250,240,.92);
-  border:2px solid rgba(255,255,255,.95);
-  border-radius:26px;
-  box-shadow:0 16px 38px rgba(91,43,45,.14);
-}
-.quotes .quote-info{
-  padding:24px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  min-height:520px;
-}
-.quotes .quote-info h3{
-  margin:0 0 10px;
-  line-height:1.15;
-}
-.quotes .quote-info p{
-  margin:0 0 18px;
-  line-height:1.65;
-}
-.quotes .chips{
-  gap:7px;
-}
-.quotes .chip{
-  padding:7px 10px;
-  line-height:1.15;
-}
-.quotes .quote-info br{
-  display:none;
-}
-.quotes .quote-info .btn{
-  align-self:flex-start;
-  margin-top:20px;
-}
-
-.quotes .tarot-stage{
-  min-height:520px;
-  padding:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  position:relative;
-  isolation:isolate;
-}
-.quotes .tarot-stage:before{
-  content:"";
-  position:absolute;
-  width:420px;
-  height:420px;
-  border:1px solid rgba(197,139,36,.18);
+.front>*{position:relative;z-index:3}
+.front .big{
+  width:100px;height:100px;display:grid;place-items:center;
+  margin:0 0 3px;font-size:70px;line-height:1;
   border-radius:50%;
-  box-shadow:0 0 0 18px rgba(197,139,36,.035),
-             0 0 0 38px rgba(197,139,36,.025);
-  pointer-events:none;
-}
-.quotes .card{
-  position:relative;
-  z-index:3;
-  width:min(310px,100%);
-  height:450px;
-  flex:0 1 310px;
-  perspective:none;
-  -webkit-perspective:none;
-  cursor:pointer;
-}
-.quotes .card-inner{
-  position:relative;
-  width:100%;
-  height:100%;
-  transform:none !important;
-  -webkit-transform:none !important;
-  transform-style:flat;
-  -webkit-transform-style:flat;
-}
-.quotes .face{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  box-sizing:border-box;
-  border-radius:24px;
-  border:5px solid #d4a33b;
-  box-shadow:0 18px 34px rgba(74,30,39,.22);
-  overflow:hidden;
-  backface-visibility:visible;
-  -webkit-backface-visibility:visible;
-  transition:opacity .35s ease, transform .35s ease;
-}
-.quotes .front{
-  opacity:1;
-  transform:none !important;
-  -webkit-transform:none !important;
-  pointer-events:auto;
+  color:#ffe9a5;
+  text-shadow:0 3px 0 #7b2337,0 6px 14px rgba(32,5,20,.42);
   background:
-    radial-gradient(circle at 18% 18%,rgba(255,239,194,.75) 0 2px,transparent 3px),
-    radial-gradient(circle at 82% 23%,rgba(255,239,194,.55) 0 2px,transparent 3px),
-    radial-gradient(circle at 75% 82%,rgba(255,239,194,.5) 0 2px,transparent 3px),
-    linear-gradient(145deg,#7e2438 0%,#9f3048 48%,#6d2035 100%);
-  color:#fff4d5;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  text-align:center;
-  padding:30px;
+    radial-gradient(circle,#fff0ad 0 34%,#d89a42 35% 39%,transparent 40%),
+    repeating-conic-gradient(from 0deg,rgba(255,227,151,.28) 0deg 5deg,transparent 5deg 15deg);
+  border:2px solid rgba(255,225,147,.68);
+  box-shadow:
+    0 0 0 5px rgba(255,225,147,.09),
+    0 0 0 8px rgba(255,225,147,.32),
+    inset 0 0 12px rgba(91,20,38,.28);
 }
-.quotes .front:before{
-  content:"";
-  position:absolute;
-  inset:14px;
-  border:1px solid rgba(255,230,170,.58);
-  border-radius:16px;
-  pointer-events:none;
+.front h3{
+  font:400 39px/1 "Ma Shan Zheng";margin:0;
+  color:#fff0bd;letter-spacing:1px;
+  text-shadow:0 2px 0 #752039,0 4px 8px rgba(43,5,24,.28);
 }
-.quotes .front:after{
-  content:"✦  ·  ✦";
-  position:absolute;
-  bottom:18px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#f5d27c;
-  font-size:13px;
-  letter-spacing:5px;
+.front small{
+  letter-spacing:2.5px;font-size:9px;color:#ffe6a1;
+  padding:5px 10px;border-top:1px solid rgba(255,226,154,.48);
+  border-bottom:1px solid rgba(255,226,154,.48);
 }
-.quotes .front .big{
-  font-size:76px;
-  line-height:1;
-  margin:0;
-  position:relative;
-  z-index:1;
-  text-shadow:0 4px 12px rgba(0,0,0,.2);
-}
-.quotes .front h3{
-  margin:0;
-  line-height:1.1;
-  position:relative;
-  z-index:1;
-}
-.quotes .front small{
-  letter-spacing:2px;
-  font-size:10px;
-  opacity:.82;
-  position:relative;
-  z-index:1;
-}
-.quotes .front div:last-child{
-  position:relative;
-  z-index:1;
-  color:#ffe4a4;
+.front div:last-child{
+  font-size:12px;letter-spacing:2px;margin-top:3px;color:#ffe6a1;
 }
 
-.quotes .back{
-  opacity:0;
-  transform:scale(.97) !important;
-  -webkit-transform:scale(.97) !important;
-  pointer-events:none;
+/* BACK — ornate cream/gold fortune-card face */
+.back{
+  transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:24px 20px;color:var(--ink);
   background:
-    radial-gradient(circle at 85% 15%,rgba(213,164,65,.13) 0 2px,transparent 3px),
-    radial-gradient(circle at 12% 86%,rgba(140,41,57,.08) 0 2px,transparent 3px),
-    linear-gradient(145deg,#fffaf0 0%,#fff0dd 100%);
-  color:#6d3944;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:34px 30px;
-  gap:0;
+    radial-gradient(circle at 50% 50%,rgba(201,111,78,.08) 0 1px,transparent 2px),
+    radial-gradient(circle at 20% 18%,rgba(173,72,72,.10) 0 2px,transparent 3px),
+    radial-gradient(circle at 80% 82%,rgba(173,72,72,.10) 0 2px,transparent 3px),
+    repeating-linear-gradient(45deg,rgba(176,108,58,.025) 0 2px,transparent 2px 8px),
+    linear-gradient(145deg,#fffaf0 0%,#ffeede 50%,#fff8e8 100%);
 }
-.quotes .back:before{
-  content:"";
-  position:absolute;
-  inset:15px;
-  border:1px solid rgba(196,145,45,.48);
-  border-radius:15px;
+.back:before{
+  content:"";position:absolute;inset:11px;border:1px solid rgba(180,119,45,.58);border-radius:15px;
   pointer-events:none;
-}
-.quotes .back .hanzi,
-.quotes .back .pinyin,
-.quotes .back .meaning,
-.quotes .back .explain{
-  position:relative;
-  z-index:1;
-  max-width:100%;
-}
-.quotes .back .hanzi{
-  margin:0;
-  color:#8c2939;
-  font-size:44px;
-  line-height:1.25;
-}
-.quotes .back .pinyin{
-  margin:10px 0 18px;
-  line-height:1.3;
-}
-.quotes .back .meaning{
-  margin:0;
-  color:#5d303a;
-  font-size:17px;
-  line-height:1.55;
-}
-.quotes .back .explain{
-  margin:14px 0 0;
-  color:#87616a;
-  font-size:12px;
-  line-height:1.6;
-  max-width:235px;
-}
-.quotes .card.flipped .front{
-  opacity:0;
-  transform:scale(.97) !important;
-  -webkit-transform:scale(.97) !important;
-  pointer-events:none;
-}
-.quotes .card.flipped .back{
-  opacity:1;
-  transform:scale(1) !important;
-  -webkit-transform:scale(1) !important;
-  pointer-events:auto;
-}
-
-@media(max-width:900px){
-  .quotes .quote-layout{
-    grid-template-columns:1fr;
-    width:min(620px,100%);
-  }
-  .quotes .quote-info{
-    min-height:0;
-  }
-  .quotes .tarot-stage{
-    min-height:510px;
-  }
-}
-@media(max-width:520px){
-  .quotes .title{
-    margin-bottom:18px;
-  }
-  .quotes .title h2{
-    font-size:46px;
-  }
-  .quotes .quote-info{
-    padding:20px;
-    border-radius:22px;
-  }
-  .quotes .tarot-stage{
-    min-height:480px;
-    padding:20px 14px;
-    border-radius:22px;
-  }
-  .quotes .card{
-    width:min(285px,82vw);
-    height:min(425px,122vw);
-  }
-  .quotes .face{
-    border-width:4px;
-    border-radius:21px;
-  }
-  .quotes .front{
-    padding:25px;
-  }
-  .quotes .front .big{
-    font-size:68px;
-  }
-  .quotes .back{
-    padding:30px 24px;
-  }
-  .quotes .back .hanzi{
-    font-size:38px;
-  }
-  .quotes .back .meaning{
-    font-size:16px;
-  }
-}
-
-</style>
-
-<style>
-/* ===== QUOTES: CLEAN CENTERED TAROT CARD ===== */
-.quotes .tarot-stage{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  min-height:540px !important;
-  padding:32px !important;
-  box-sizing:border-box;
-  overflow:hidden !important;
-}
-.quotes .card{
-  position:relative !important;
-  width:min(330px,100%) !important;
-  height:480px !important;
-  flex:0 1 330px !important;
-  padding:10px !important;
-  box-sizing:border-box !important;
-  border:2px solid #c99b3b !important;
-  border-radius:30px !important;
-  background:#fff5df !important;
-  box-shadow:0 18px 38px rgba(73,28,40,.20) !important;
-  overflow:hidden !important;
-  perspective:none !important;
-  -webkit-perspective:none !important;
-}
-.quotes .card-inner{
-  position:relative !important;
-  width:100% !important;
-  height:100% !important;
-  transform:none !important;
-  -webkit-transform:none !important;
-  transform-style:flat !important;
-  -webkit-transform-style:flat !important;
-}
-.quotes .face{
-  position:absolute !important;
-  inset:10px !important;
-  width:auto !important;
-  height:auto !important;
-  box-sizing:border-box !important;
-  border:1px solid rgba(246,214,143,.75) !important;
-  border-radius:20px !important;
-  overflow:hidden !important;
-  box-shadow:none !important;
-  padding:30px 26px !important;
-  transition:opacity .28s ease, transform .28s ease !important;
-}
-/* One consistent dark-red surface: no clashing pale back face. */
-.quotes .front,
-.quotes .back{
+  box-shadow:
+    0 0 0 5px rgba(210,157,67,.10),
+    0 0 0 8px rgba(210,157,67,.25),
+    inset 0 0 18px rgba(172,83,64,.08);
   background:
-    radial-gradient(circle at 16% 14%,rgba(246,213,142,.12) 0 2px,transparent 3px),
-    radial-gradient(circle at 84% 84%,rgba(246,213,142,.10) 0 2px,transparent 3px),
-    linear-gradient(150deg,#671c31 0%,#7e2339 52%,#5d192d 100%) !important;
-  color:#fff0cc !important;
-  text-align:center !important;
+    radial-gradient(circle at 0 0,transparent 0 12px,rgba(174,105,47,.32) 13px 14px,transparent 15px),
+    radial-gradient(circle at 100% 0,transparent 0 12px,rgba(174,105,47,.32) 13px 14px,transparent 15px),
+    radial-gradient(circle at 0 100%,transparent 0 12px,rgba(174,105,47,.32) 13px 14px,transparent 15px),
+    radial-gradient(circle at 100% 100%,transparent 0 12px,rgba(174,105,47,.32) 13px 14px,transparent 15px);
 }
-.quotes .front{
-  opacity:1;
-  transform:none !important;
-  -webkit-transform:none !important;
-  pointer-events:auto;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:14px !important;
-}
-.quotes .front:before,
-.quotes .back:before{
-  content:"";
-  position:absolute !important;
-  inset:12px !important;
-  border:1px solid rgba(246,214,143,.28) !important;
-  border-radius:14px !important;
-  pointer-events:none !important;
-}
-.quotes .front:after{
-  content:"✦  中秋  ✦" !important;
-  position:absolute !important;
-  left:50% !important;
-  bottom:20px !important;
-  transform:translateX(-50%) !important;
-  color:#e8c875 !important;
-  font-size:11px !important;
-  letter-spacing:3px !important;
-  white-space:nowrap !important;
-}
-.quotes .front .big{
-  position:relative !important;
-  z-index:2 !important;
-  margin:0 !important;
-  color:#ffe2a0 !important;
-  font-size:72px !important;
-  line-height:1 !important;
-  text-shadow:0 3px 10px rgba(0,0,0,.18) !important;
-}
-.quotes .front h3{
-  position:relative !important;
-  z-index:2 !important;
-  margin:0 !important;
-  color:#fff0cc !important;
-  font-size:42px !important;
-  line-height:1.12 !important;
-}
-.quotes .front small{
-  position:relative !important;
-  z-index:2 !important;
-  color:#e7c997 !important;
-  font-size:10px !important;
-  letter-spacing:2px !important;
-}
-.quotes .front div:last-child{
-  position:relative !important;
-  z-index:2 !important;
-  color:#e8c875 !important;
-}
-.quotes .back{
-  opacity:0;
-  transform:scale(.985) !important;
-  -webkit-transform:scale(.985) !important;
+.back:after{
+  content:"☾  ✦  ❀  ✦  ☽";position:absolute;left:50%;top:19px;
+  transform:translateX(-50%);width:85%;text-align:center;
+  color:rgba(155,72,55,.48);font-size:12px;letter-spacing:5px;
   pointer-events:none;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:0 !important;
-  padding:34px 30px !important;
+  text-shadow:0 0 0 rgba(155,72,55,.2);
 }
-.quotes .back .hanzi,
-.quotes .back .pinyin,
-.quotes .back .meaning,
-.quotes .back .explain{
-  position:relative !important;
-  z-index:2 !important;
-  width:100% !important;
-  max-width:235px !important;
-  box-sizing:border-box !important;
-  text-align:center !important;
+.back>*{position:relative;z-index:3}
+.back .hanzi{
+  font:400 42px/1.2 "Ma Shan Zheng","Noto Sans SC";
+  color:var(--red);margin:5px 0 0;
+  padding:12px 18px 9px;min-width:78%;
+  border-top:2px solid rgba(177,101,53,.30);
+  border-bottom:2px solid rgba(177,101,53,.30);
+  text-shadow:0 1px rgba(255,240,190,.7);
 }
-.quotes .back .hanzi{
-  margin:0 !important;
-  color:#ffe1a0 !important;
-  font-size:42px !important;
-  line-height:1.28 !important;
+.back .pinyin{
+  font-style:italic;color:#93636c;margin:9px 0 7px;font-size:13px;
+  letter-spacing:.4px;
 }
-.quotes .back .pinyin{
-  margin:10px 0 20px !important;
-  color:#e7c997 !important;
-  font-size:13px !important;
-  line-height:1.45 !important;
+.back .meaning{
+  position:static;min-height:0;overflow:visible;padding:0;margin:0;
+  width:100%;background:transparent;color:var(--ink);
+  font-size:17px;font-weight:900;line-height:1.35;
+  padding:9px 13px;border-radius:12px;
+  background:rgba(255,247,221,.48);
+  border:1px solid rgba(189,126,61,.18);
 }
-.quotes .back .meaning{
-  margin:0 !important;
-  color:#fff3d8 !important;
-  font-size:16px !important;
-  line-height:1.58 !important;
+.back .explain{
+  font-size:11.5px;line-height:1.5;margin-top:9px;max-width:92%;
+  color:#6f4d55;
 }
-.quotes .back .explain{
-  margin:15px 0 0 !important;
-  color:#d9bda0 !important;
-  font-size:11.5px !important;
-  line-height:1.58 !important;
+@media(max-width:620px){
+  .tarot-stage{min-height:500px;padding:20px 10px}
+  .card{width:min(258px,78vw);height:min(374px,112vw)}
+  .face{border-radius:19px;padding:14px}
+  .front:before{inset:9px}
+  .front:after{width:285px;height:285px}
+  .front .big{width:82px;height:82px;font-size:61px}
+  .front h3{font-size:35px}
+  .front small{font-size:8px}
+  .back{padding:20px 16px}
+  .back .hanzi{font-size:38px}
+  .back .meaning{font-size:15px;padding:8px 10px}
+  .back .explain{font-size:10.5px}
 }
-.quotes .card.flipped .front{
-  opacity:0 !important;
-  transform:scale(.985) !important;
-  -webkit-transform:scale(.985) !important;
-  pointer-events:none !important;
-}
-.quotes .card.flipped .back{
-  opacity:1 !important;
-  transform:scale(1) !important;
-  -webkit-transform:scale(1) !important;
-  pointer-events:auto !important;
-}
-@media(max-width:900px){
-  .quotes .tarot-stage{min-height:510px !important;padding:26px !important}
-}
-@media(max-width:520px){
-  .quotes .tarot-stage{min-height:475px !important;padding:18px 10px !important}
-  .quotes .card{
-    width:min(294px,88vw) !important;
-    height:min(430px,128vw) !important;
-    padding:8px !important;
-    border-radius:25px !important;
-  }
-  .quotes .face{
-    inset:8px !important;
-    border-radius:17px !important;
-    padding:25px 20px !important;
-  }
-  .quotes .front .big{font-size:64px !important}
-  .quotes .front h3{font-size:37px !important}
-  .quotes .back .hanzi{font-size:36px !important}
-  .quotes .back .meaning{font-size:15px !important;max-width:220px !important}
-  .quotes .back .explain{font-size:11px !important;max-width:205px !important}
-}
-</style>
 
-
-<style>
-/* ===== QUOTES FINAL: FULLY CONTAINED, BALANCED, ROUNDED ===== */
-.quotes .title{margin-bottom:32px!important;position:relative;z-index:20}
-.quotes .quote-layout{gap:30px!important;align-items:center!important}
-.quotes .tarot-stage{
-  box-sizing:border-box!important;
-  min-height:570px!important;
-  height:auto!important;
-  padding:34px!important;
-  overflow:hidden!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border-radius:30px!important;
-}
-.quotes .card{
-  box-sizing:border-box!important;
-  width:330px!important;
-  height:478px!important;
-  max-width:100%!important;
-  padding:12px!important;
-  margin:auto!important;
-  border-radius:32px!important;
-  overflow:hidden!important;
-  background:linear-gradient(145deg,#fff9ea,#f5e5cd)!important;
-  border:2px solid #c89a3d!important;
-  box-shadow:0 20px 42px rgba(72,28,39,.20),inset 0 0 0 1px rgba(255,255,255,.8)!important;
-}
-.quotes .card-inner{
-  width:100%!important;height:100%!important;
-  position:relative!important;
-  transform:none!important;-webkit-transform:none!important;
-  transform-style:flat!important;-webkit-transform-style:flat!important;
-}
-.quotes .face{
-  inset:0!important;
-  width:100%!important;height:100%!important;
-  box-sizing:border-box!important;
-  border:0!important;
-  border-radius:21px!important;
-  overflow:hidden!important;
-  padding:30px!important;
-  backface-visibility:visible!important;-webkit-backface-visibility:visible!important;
-}
-.quotes .front,.quotes .back{
-  background:linear-gradient(155deg,#681d33 0%,#7d263d 52%,#5c192d 100%)!important;
-  color:#fff2d0!important;
-}
-.quotes .front:before,.quotes .back:before{
-  inset:12px!important;border:1px solid rgba(248,218,151,.32)!important;border-radius:15px!important;
-}
-.quotes .front:after{
-  bottom:20px!important;color:#f0ce80!important;
-}
-.quotes .front{
-  gap:13px!important;
-  justify-content:center!important;
-  padding:32px!important;
-}
-.quotes .front .big{font-size:70px!important;line-height:1!important;margin:0!important;color:#ffe3a4!important}
-.quotes .front h3{font-size:40px!important;line-height:1.15!important;margin:0!important;color:#fff1cf!important}
-.quotes .front small{font-size:10px!important;letter-spacing:2px!important;color:#e9cfa1!important}
-.quotes .front div:last-child{color:#edc873!important}
-.quotes .back{
-  padding:34px 30px!important;
-  justify-content:center!important;
-  align-items:center!important;
-  text-align:center!important;
-}
-.quotes .back .hanzi,.quotes .back .pinyin,.quotes .back .meaning,.quotes .back .explain{
-  width:100%!important;box-sizing:border-box!important;text-align:center!important;
-}
-.quotes .back .hanzi{
-  margin:0!important;max-width:245px!important;font-size:41px!important;line-height:1.28!important;color:#ffe4a7!important;
-}
-.quotes .back .pinyin{
-  margin:10px auto 19px!important;max-width:250px!important;font-size:13px!important;line-height:1.45!important;color:#e8c994!important;
-}
-.quotes .back .meaning{
-  margin:0 auto!important;max-width:235px!important;font-size:16px!important;line-height:1.58!important;color:#fff4dc!important;
-}
-.quotes .back .explain{
-  margin:15px auto 0!important;max-width:220px!important;font-size:11.5px!important;line-height:1.58!important;color:#dfc4aa!important;
-}
-.quotes .card.flipped .front{opacity:0!important;transform:scale(.985)!important;pointer-events:none!important}
-.quotes .card.flipped .back{opacity:1!important;transform:scale(1)!important;pointer-events:auto!important}
-@media(max-width:900px){
-  .quotes .title{margin-bottom:26px!important}
-  .quotes .tarot-stage{min-height:535px!important;padding:28px!important}
-}
-@media(max-width:520px){
-  .quotes .title{margin-bottom:22px!important}
-  .quotes .tarot-stage{min-height:500px!important;padding:20px 14px!important}
-  .quotes .card{width:min(300px,88vw)!important;height:min(438px,128vw)!important;padding:9px!important;border-radius:27px!important}
-  .quotes .face{border-radius:18px!important;padding:25px 20px!important}
-  .quotes .front .big{font-size:62px!important}
-  .quotes .front h3{font-size:36px!important}
-  .quotes .back .hanzi{font-size:35px!important}
-  .quotes .back .meaning{font-size:15px!important;max-width:220px!important}
-  .quotes .back .explain{font-size:11px!important;max-width:205px!important}
-}
 </style>
 </head>
 
@@ -1891,7 +1303,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
     <div class="title">
       <div class="kicker" style="color:#a73b47">Cooking Game</div>
       <h2 style="color:#8c2939">厨房 · Mooncake Kitchen</h2>
-      <p>Let's make a mooncake!</b> Drag, timing, tombol, dan mini challenge akan berubah setiap tahap.</p>
+      <p>Let's make a mooncake!</b>. Drag, timing, tombol, dan mini challenge akan berubah setiap tahap.</p>
     </div>
 
     <div class="kitchen-room">
@@ -2087,7 +1499,7 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
         <div class="event-row"><div><strong>🏮 开场 · Opening</strong><small>Pembukaan festival dengan suasana meriah, lantern, dan nuansa Mid-Autumn.</small></div><span class="event-soon">EVENT</span></div>
         <div class="event-row"><div><strong>🎎 传统表演 · Traditional Performance</strong><small>Pertunjukan tradisional dengan musik, gerakan, dan nuansa budaya Tionghoa.</small></div><span class="event-soon">EVENT</span></div>
         <div class="event-row"><div><strong>📖 故事会 · Story Telling</strong><small>Sesi bercerita tentang kisah, legenda, dan makna di balik Mid-Autumn Festival.</small></div><span class="event-soon">EVENT</span></div>
-        <div class="event-row"><div><strong>🥮 月饼工坊 · Mooncake Workshop</strong><small>Workshop membuat dan menghias mooncake bersama.</small></div><span class="event-soon">EVENT</span></div>
+        <div class="event-row"><div><strong>🍱 便当装饰比赛 · Bento Decoration Contest</strong><small>Lomba menghias bento dengan kreativitas dan tema Mid-Autumn bersama.</small></div><span class="event-soon">EVENT</span></div>
         <div class="event-row"><div><strong>🌕 团圆时刻 · Reunion Moment</strong><small>Momen berkumpul, berbagi mooncake, dan merayakan kebersamaan bersama teman-teman dan guru.</small></div><span class="event-soon">EVENT</span></div>
       </div>
 
@@ -2253,58 +1665,6 @@ document.querySelectorAll(".ingredient").forEach(el=>{
     dragItem=el.dataset.ing;e.dataTransfer.setData("text/plain",dragItem);el.classList.add("dragging");
   });
   el.addEventListener("dragend",()=>el.classList.remove("dragging"));
-
-  // Mobile/touch fallback: native HTML5 drag is unreliable on phones,
-  // so ingredients can also be dragged with Pointer Events.
-  el.addEventListener("pointerdown",e=>{
-    if(el.classList.contains("used") || cookStage!==1)return;
-    if(e.pointerType==="mouse" && e.button!==0)return;
-    e.preventDefault();
-
-    const ghost=el.cloneNode(true);
-    ghost.classList.remove("dragging");
-    ghost.style.cssText=
-      "position:fixed;z-index:9999;pointer-events:none;margin:0;width:"+el.getBoundingClientRect().width+
-      "px;opacity:.92;transform:scale(1.03);box-shadow:0 14px 28px rgba(70,35,30,.25);";
-    document.body.appendChild(ghost);
-
-    const moveGhost=(ev)=>{
-      ghost.style.left=(ev.clientX-ghost.getBoundingClientRect().width/2)+"px";
-      ghost.style.top=(ev.clientY-ghost.getBoundingClientRect().height/2)+"px";
-
-      const r=dropTarget.getBoundingClientRect();
-      const inside=ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom;
-      dropTarget.classList.toggle("over",inside);
-    };
-
-    const endGhost=(ev)=>{
-      const r=dropTarget.getBoundingClientRect();
-      const r2=document.getElementById("ingredientTarget").getBoundingClientRect();
-      const inside=(ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom) ||
-                   (ev.clientX>=r2.left&&ev.clientX<=r2.right&&ev.clientY>=r2.top&&ev.clientY<=r2.bottom);
-
-      dropTarget.classList.remove("over");
-      ghost.remove();
-      document.removeEventListener("pointermove",moveGhost);
-      document.removeEventListener("pointerup",endGhost);
-      document.removeEventListener("pointercancel",cancelGhost);
-
-      if(inside)addIngredient(el.dataset.ing);
-    };
-
-    const cancelGhost=()=>{
-      dropTarget.classList.remove("over");
-      ghost.remove();
-      document.removeEventListener("pointermove",moveGhost);
-      document.removeEventListener("pointerup",endGhost);
-      document.removeEventListener("pointercancel",cancelGhost);
-    };
-
-    moveGhost(e);
-    document.addEventListener("pointermove",moveGhost,{passive:false});
-    document.addEventListener("pointerup",endGhost,{passive:false});
-    document.addEventListener("pointercancel",cancelGhost,{passive:false});
-  });
 });
 dropTarget.addEventListener("dragover",e=>{e.preventDefault();dropTarget.classList.add("over")});
 dropTarget.addEventListener("dragleave",()=>dropTarget.classList.remove("over"));
@@ -2387,67 +1747,62 @@ function setCookStage(stage){
     inst.textContent="Sekarang bungkus lotus filling: drag 🟤 ke dough, lalu klik seal!";
     hint.innerHTML="<strong>💡 包馅 · Fill</strong>Drag filling ke dough. Setelah masuk, tekan SEAL untuk mengunci isian.";
     cookVisual.innerHTML='<div class="dough" id="fillDough"><span>🥮</span></div>';
-    const fill=document.createElement("div");fill.textContent="🟤";fill.draggable=true;fill.style="position:absolute;z-index:25;left:25%;top:56%;font-size:52px;cursor:grab;touch-action:none";
-    fill.addEventListener("dragstart",e=>e.dataTransfer.setData("fill","yes"));
-
-    // Mobile/touch fallback for the lotus filling.
-    fill.addEventListener("pointerdown",e=>{
-      if(e.pointerType==="mouse" && e.button!==0)return;
-      e.preventDefault();
-      const startLeft=fill.offsetLeft,startTop=fill.offsetTop;
-      const box=cookBox.getBoundingClientRect();
-      const fr=fill.getBoundingClientRect();
-      const ox=e.clientX-fr.left,oy=e.clientY-fr.top;
-
-      const moveFill=(ev)=>{
-        const x=Math.max(0,Math.min(box.width-fr.width,ev.clientX-box.left-ox));
-        const y=Math.max(0,Math.min(box.height-fr.height,ev.clientY-box.top-oy));
-        fill.style.left=x+"px";
-        fill.style.top=y+"px";
-        const dr=d.getBoundingClientRect();
-        const inside=ev.clientX>=dr.left&&ev.clientX<=dr.right&&ev.clientY>=dr.top&&ev.clientY<=dr.bottom;
-        d.classList.toggle("over",inside);
-      };
-
-      const finishFill=(ev)=>{
-        const dr=d.getBoundingClientRect();
-        const inside=ev.clientX>=dr.left&&ev.clientX<=dr.right&&ev.clientY>=dr.top&&ev.clientY<=dr.bottom;
-        d.classList.remove("over");
-        document.removeEventListener("pointermove",moveFill);
-        document.removeEventListener("pointerup",finishFill);
-        document.removeEventListener("pointercancel",cancelFill);
-        if(inside){
-          fill.remove();
-          d.innerHTML="<span>🥮🟤</span>";
-          d.dataset.filled="yes";
-          toast("Filling masuk! Sekarang seal.");
-        }else{
-          fill.style.left=startLeft+"px";
-          fill.style.top=startTop+"px";
-        }
-      };
-
-      const cancelFill=()=>{
-        d.classList.remove("over");
-        fill.style.left=startLeft+"px";
-        fill.style.top=startTop+"px";
-        document.removeEventListener("pointermove",moveFill);
-        document.removeEventListener("pointerup",finishFill);
-        document.removeEventListener("pointercancel",cancelFill);
-      };
-
-      document.addEventListener("pointermove",moveFill,{passive:false});
-      document.addEventListener("pointerup",finishFill,{passive:false});
-      document.addEventListener("pointercancel",cancelFill,{passive:false});
-    });
-
+    const fill=document.createElement("div");
+    fill.textContent="🟤";
+    fill.draggable=false;
+    fill.className="touch-drag-fill";
+    fill.style="position:absolute;z-index:25;left:25%;top:56%;font-size:52px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none";
     cookBox.appendChild(fill);
-    const d=document.getElementById("fillDough");d.addEventListener("dragover",e=>{e.preventDefault();d.classList.add("over")});
-    d.addEventListener("dragleave",()=>d.classList.remove("over"));
-    d.addEventListener("drop",e=>{
-      e.preventDefault();d.classList.remove("over");
-      if(e.dataTransfer.getData("fill")){fill.remove();d.innerHTML="<span>🥮🟤</span>";d.dataset.filled="yes";toast("Filling masuk! Sekarang seal.");}
+
+    const d=document.getElementById("fillDough");
+
+    // Pointer dragging works with mouse, Android touch, and iPhone/iPad touch.
+    // It replaces HTML5 drag for this stage because mobile browsers do not
+    // reliably fire dragstart/drop for emoji elements.
+    let draggingFill=false,offsetX=0,offsetY=0;
+    const finishFill=()=>{
+      if(!draggingFill)return;
+      draggingFill=false;
+      fill.classList.remove("dragging");
+      const fr=fill.getBoundingClientRect(),dr=d.getBoundingClientRect();
+      const fx=fr.left+fr.width/2,fy=fr.top+fr.height/2;
+      const dx=Math.abs(fx-(dr.left+dr.width/2));
+      const dy=Math.abs(fy-(dr.top+dr.height/2));
+      if(dx<=dr.width*0.62 && dy<=dr.height*0.62){
+        fill.remove();
+        d.innerHTML="<span>🥮🟤</span>";
+        d.dataset.filled="yes";
+        toast("Filling masuk! Sekarang seal.");
+      }
+    };
+    fill.addEventListener("pointerdown",e=>{
+      e.preventDefault();
+      draggingFill=true;
+      fill.setPointerCapture(e.pointerId);
+      fill.classList.add("dragging");
+      const r=fill.getBoundingClientRect();
+      offsetX=e.clientX-r.left-r.width/2;
+      offsetY=e.clientY-r.top-r.height/2;
     });
+    fill.addEventListener("pointermove",e=>{
+      if(!draggingFill)return;
+      e.preventDefault();
+      const box=cookBox.getBoundingClientRect();
+      const x=e.clientX-box.left-offsetX;
+      const y=e.clientY-box.top-offsetY;
+      fill.style.left=x+"px";
+      fill.style.top=y+"px";
+    });
+    fill.addEventListener("pointerup",e=>{
+      if(fill.hasPointerCapture(e.pointerId))fill.releasePointerCapture(e.pointerId);
+      finishFill();
+    });
+    fill.addEventListener("pointercancel",e=>{
+      if(fill.hasPointerCapture(e.pointerId))fill.releasePointerCapture(e.pointerId);
+      draggingFill=false;
+      fill.classList.remove("dragging");
+    });
+
     const b=document.createElement("button");b.className="btn red";b.textContent="封口 · SEAL";
     b.onclick=()=>{if(d.dataset.filled==="yes")setCookStage(6);else toast("Masukkan filling dulu! 🟤")};
     cookActions.appendChild(b);
@@ -2649,37 +2004,4 @@ wishText=document.getElementById("wishText"),ovenLight=document.getElementById("
 updateCoins();renderQuiz();resetKitchen();spawnBalls();renderInventory();refreshDecorUnlocks();updateLantern();go("home");
 </script>
 </body>
-</html><style>
-/* ===== QUOTES V2 — TRUE CONTAINED CARD ===== */
-#quotes .tarot-stage{overflow:hidden!important; padding:40px!important; min-height:600px!important; box-sizing:border-box!important;}
-#quotes .card{width:340px!important;height:500px!important;padding:12px!important;border-radius:30px!important;overflow:hidden!important;box-sizing:border-box!important;position:relative!important;}
-#quotes .card-inner{position:relative!important;width:100%!important;height:100%!important;overflow:hidden!important;border-radius:18px!important;}
-#quotes .face{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;box-sizing:border-box!important;overflow:hidden!important;border-radius:18px!important;padding:0!important;}
-#quotes .front{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:14px!important;padding:48px 34px 54px!important;}
-#quotes .front:before,#quotes .back:before{content:""!important;position:absolute!important;inset:14px!important;border:1px solid rgba(248,218,151,.35)!important;border-radius:13px!important;pointer-events:none!important;}
-#quotes .front .big{font-size:64px!important;line-height:1!important;margin:0!important;}
-#quotes .front h3{font-size:38px!important;line-height:1.15!important;margin:0!important;white-space:normal!important;}
-#quotes .front small{font-size:10px!important;line-height:1.3!important;letter-spacing:2px!important;}
-#quotes .front div:last-child{font-size:14px!important;line-height:1.3!important;}
-#quotes .back{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;padding:52px 38px 48px!important;gap:0!important;}
-#quotes .back .hanzi{display:block!important;width:100%!important;max-width:250px!important;margin:0 auto!important;font-size:38px!important;line-height:1.25!important;color:#ffe7ad!important;white-space:normal!important;overflow-wrap:anywhere!important;}
-#quotes .back .pinyin{display:block!important;width:100%!important;max-width:250px!important;margin:10px auto 24px!important;font-size:13px!important;line-height:1.45!important;color:#e8c994!important;white-space:normal!important;}
-#quotes .back .meaning{display:block!important;width:100%!important;max-width:238px!important;margin:0 auto!important;font-size:15px!important;line-height:1.55!important;color:#fff5df!important;overflow-wrap:anywhere!important;}
-#quotes .back .explain{display:block!important;width:100%!important;max-width:220px!important;margin:18px auto 0!important;font-size:11px!important;line-height:1.55!important;color:#dec2a6!important;overflow-wrap:anywhere!important;}
-#quotes .back:after{content:"✦  中秋 · 祝福  ✦";position:absolute!important;bottom:19px!important;left:0!important;right:0!important;text-align:center!important;color:#dcb76a!important;font-size:10px!important;letter-spacing:2px!important;}
-@media(max-width:900px){#quotes .tarot-stage{min-height:560px!important;padding:30px!important;} }
-@media(max-width:520px){
- #quotes .tarot-stage{min-height:535px!important;padding:22px 10px!important;}
- #quotes .card{width:min(310px,88vw)!important;height:min(470px,133vw)!important;padding:10px!important;border-radius:27px!important;}
- #quotes .card-inner,#quotes .face{border-radius:17px!important;}
- #quotes .back{padding:45px 28px 42px!important;}
- #quotes .back .hanzi{font-size:34px!important;max-width:235px!important;}
- #quotes .back .pinyin{font-size:12px!important;margin:8px auto 19px!important;max-width:235px!important;}
- #quotes .back .meaning{font-size:14px!important;line-height:1.5!important;max-width:225px!important;}
- #quotes .back .explain{font-size:10.5px!important;line-height:1.5!important;max-width:205px!important;margin-top:14px!important;}
- #quotes .front{padding:40px 28px 48px!important;}
- #quotes .front .big{font-size:58px!important;}
- #quotes .front h3{font-size:34px!important;}
-}
-</style>
-
+</html>
