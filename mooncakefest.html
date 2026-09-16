@@ -1572,6 +1572,108 @@ footer .hanzi{font:400 32px "Ma Shan Zheng"}
   .quote-info::after,.tarot-stage::after,.quiz-box::after{font-size:12px;letter-spacing:5px}
 }
 
+
+
+/* ============ FESTIVAL HANGING LANTERNS — ALL PAGES EXCEPT KITCHEN & GARDEN ============ */
+.page-hanging-lanterns{
+  position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;
+}
+.page-hanging-lantern{
+  position:absolute;top:20px;width:132px;height:190px;
+  display:flex;flex-direction:column;align-items:center;
+  transform-origin:50% 0;
+  animation:pageLanternSwing 4.8s ease-in-out infinite;
+  filter:drop-shadow(0 12px 18px rgba(65,20,32,.18));
+}
+.page-hanging-lantern.left{left:1.4%}
+.page-hanging-lantern.right{right:1.4%;animation-delay:-2.1s}
+.page-hanging-lantern .wire{
+  width:3px;height:44px;background:linear-gradient(#8e6532,#e6bc62,#8e6532);
+  box-shadow:0 0 0 1px rgba(76,35,29,.12);
+}
+.page-hanging-lantern .cap{
+  width:68px;height:18px;border:3px solid #d7a847;border-radius:12px 12px 5px 5px;
+  background:linear-gradient(#7b2637,#c43c49);position:relative;z-index:2;
+}
+.page-hanging-lantern .cap:before,
+.page-hanging-lantern .cap:after{
+  content:"";position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;
+  background:#efc95f;
+}
+.page-hanging-lantern .cap:before{width:12px;height:7px;top:-8px}
+.page-hanging-lantern .cap:after{width:8px;height:5px;bottom:-7px}
+.page-hanging-lantern .body{
+  position:relative;width:104px;height:104px;margin-top:-1px;
+  border:5px solid #e3b74e;border-radius:48% 48% 42% 42%;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(255,232,151,.92) 0 3px,transparent 4px),
+    radial-gradient(circle at 25% 28%,rgba(255,226,121,.5) 0 2px,transparent 3px),
+    radial-gradient(circle at 75% 72%,rgba(255,226,121,.45) 0 2px,transparent 3px),
+    linear-gradient(90deg,#762538 0%,#c83f4c 18%,#e05b57 50%,#c83f4c 82%,#762538 100%);
+  box-shadow:inset 10px 0 0 rgba(255,226,143,.08),inset -10px 0 0 rgba(67,17,31,.13),0 0 26px rgba(255,193,71,.18);
+  display:grid;place-items:center;overflow:hidden;
+}
+.page-hanging-lantern .body:before{
+  content:"✿  中秋  ✿";position:absolute;inset:12px 9px;
+  border:2px solid rgba(255,220,125,.62);border-radius:45%;
+  display:grid;place-items:center;color:#ffe7a0;font:400 22px "Ma Shan Zheng";
+  text-shadow:0 2px 5px rgba(85,23,35,.55);
+}
+.page-hanging-lantern .body:after{
+  content:"";position:absolute;left:15px;right:15px;top:22px;bottom:22px;
+  border-top:1px solid rgba(255,226,143,.35);border-bottom:1px solid rgba(255,226,143,.35);
+  border-radius:50%;transform:rotate(90deg);
+}
+.page-hanging-lantern .bottom-cap{
+  width:64px;height:16px;border:3px solid #d7a847;border-radius:5px 5px 12px 12px;
+  background:#9d2d3e;margin-top:-1px;position:relative;z-index:2;
+}
+.page-hanging-lantern .tassel{
+  position:relative;width:4px;height:40px;margin-top:1px;background:#d9ae48;
+}
+.page-hanging-lantern .tassel:before{
+  content:"";position:absolute;left:50%;top:23px;transform:translateX(-50%);
+  width:30px;height:42px;border-radius:0 0 50% 50%;
+  background:repeating-linear-gradient(90deg,#b92f42 0 3px,#e05b57 3px 6px);
+  clip-path:polygon(0 0,100% 0,82% 100%,65% 75%,50% 100%,34% 75%,18% 100%);
+}
+.page-hanging-lantern .ornament{
+  position:absolute;top:65px;left:50%;transform:translateX(-50%);
+  width:124px;height:124px;border:1px solid rgba(226,181,73,.28);border-radius:50%;
+}
+.page-hanging-lantern .ornament:before,
+.page-hanging-lantern .ornament:after{
+  content:"✦";position:absolute;color:#e2b54d;font-size:15px;
+}
+.page-hanging-lantern .ornament:before{left:0;top:50%}.page-hanging-lantern .ornament:after{right:0;top:50%}
+@keyframes pageLanternSwing{
+  0%,100%{transform:rotate(-2.5deg) translateY(0)}
+  25%{transform:rotate(2deg) translateY(3px)}
+  50%{transform:rotate(-1deg) translateY(0)}
+  75%{transform:rotate(3deg) translateY(2px)}
+}
+/* Keep every lantern safely outside the reading/gameplay column. */
+.page-hanging-lanterns + .room-inner{z-index:3}
+@media(max-width:900px){
+  .page-hanging-lantern{width:98px;height:155px;top:22px}
+  .page-hanging-lantern.left{left:-4px}.page-hanging-lantern.right{right:-4px}
+  .page-hanging-lantern .wire{height:34px}
+  .page-hanging-lantern .cap{width:54px;height:14px;border-width:2px}
+  .page-hanging-lantern .body{width:78px;height:82px;border-width:4px}
+  .page-hanging-lantern .body:before{font-size:16px;inset:9px 7px;border-width:1px}
+  .page-hanging-lantern .body:after{left:10px;right:10px;top:16px;bottom:16px}
+  .page-hanging-lantern .bottom-cap{width:50px;height:13px;border-width:2px}
+  .page-hanging-lantern .tassel{height:28px}
+  .page-hanging-lantern .tassel:before{top:17px;width:24px;height:34px}
+  .page-hanging-lantern .ornament{width:94px;height:94px;top:53px}
+}
+@media(max-width:560px){
+  .page-hanging-lantern{top:18px;opacity:.96}
+  .page-hanging-lantern.left{left:-25px}.page-hanging-lantern.right{right:-25px}
+  .page-hanging-lantern .body{width:70px;height:75px}
+  .page-hanging-lantern .ornament{display:none}
+}
+
 </style>
 </head>
 
@@ -2428,6 +2530,28 @@ lanternPreview=document.getElementById("lanternPreview"),lanternColor=document.g
 lanternText=document.getElementById("lanternText"),cutscene=document.getElementById("cutscene"),
 cinematicLantern=document.getElementById("cinematicLantern"),cutsceneWish=document.getElementById("cutsceneWish"),
 wishText=document.getElementById("wishText"),ovenLight=document.getElementById("ovenLight");
+
+
+/* Add the same large, gently moving hanging-lantern treatment to every page
+   except Garden and Kitchen. These are decorative only and never intercept clicks. */
+function addPageHangingLanterns(){
+  document.querySelectorAll('.room:not(#garden):not(#kitchen)').forEach(room=>{
+    if(room.querySelector('.page-hanging-lanterns')) return;
+    const wrap=document.createElement('div');
+    wrap.className='page-hanging-lanterns';
+    wrap.innerHTML=`
+      <div class="page-hanging-lantern left" aria-hidden="true">
+        <div class="wire"></div><div class="cap"></div>
+        <div class="body"></div><div class="bottom-cap"></div><div class="tassel"></div><div class="ornament"></div>
+      </div>
+      <div class="page-hanging-lantern right" aria-hidden="true">
+        <div class="wire"></div><div class="cap"></div>
+        <div class="body"></div><div class="bottom-cap"></div><div class="tassel"></div><div class="ornament"></div>
+      </div>`;
+    room.insertBefore(wrap,room.firstElementChild);
+  });
+}
+addPageHangingLanterns();
 
 updateCoins();renderQuiz();resetKitchen();spawnBalls();renderInventory();refreshDecorUnlocks();updateLantern();go("home");
 </script>
