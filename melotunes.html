@@ -2,530 +2,877 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartScore | Scan & Play</title>
 
-  <meta name="theme-color" content="#172554">
-  <title>SmartScore | Music Sheet Scanner</title>
+<style>
+* { box-sizing: border-box; }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #172554;
-    }
+header {
+  background: #172554;
+  color: white;
+  padding: 24px;
+  text-align: center;
+}
 
-    header {
-      padding: 22px;
-      text-align: center;
-      background: #172554;
-      color: white;
-    }
+header h1 { margin: 0 0 8px; }
 
-    header h1 {
-      margin: 0 0 8px;
-    }
+main {
+  max-width: 850px;
+  margin: 24px auto;
+  padding: 15px;
+}
 
-    main {
-      max-width: 850px;
-      margin: 25px auto;
-      padding: 16px;
-    }
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px #00000010;
+}
 
-    .card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 18px;
-      border-radius: 16px;
-      box-shadow: 0 5px 18px #0000000d;
-    }
+h2 {
+  color: #172554;
+  font-size: 20px;
+}
 
-    h2 {
-      font-size: 19px;
-      margin-top: 0;
-    }
+video, #preview {
+  display: block;
+  width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  background: #0f172a;
+  border-radius: 10px;
+}
 
-    video, #preview {
-      width: 100%;
-      max-height: 440px;
-      object-fit: contain;
-      background: #0f172a;
-      border-radius: 12px;
-      display: block;
-    }
+#preview {
+  margin-top: 12px;
+  background: #e2e8f0;
+}
 
-    #preview {
-      margin-top: 12px;
-      background: #e2e8f0;
-    }
+button, select {
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+}
 
-    button, select, .upload-label {
-      padding: 12px;
-      border-radius: 9px;
-      border: 1px solid #cbd5e1;
-      font-size: 14px;
-    }
+button {
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  flex: 1;
+  min-width: 125px;
+}
 
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+.secondary { background: #475569; }
 
-    select {
-      width: 100%;
-      background: white;
-      margin: 8px 0 12px;
-    }
+select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  background: white;
+  margin: 8px 0;
+}
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 14px;
-    }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+}
 
-    .controls button {
-      flex: 1;
-      min-width: 130px;
-    }
+#fileInput { margin-top: 12px; max-width: 100%; }
 
-    .secondary {
-      background: #475569;
-    }
+#status {
+  padding: 12px;
+  border-radius: 8px;
+  background: #eff6ff;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 
-    .upload-label {
-      display: block;
-      cursor: pointer;
-      margin-top: 12px;
-      text-align: center;
-      background: #eff6ff;
-    }
+#notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
 
-    input[type="file"] {
-      max-width: 100%;
-    }
+.note {
+  background: #dbeafe;
+  border-radius: 7px;
+  padding: 9px;
+  font-weight: bold;
+}
 
-    #status {
-      padding: 12px;
-      background: #eff6ff;
-      border-radius: 9px;
-      overflow-wrap: anywhere;
-    }
+.note.active {
+  background: #2563eb;
+  color: white;
+}
 
-    audio {
-      width: 100%;
-      margin-top: 12px;
-    }
+#sheetCanvas {
+  width: 100%;
+  height: auto;
+  margin-top: 12px;
+  border: 1px solid #cbd5e1;
+}
 
-    .hint {
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #64748b;
-      font-size: 13px;
-    }
-  </style>
+.small {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <h1>🎼 SmartScore</h1>
-    <p>Scan sheet music. Turn notes into sound.</p>
-  </header>
 
-  <main>
-    <section class="card">
-      <h2>1. Choose Your Camera</h2>
+<header>
+  <h1>🎼 SmartScore</h1>
+  <p>Scan sheet music and turn notes into sound.</p>
+</header>
 
-      <label for="cameraSelect">
-        Available cameras
-      </label>
+<main>
 
-      <select id="cameraSelect">
-        <option value="">Use the default camera</option>
-      </select>
+<section class="card">
+  <h2>1. Choose Camera</h2>
 
-      <div class="controls">
-        <button id="frontBtn" class="secondary">
-          Front Camera
-        </button>
+  <select id="cameraSelect">
+    <option value="">Default camera</option>
+  </select>
 
-        <button id="backBtn" class="secondary">
-          Back Camera
-        </button>
+  <div class="row">
+    <button id="frontBtn" class="secondary">Front Camera</button>
+    <button id="backBtn" class="secondary">Back Camera</button>
+    <button id="startBtn">Start Camera</button>
+    <button id="stopBtn" class="secondary">Stop Camera</button>
+  </div>
+</section>
 
-        <button id="startBtn">
-          Start Camera
-        </button>
-      </div>
-    </section>
+<section class="card">
+  <h2>2. Scan Music Sheet</h2>
 
-    <section class="card">
-      <h2>2. Scan Your Music Sheet</h2>
+  <video id="video" autoplay playsinline muted></video>
 
-      <video id="video" autoplay playsinline muted></video>
+  <div class="row">
+    <button id="captureBtn" disabled>📷 Capture Sheet</button>
+  </div>
 
-      <div class="controls">
-        <button id="captureBtn" disabled>
-          📷 Capture Sheet
-        </button>
+  <p>Or upload a music-sheet image:</p>
+  <input id="fileInput" type="file" accept="image/*">
 
-        <button id="stopBtn" class="secondary">
-          Stop Camera
-        </button>
-      </div>
+  <img id="preview" alt="Music sheet preview" hidden>
 
-      <label class="upload-label" for="fileInput">
-        Or upload a photo from your device
-      </label>
+  <p class="small">
+    Use a clear, straight photo of a printed treble-clef staff.
+    Good lighting improves detection.
+  </p>
+</section>
 
-      <input
-        id="fileInput"
-        type="file"
-        accept="image/*"
-        hidden
-      />
+<section class="card">
+  <h2>3. Detect and Play Music</h2>
 
-      <canvas id="canvas" hidden></canvas>
+  <div class="row">
+    <button id="detectBtn" disabled>🔎 Detect Notes</button>
+    <button id="playBtn" disabled>▶ Play Music</button>
+    <button id="stopMusicBtn" class="secondary" disabled>
+      ■ Stop Music
+    </button>
+  </div>
 
-      <img id="preview" alt="Music sheet preview" hidden />
+  <p id="status" role="status" aria-live="polite">
+    Start the camera or upload a music-sheet image.
+  </p>
 
-      <p class="hint">
-        Keep the entire music sheet inside the frame.
-        Use good lighting and avoid shadows or blur.
-      </p>
-    </section>
+  <div id="notes"></div>
 
-    <section class="card">
-      <h2>3. Recognize and Play</h2>
+  <canvas id="sheetCanvas" hidden></canvas>
 
-      <button id="recognizeBtn" disabled>
-        Convert Sheet to Music
-      </button>
+  <p class="small">
+    This is a basic experimental detector. It estimates note pitches
+    from a five-line treble staff. It does not fully recognize rhythm,
+    rests, chords, key signatures, or accidentals.
+  </p>
+</section>
 
-      <p id="status" role="status" aria-live="polite">
-        Ready. Start the camera or upload a photo.
-      </p>
+</main>
 
-      <audio id="player" controls hidden></audio>
+<script>
+const $ = id => document.getElementById(id);
 
-      <p class="hint">
-        Audio playback becomes available after the
-        recognition service returns an audio file.
-      </p>
-    </section>
-  </main>
+const video = $("video");
+const cameraSelect = $("cameraSelect");
+const preview = $("preview");
+const statusBox = $("status");
+const notesBox = $("notes");
+const canvas = $("sheetCanvas");
 
-  <footer>
-    SmartScore — Student Music Technology Project
-  </footer>
+let stream = null;
+let imageBlob = null;
+let imageURL = null;
+let detectedNotes = [];
+let audioContext = null;
+let oscillators = [];
+let playbackID = 0;
 
-  <script>
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const preview = document.getElementById("preview");
-    const cameraSelect = document.getElementById("cameraSelect");
-    const captureBtn = document.getElementById("captureBtn");
-    const recognizeBtn = document.getElementById("recognizeBtn");
-    const statusBox = document.getElementById("status");
-    const player = document.getElementById("player");
+function setStatus(message) {
+  statusBox.textContent = message;
+}
 
-    let stream = null;
-    let capturedBlob = null;
-    let cameraMode = "environment";
+async function refreshCameras() {
+  if (!navigator.mediaDevices?.enumerateDevices) return;
 
-    function setStatus(message) {
-      statusBox.textContent = message;
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter(
+      device => device.kind === "videoinput"
+    );
+
+    const previous = cameraSelect.value;
+    cameraSelect.replaceChildren();
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Choose a camera";
+    cameraSelect.appendChild(defaultOption);
+
+    cameras.forEach((camera, index) => {
+      const option = document.createElement("option");
+      option.value = camera.deviceId;
+      option.textContent =
+        camera.label || `Camera ${index + 1}`;
+      cameraSelect.appendChild(option);
+    });
+
+    if (cameras.some(camera => camera.deviceId === previous)) {
+      cameraSelect.value = previous;
     }
+  } catch (error) {
+    console.log("Camera list unavailable", error);
+  }
+}
 
-    async function refreshCameras() {
-      if (!navigator.mediaDevices?.enumerateDevices) {
-        setStatus("Camera selection is not supported in this browser.");
-        return;
-      }
+function stopCamera(showMessage = true) {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
 
-      try {
-        const devices =
-          await navigator.mediaDevices.enumerateDevices();
+  video.srcObject = null;
+  $("captureBtn").disabled = true;
 
-        const cameras = devices.filter(
-          device => device.kind === "videoinput"
-        );
+  if (showMessage) setStatus("Camera stopped.");
+}
 
-        const previousValue = cameraSelect.value;
+async function startCamera(deviceId = null, facing = "environment") {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setStatus(
+      "Camera access requires HTTPS or localhost. " +
+      "You can upload an image instead."
+    );
+    return;
+  }
 
-        cameraSelect.replaceChildren();
+  stopCamera(false);
 
-        cameras.forEach((camera, index) => {
-          const option = document.createElement("option");
-
-          option.value = camera.deviceId;
-          option.textContent =
-            camera.label || `Camera ${index + 1}`;
-
-          cameraSelect.appendChild(option);
-        });
-
-        if (
-          previousValue &&
-          cameras.some(camera => camera.deviceId === previousValue)
-        ) {
-          cameraSelect.value = previousValue;
+  try {
+    const videoConstraints = deviceId
+      ? {
+          deviceId: { exact: deviceId },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         }
-      } catch (error) {
-        setStatus("Unable to list cameras: " + error.message);
-      }
-    }
-
-    async function startCamera(deviceId = null, mode = null) {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setStatus(
-          "Camera unavailable. Open this site using HTTPS or localhost " +
-          "in a supported browser, then upload a photo instead."
-        );
-        return;
-      }
-
-      stopCamera(false);
-
-      const selectedMode = mode || cameraMode;
-
-      const videoConstraints = deviceId
-        ? {
-            deviceId: { exact: deviceId },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-          }
-        : {
-            facingMode: { ideal: selectedMode },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-          };
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: videoConstraints
-        });
-
-        video.srcObject = stream;
-        await video.play();
-
-        captureBtn.disabled = false;
-
-        await refreshCameras();
-
-        if (deviceId) {
-          cameraSelect.value = deviceId;
-        }
-
-        setStatus("Camera ready. Position your music sheet.");
-      } catch (error) {
-        stopCamera(false);
-
-        const messages = {
-          NotAllowedError:
-            "Camera permission was denied. Allow camera access in your browser.",
-          NotFoundError:
-            "No compatible camera was found. Connect a camera or upload a photo.",
-          NotReadableError:
-            "The camera may be in use by another application.",
-          OverconstrainedError:
-            "This camera cannot satisfy the requested settings."
+      : {
+          facingMode: { ideal: facing },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         };
 
-        setStatus(
-          messages[error.name] ||
-          "Could not start camera: " + error.message
-        );
-      }
-    }
-
-    function stopCamera(showMessage = true) {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-      }
-
-      video.srcObject = null;
-      captureBtn.disabled = true;
-
-      if (showMessage) {
-        setStatus("Camera stopped.");
-      }
-    }
-
-    function savePreview(blob) {
-      capturedBlob = blob;
-
-      if (preview.dataset.objectUrl) {
-        URL.revokeObjectURL(preview.dataset.objectUrl);
-      }
-
-      const url = URL.createObjectURL(blob);
-
-      preview.dataset.objectUrl = url;
-      preview.src = url;
-      preview.hidden = false;
-
-      recognizeBtn.disabled = false;
-      player.hidden = true;
-      player.removeAttribute("src");
-      player.load();
-
-      setStatus("Image ready. You can now convert the sheet.");
-    }
-
-    document.getElementById("startBtn").addEventListener(
-      "click",
-      () => startCamera(
-        cameraSelect.value || null,
-        cameraMode
-      )
-    );
-
-    document.getElementById("frontBtn").addEventListener(
-      "click",
-      () => {
-        cameraMode = "user";
-        cameraSelect.value = "";
-        startCamera(null, "user");
-      }
-    );
-
-    document.getElementById("backBtn").addEventListener(
-      "click",
-      () => {
-        cameraMode = "environment";
-        cameraSelect.value = "";
-        startCamera(null, "environment");
-      }
-    );
-
-    cameraSelect.addEventListener("change", () => {
-      if (cameraSelect.value) {
-        startCamera(cameraSelect.value);
-      }
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: videoConstraints,
+      audio: false
     });
 
-    document.getElementById("stopBtn").addEventListener(
-      "click",
-      () => stopCamera()
+    video.srcObject = stream;
+    await video.play();
+
+    $("captureBtn").disabled = false;
+
+    await refreshCameras();
+
+    if (deviceId) cameraSelect.value = deviceId;
+
+    setStatus("Camera ready. Position the music sheet.");
+  } catch (error) {
+    stopCamera(false);
+    setStatus(
+      "Camera error: " + error.message +
+      ". Check permissions or upload a photo."
+    );
+  }
+}
+
+function stopMusic() {
+  playbackID++;
+
+  oscillators.forEach(oscillator => {
+    try {
+      oscillator.stop();
+    } catch (error) {}
+  });
+
+  oscillators = [];
+  $("stopMusicBtn").disabled = true;
+
+  document.querySelectorAll(".note.active").forEach(note => {
+    note.classList.remove("active");
+  });
+}
+
+function saveImage(blob) {
+  imageBlob = blob;
+
+  if (imageURL) URL.revokeObjectURL(imageURL);
+
+  imageURL = URL.createObjectURL(blob);
+  preview.src = imageURL;
+  preview.hidden = false;
+
+  detectedNotes = [];
+  notesBox.replaceChildren();
+
+  $("detectBtn").disabled = false;
+  $("playBtn").disabled = true;
+
+  stopMusic();
+  setStatus("Image ready. Press Detect Notes.");
+}
+
+$("startBtn").addEventListener("click", () => {
+  startCamera(cameraSelect.value || null);
+});
+
+$("frontBtn").addEventListener("click", () => {
+  cameraSelect.value = "";
+  startCamera(null, "user");
+});
+
+$("backBtn").addEventListener("click", () => {
+  cameraSelect.value = "";
+  startCamera(null, "environment");
+});
+
+$("stopBtn").addEventListener("click", () => stopCamera());
+
+cameraSelect.addEventListener("change", () => {
+  if (cameraSelect.value) {
+    startCamera(cameraSelect.value);
+  }
+});
+
+$("captureBtn").addEventListener("click", () => {
+  if (!stream || !video.videoWidth) {
+    setStatus("Start the camera first.");
+    return;
+  }
+
+  const captureCanvas = document.createElement("canvas");
+  captureCanvas.width = video.videoWidth;
+  captureCanvas.height = video.videoHeight;
+
+  captureCanvas.getContext("2d").drawImage(
+    video,
+    0,
+    0,
+    captureCanvas.width,
+    captureCanvas.height
+  );
+
+  captureCanvas.toBlob(blob => {
+    if (blob) saveImage(blob);
+    else setStatus("Image capture failed.");
+  }, "image/jpeg", 0.95);
+});
+
+$("fileInput").addEventListener("change", event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    setStatus("Please select an image.");
+    return;
+  }
+
+  saveImage(file);
+});
+
+function loadImage(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Could not open image."));
+    };
+
+    img.src = url;
+  });
+}
+
+// Basic notehead detection for clear, printed treble-clef music.
+async function detectNotes(blob) {
+  const img = await loadImage(blob);
+
+  const scale = Math.min(1, 1500 / img.naturalWidth);
+
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  canvas.hidden = false;
+
+  const ctx = canvas.getContext("2d", {
+    willReadFrequently: true
+  });
+
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  const width = canvas.width;
+  const height = canvas.height;
+
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  const gray = new Uint8Array(width * height);
+
+  for (let i = 0, j = 0; i < pixels.length; i += 4, j++) {
+    gray[j] = Math.round(
+      0.299 * pixels[i] +
+      0.587 * pixels[i + 1] +
+      0.114 * pixels[i + 2]
+    );
+  }
+
+  // Find the five horizontal staff lines.
+  const rowScores = new Array(height).fill(0);
+
+  for (let y = 0; y < height; y++) {
+    let darkPixels = 0;
+
+    for (let x = 0; x < width; x++) {
+      if (gray[y * width + x] < 115) darkPixels++;
+    }
+
+    rowScores[y] = darkPixels / width;
+  }
+
+  let bestStaff = null;
+
+  for (let y = 0; y < height - 4; y++) {
+    if (rowScores[y] < 0.25) continue;
+
+    const lines = [y];
+    let previous = y;
+
+    for (
+      let yy = y + 1;
+      yy < Math.min(height, y + Math.max(30, height * 0.12));
+      yy++
+    ) {
+      if (
+        rowScores[yy] > 0.25 &&
+        yy - previous >= 2 &&
+        yy - previous <= Math.max(12, height * 0.025)
+      ) {
+        lines.push(yy);
+        previous = yy;
+
+        if (lines.length === 5) break;
+      }
+    }
+
+    if (lines.length !== 5) continue;
+
+    const gaps = lines.slice(1).map(
+      (value, index) => value - lines[index]
     );
 
-    captureBtn.addEventListener("click", () => {
-      if (!stream || !video.videoWidth) {
-        setStatus("Start the camera before capturing.");
-        return;
+    const meanGap = gaps.reduce((a, b) => a + b, 0) / 4;
+    const spread = Math.max(...gaps) - Math.min(...gaps);
+
+    if (
+      meanGap >= 3 &&
+      spread < Math.max(5, meanGap * 0.55)
+    ) {
+      const score =
+        lines.reduce((sum, line) => sum + rowScores[line], 0) -
+        spread * 0.01;
+
+      if (!bestStaff || score > bestStaff.score) {
+        bestStaff = {
+          lines,
+          gap: meanGap,
+          score
+        };
+      }
+    }
+  }
+
+  if (!bestStaff) {
+    throw new Error(
+      "Five staff lines not found. Try a clear, straight photo " +
+      "of a single treble-clef staff."
+    );
+  }
+
+  const staff = bestStaff.lines;
+  const gap = bestStaff.gap;
+  const binary = new Uint8Array(width * height);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      binary[y * width + x] =
+        gray[y * width + x] < 145 ? 1 : 0;
+    }
+  }
+
+  // Remove horizontal staff lines before searching for noteheads.
+  for (const line of staff) {
+    for (let dy = -1; dy <= 1; dy++) {
+      const y = line + dy;
+
+      if (y < 0 || y >= height) continue;
+
+      for (let x = 0; x < width; x++) {
+        binary[y * width + x] = 0;
+      }
+    }
+  }
+
+  const visited = new Uint8Array(width * height);
+  const stack = [];
+  const candidates = [];
+
+  const minArea = Math.max(8, Math.floor(gap * gap * 0.12));
+  const maxArea = Math.max(100, Math.floor(gap * gap * 3.2));
+
+  for (
+    let y = Math.max(0, staff[0] - gap * 2);
+    y < Math.min(height, staff[4] + gap * 2);
+    y++
+  ) {
+    for (let x = 0; x < width; x++) {
+      const index = y * width + x;
+
+      if (!binary[index] || visited[index]) continue;
+
+      let minX = x, maxX = x, minY = y, maxY = y;
+      let area = 0, sumX = 0, sumY = 0;
+
+      visited[index] = 1;
+      stack.push(index);
+
+      while (stack.length) {
+        const point = stack.pop();
+        const px = point % width;
+        const py = Math.floor(point / width);
+
+        area++;
+        sumX += px;
+        sumY += py;
+
+        minX = Math.min(minX, px);
+        maxX = Math.max(maxX, px);
+        minY = Math.min(minY, py);
+        maxY = Math.max(maxY, py);
+
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+
+            const nx = px + dx;
+            const ny = py + dy;
+
+            if (
+              nx < 0 || nx >= width ||
+              ny < 0 || ny >= height
+            ) continue;
+
+            const next = ny * width + nx;
+
+            if (binary[next] && !visited[next]) {
+              visited[next] = 1;
+              stack.push(next);
+            }
+          }
+        }
       }
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const boxWidth = maxX - minX + 1;
+      const boxHeight = maxY - minY + 1;
 
-      const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0);
+      if (
+        area >= minArea &&
+        area <= maxArea &&
+        boxWidth >= gap * 0.45 &&
+        boxWidth <= gap * 2.6 &&
+        boxHeight >= gap * 0.28 &&
+        boxHeight <= gap * 1.65 &&
+        boxWidth >= boxHeight * 0.7
+      ) {
+        const cx = sumX / area;
+        const cy = sumY / area;
 
-      canvas.toBlob(blob => {
-        if (blob) {
-          savePreview(blob);
-        } else {
-          setStatus("Could not capture the image.");
+        if (
+          cy >= staff[0] - gap * 1.8 &&
+          cy <= staff[4] + gap * 1.8
+        ) {
+          candidates.push({
+            x: cx,
+            y: cy,
+            area,
+            width: boxWidth,
+            height: boxHeight
+          });
         }
-      }, "image/jpeg", 0.95);
+      }
+    }
+  }
+
+  // Merge detections that are close together.
+  candidates.sort((a, b) => a.x - b.x);
+
+  const merged = [];
+
+  for (const point of candidates) {
+    const previous = merged[merged.length - 1];
+
+    if (
+      previous &&
+      Math.abs(previous.x - point.x) < gap * 0.8 &&
+      Math.abs(previous.y - point.y) < gap * 0.75
+    ) {
+      if (point.area > previous.area) {
+        Object.assign(previous, point);
+      }
+    } else {
+      merged.push({ ...point });
+    }
+  }
+
+  const letterNames = ["C", "D", "E", "F", "G", "A", "B"];
+
+  function pitchFromY(y) {
+    // Treble clef: bottom line E4.
+    const steps = Math.round((staff[4] - y) / (gap / 2));
+    const index = 2 + steps;
+    const octave = 4 + Math.floor(index / 7);
+    const letter = letterNames[(index % 7 + 7) % 7];
+
+    const semitones = {
+      C: 0, D: 2, E: 4, F: 5,
+      G: 7, A: 9, B: 11
+    };
+
+    return {
+      name: letter + octave,
+      midi: semitones[letter] + 12 * (octave + 1)
+    };
+  }
+
+  const notes = merged
+    .filter(point =>
+      point.height <= gap * 1.45 &&
+      point.width >= gap * 0.48
+    )
+    .map(point => ({
+      ...point,
+      ...pitchFromY(point.y)
+    }))
+    .sort((a, b) => a.x - b.x)
+    .slice(0, 100);
+
+  // Show staff lines and estimated note centers on the image.
+  ctx.drawImage(img, 0, 0, width, height);
+  ctx.strokeStyle = "#2563eb";
+  ctx.lineWidth = Math.max(2, gap * 0.08);
+
+  staff.forEach(y => {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  });
+
+  notes.forEach(note => {
+    ctx.beginPath();
+    ctx.arc(note.x, note.y, Math.max(5, gap * 0.25), 0, Math.PI * 2);
+    ctx.fillStyle = "#ef4444";
+    ctx.fill();
+  });
+
+  return notes;
+}
+
+$("detectBtn").addEventListener("click", async () => {
+  if (!imageBlob) return;
+
+  $("detectBtn").disabled = true;
+  $("playBtn").disabled = true;
+  notesBox.replaceChildren();
+
+  setStatus("Detecting notes in your image...");
+
+  try {
+    detectedNotes = await detectNotes(imageBlob);
+
+    if (!detectedNotes.length) {
+      setStatus(
+        "No notes detected. Try a clearer image of a printed staff."
+      );
+      return;
+    }
+
+    detectedNotes.forEach((note, index) => {
+      const element = document.createElement("span");
+      element.className = "note";
+      element.textContent = note.name;
+      element.dataset.index = index;
+      notesBox.appendChild(element);
     });
 
-    document.getElementById("fileInput").addEventListener(
-      "change",
-      event => {
-        const file = event.target.files[0];
+    $("playBtn").disabled = false;
 
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-          setStatus("Please select an image file.");
-          return;
-        }
-
-        savePreview(file);
-      }
+    setStatus(
+      `Detected ${detectedNotes.length} possible notes: ` +
+      detectedNotes.map(note => note.name).join(" - ") +
+      ". Check the notes because this is a basic prototype."
     );
+  } catch (error) {
+    detectedNotes = [];
+    setStatus(error.message);
+  } finally {
+    $("detectBtn").disabled = false;
+  }
+});
 
-    recognizeBtn.addEventListener("click", async () => {
-      if (!capturedBlob) return;
+function midiToFrequency(midi) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
 
-      recognizeBtn.disabled = true;
-      setStatus("Uploading image for music recognition...");
+$("playBtn").addEventListener("click", async () => {
+  if (!detectedNotes.length) return;
 
-      try {
-        const formData = new FormData();
+  stopMusic();
+  const thisPlayback = playbackID;
 
-        formData.append(
-          "image",
-          capturedBlob,
-          "music-sheet.jpg"
-        );
+  try {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
 
-        // Replace this path with your real backend endpoint.
-        const response = await fetch("/api/recognize", {
-          method: "POST",
-          body: formData
+    if (!AudioContextClass) {
+      setStatus("Web Audio is not supported in this browser.");
+      return;
+    }
+
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
+
+    await audioContext.resume();
+
+    const noteDuration = 0.42;
+    const startTime = audioContext.currentTime;
+
+    $("stopMusicBtn").disabled = false;
+    setStatus("Playing detected notes...");
+
+    detectedNotes.forEach((note, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      const start = startTime + index * noteDuration;
+      const end = start + noteDuration * 0.8;
+
+      oscillator.type = "triangle";
+      oscillator.frequency.value = midiToFrequency(note.midi);
+
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.2, start + 0.025);
+      gain.gain.setTargetAtTime(0.0001, end, 0.04);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start(start);
+      oscillator.stop(start + noteDuration);
+
+      oscillators.push(oscillator);
+
+      setTimeout(() => {
+        if (thisPlayback !== playbackID) return;
+
+        document.querySelectorAll(".note.active").forEach(el => {
+          el.classList.remove("active");
         });
 
-        if (!response.ok) {
-          throw new Error(
-            "Recognition service returned HTTP " + response.status
-          );
-        }
-
-        const result = await response.json();
-
-        if (result.audio_url) {
-          player.src = result.audio_url;
-          player.hidden = false;
-          setStatus("Music converted successfully! Press Play.");
-        } else if (result.message) {
-          setStatus(result.message);
-        } else {
-          setStatus(
-            "Image received, but no playable audio was returned."
-          );
-        }
-      } catch (error) {
-        setStatus(
-          "Recognition service is not connected or failed. " +
-          "Configure /api/recognize on your backend. Details: " +
-          error.message
+        const element = notesBox.querySelector(
+          `[data-index="${index}"]`
         );
-      } finally {
-        recognizeBtn.disabled = false;
-      }
+
+        if (element) element.classList.add("active");
+      }, index * noteDuration * 1000);
     });
 
-    if (navigator.mediaDevices?.addEventListener) {
-      navigator.mediaDevices.addEventListener(
-        "devicechange",
-        refreshCameras
-      );
-    }
+    setTimeout(() => {
+      if (thisPlayback !== playbackID) return;
 
-    refreshCameras();
-  </script>
+      $("stopMusicBtn").disabled = true;
+
+      document.querySelectorAll(".note.active").forEach(el => {
+        el.classList.remove("active");
+      });
+
+      oscillators = [];
+      setStatus("Playback finished.");
+    }, detectedNotes.length * noteDuration * 1000 + 150);
+
+  } catch (error) {
+    setStatus("Could not play audio: " + error.message);
+  }
+});
+
+$("stopMusicBtn").addEventListener("click", () => {
+  stopMusic();
+  setStatus("Music stopped.");
+});
+
+if (navigator.mediaDevices?.addEventListener) {
+  navigator.mediaDevices.addEventListener(
+    "devicechange",
+    refreshCameras
+  );
+}
+
+refreshCameras();
+</script>
+
 </body>
 </html>
