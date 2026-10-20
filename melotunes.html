@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#172554">
+  <title>SmartScore | Music Sheet Scanner</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172554;
+    }
+
+    header {
+      padding: 22px;
+      text-align: center;
+      background: #172554;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+    }
+
+    main {
+      max-width: 850px;
+      margin: 25px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      box-shadow: 0 5px 18px #0000000d;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin-top: 0;
+    }
+
+    video, #preview {
+      width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      background: #0f172a;
+      border-radius: 12px;
+      display: block;
+    }
+
+    #preview {
+      margin-top: 12px;
+      background: #e2e8f0;
+    }
+
+    button, select, .upload-label {
+      padding: 12px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    select {
+      width: 100%;
+      background: white;
+      margin: 8px 0 12px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .controls button {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .secondary {
+      background: #475569;
+    }
+
+    .upload-label {
+      display: block;
+      cursor: pointer;
+      margin-top: 12px;
+      text-align: center;
+      background: #eff6ff;
+    }
+
+    input[type="file"] {
+      max-width: 100%;
+    }
+
+    #status {
+      padding: 12px;
+      background: #eff6ff;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .hint {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🎼 SmartScore</h1>
+    <p>Scan sheet music. Turn notes into sound.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Choose Your Camera</h2>
+
+      <label for="cameraSelect">
+        Available cameras
+      </label>
+
+      <select id="cameraSelect">
+        <option value="">Use the default camera</option>
+      </select>
+
+      <div class="controls">
+        <button id="frontBtn" class="secondary">
+          Front Camera
+        </button>
+
+        <button id="backBtn" class="secondary">
+          Back Camera
+        </button>
+
+        <button id="startBtn">
+          Start Camera
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Scan Your Music Sheet</h2>
+
+      <video id="video" autoplay playsinline muted></video>
+
+      <div class="controls">
+        <button id="captureBtn" disabled>
+          📷 Capture Sheet
+        </button>
+
+        <button id="stopBtn" class="secondary">
+          Stop Camera
+        </button>
+      </div>
+
+      <label class="upload-label" for="fileInput">
+        Or upload a photo from your device
+      </label>
+
+      <input
+        id="fileInput"
+        type="file"
+        accept="image/*"
+        hidden
+      />
+
+      <canvas id="canvas" hidden></canvas>
+
+      <img id="preview" alt="Music sheet preview" hidden />
+
+      <p class="hint">
+        Keep the entire music sheet inside the frame.
+        Use good lighting and avoid shadows or blur.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>3. Recognize and Play</h2>
+
+      <button id="recognizeBtn" disabled>
+        Convert Sheet to Music
+      </button>
+
+      <p id="status" role="status" aria-live="polite">
+        Ready. Start the camera or upload a photo.
+      </p>
+
+      <audio id="player" controls hidden></audio>
+
+      <p class="hint">
+        Audio playback becomes available after the
+        recognition service returns an audio file.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    SmartScore — Student Music Technology Project
+  </footer>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const preview = document.getElementById("preview");
+    const cameraSelect = document.getElementById("cameraSelect");
+    const captureBtn = document.getElementById("captureBtn");
+    const recognizeBtn = document.getElementById("recognizeBtn");
+    const statusBox = document.getElementById("status");
+    const player = document.getElementById("player");
+
+    let stream = null;
+    let capturedBlob = null;
+    let cameraMode = "environment";
+
+    function setStatus(message) {
+      statusBox.textContent = message;
+    }
+
+    async function refreshCameras() {
+      if (!navigator.mediaDevices?.enumerateDevices) {
+        setStatus("Camera selection is not supported in this browser.");
+        return;
+      }
+
+      try {
+        const devices =
+          await navigator.mediaDevices.enumerateDevices();
+
+        const cameras = devices.filter(
+          device => device.kind === "videoinput"
+        );
+
+        const previousValue = cameraSelect.value;
+
+        cameraSelect.replaceChildren();
+
+        cameras.forEach((camera, index) => {
+          const option = document.createElement("option");
+
+          option.value = camera.deviceId;
+          option.textContent =
+            camera.label || `Camera ${index + 1}`;
+
+          cameraSelect.appendChild(option);
+        });
+
+        if (
+          previousValue &&
+          cameras.some(camera => camera.deviceId === previousValue)
+        ) {
+          cameraSelect.value = previousValue;
+        }
+      } catch (error) {
+        setStatus("Unable to list cameras: " + error.message);
+      }
+    }
+
+    async function startCamera(deviceId = null, mode = null) {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setStatus(
+          "Camera unavailable. Open this site using HTTPS or localhost " +
+          "in a supported browser, then upload a photo instead."
+        );
+        return;
+      }
+
+      stopCamera(false);
+
+      const selectedMode = mode || cameraMode;
+
+      const videoConstraints = deviceId
+        ? {
+            deviceId: { exact: deviceId },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          }
+        : {
+            facingMode: { ideal: selectedMode },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          };
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: videoConstraints
+        });
+
+        video.srcObject = stream;
+        await video.play();
+
+        captureBtn.disabled = false;
+
+        await refreshCameras();
+
+        if (deviceId) {
+          cameraSelect.value = deviceId;
+        }
+
+        setStatus("Camera ready. Position your music sheet.");
+      } catch (error) {
+        stopCamera(false);
+
+        const messages = {
+          NotAllowedError:
+            "Camera permission was denied. Allow camera access in your browser.",
+          NotFoundError:
+            "No compatible camera was found. Connect a camera or upload a photo.",
+          NotReadableError:
+            "The camera may be in use by another application.",
+          OverconstrainedError:
+            "This camera cannot satisfy the requested settings."
+        };
+
+        setStatus(
+          messages[error.name] ||
+          "Could not start camera: " + error.message
+        );
+      }
+    }
+
+    function stopCamera(showMessage = true) {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+
+      video.srcObject = null;
+      captureBtn.disabled = true;
+
+      if (showMessage) {
+        setStatus("Camera stopped.");
+      }
+    }
+
+    function savePreview(blob) {
+      capturedBlob = blob;
+
+      if (preview.dataset.objectUrl) {
+        URL.revokeObjectURL(preview.dataset.objectUrl);
+      }
+
+      const url = URL.createObjectURL(blob);
+
+      preview.dataset.objectUrl = url;
+      preview.src = url;
+      preview.hidden = false;
+
+      recognizeBtn.disabled = false;
+      player.hidden = true;
+      player.removeAttribute("src");
+      player.load();
+
+      setStatus("Image ready. You can now convert the sheet.");
+    }
+
+    document.getElementById("startBtn").addEventListener(
+      "click",
+      () => startCamera(
+        cameraSelect.value || null,
+        cameraMode
+      )
+    );
+
+    document.getElementById("frontBtn").addEventListener(
+      "click",
+      () => {
+        cameraMode = "user";
+        cameraSelect.value = "";
+        startCamera(null, "user");
+      }
+    );
+
+    document.getElementById("backBtn").addEventListener(
+      "click",
+      () => {
+        cameraMode = "environment";
+        cameraSelect.value = "";
+        startCamera(null, "environment");
+      }
+    );
+
+    cameraSelect.addEventListener("change", () => {
+      if (cameraSelect.value) {
+        startCamera(cameraSelect.value);
+      }
+    });
+
+    document.getElementById("stopBtn").addEventListener(
+      "click",
+      () => stopCamera()
+    );
+
+    captureBtn.addEventListener("click", () => {
+      if (!stream || !video.videoWidth) {
+        setStatus("Start the camera before capturing.");
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0);
+
+      canvas.toBlob(blob => {
+        if (blob) {
+          savePreview(blob);
+        } else {
+          setStatus("Could not capture the image.");
+        }
+      }, "image/jpeg", 0.95);
+    });
+
+    document.getElementById("fileInput").addEventListener(
+      "change",
+      event => {
+        const file = event.target.files[0];
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          setStatus("Please select an image file.");
+          return;
+        }
+
+        savePreview(file);
+      }
+    );
+
+    recognizeBtn.addEventListener("click", async () => {
+      if (!capturedBlob) return;
+
+      recognizeBtn.disabled = true;
+      setStatus("Uploading image for music recognition...");
+
+      try {
+        const formData = new FormData();
+
+        formData.append(
+          "image",
+          capturedBlob,
+          "music-sheet.jpg"
+        );
+
+        // Replace this path with your real backend endpoint.
+        const response = await fetch("/api/recognize", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            "Recognition service returned HTTP " + response.status
+          );
+        }
+
+        const result = await response.json();
+
+        if (result.audio_url) {
+          player.src = result.audio_url;
+          player.hidden = false;
+          setStatus("Music converted successfully! Press Play.");
+        } else if (result.message) {
+          setStatus(result.message);
+        } else {
+          setStatus(
+            "Image received, but no playable audio was returned."
+          );
+        }
+      } catch (error) {
+        setStatus(
+          "Recognition service is not connected or failed. " +
+          "Configure /api/recognize on your backend. Details: " +
+          error.message
+        );
+      } finally {
+        recognizeBtn.disabled = false;
+      }
+    });
+
+    if (navigator.mediaDevices?.addEventListener) {
+      navigator.mediaDevices.addEventListener(
+        "devicechange",
+        refreshCameras
+      );
+    }
+
+    refreshCameras();
+  </script>
+</body>
+</html>
