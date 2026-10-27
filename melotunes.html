@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartScore | Scan & Play</title>
-
 <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 <style>
@@ -36,58 +35,53 @@ select{width:100%;border:1px solid #cbd5e1;background:white;margin:8px 0}
 
 <body>
 <header>
-  <h1>🎼 SmartScore</h1>
-  <p>Scan sheet music and turn notes into sound.</p>
+<h1>🎼 SmartScore</h1>
+<p>Scan sheet music and turn notes into sound.</p>
 </header>
 
 <main>
 <section class="card">
-  <h2>1. Choose Camera</h2>
-  <select id="cameraSelect">
-    <option value="">Default camera</option>
-  </select>
-  <div class="row">
-    <button id="frontBtn" class="secondary">Front Camera</button>
-    <button id="backBtn" class="secondary">Back Camera</button>
-    <button id="startBtn">Start Camera</button>
-    <button id="stopBtn" class="secondary">Stop Camera</button>
-  </div>
+<h2>1. Choose Camera</h2>
+<select id="cameraSelect"><option value="">Default camera</option></select>
+<div class="row">
+<button id="frontBtn" class="secondary">Front Camera</button>
+<button id="backBtn" class="secondary">Back Camera</button>
+<button id="startBtn">Start Camera</button>
+<button id="stopBtn" class="secondary">Stop Camera</button>
+</div>
 </section>
 
 <section class="card">
-  <h2>2. Scan Music Sheet</h2>
-  <video id="video" autoplay playsinline muted></video>
-  <div class="row">
-    <button id="captureBtn" disabled>📷 Capture Sheet</button>
-  </div>
-  <p>Or upload a music-sheet image:</p>
-  <input id="fileInput" type="file" accept="image/*">
-  <img id="preview" alt="Music sheet preview" hidden>
-  <p class="small">
-    Use a high-resolution, straight photo. Keep the entire staff visible.
-  </p>
+<h2>2. Scan Music Sheet</h2>
+<video id="video" autoplay playsinline muted></video>
+<div class="row">
+<button id="captureBtn" disabled>📷 Capture Sheet</button>
+</div>
+<p>Or upload a music-sheet image:</p>
+<input id="fileInput" type="file" accept="image/*">
+<img id="preview" alt="Music sheet preview" hidden>
+<p class="small">Use a straight, high-resolution photo of a complete staff.</p>
 </section>
 
 <section class="card">
-  <h2>3. Detect and Play Music</h2>
-  <div class="row">
-    <button id="detectBtn" disabled>🔎 Detect Notes</button>
-    <button id="playBtn" disabled>▶ Play Music</button>
-    <button id="stopMusicBtn" class="secondary" disabled>■ Stop Music</button>
-  </div>
-  <p id="status" role="status" aria-live="polite">Loading OpenCV...</p>
-  <div id="notes"></div>
-  <canvas id="sheetCanvas" hidden></canvas>
-  <p class="small">
-    Experimental treble-clef detector. Rhythm, rests, chords, key signatures
-    and accidentals are not fully recognized.
-  </p>
+<h2>3. Detect and Play Music</h2>
+<div class="row">
+<button id="detectBtn" disabled>🔎 Detect Notes</button>
+<button id="playBtn" disabled>▶ Play Music</button>
+<button id="stopMusicBtn" class="secondary" disabled>■ Stop Music</button>
+</div>
+<p id="status" role="status" aria-live="polite">Loading OpenCV...</p>
+<div id="notes"></div>
+<canvas id="sheetCanvas" hidden></canvas>
+<p class="small">
+Experimental treble-clef recognition. This version estimates single-note
+melodies; it does not fully recognize rhythm, chords, rests, or accidentals.
+</p>
 </section>
 </main>
 
 <script>
 const $ = id => document.getElementById(id);
-
 const video = $("video");
 const cameraSelect = $("cameraSelect");
 const preview = $("preview");
@@ -105,33 +99,31 @@ let playbackTimers = [];
 let playbackID = 0;
 let cvReady = false;
 
-function setStatus(message) {
+function setStatus(message){
   statusBox.textContent = message;
 }
 
-function waitForOpenCV() {
-  const started = Date.now();
-  const timer = setInterval(() => {
-    if (window.cv && cv.Mat && cv.imread) {
+function waitForOpenCV(){
+  const start = Date.now();
+  const timer = setInterval(()=>{
+    if(window.cv && cv.Mat && cv.imread){
       clearInterval(timer);
       cvReady = true;
       setStatus("OpenCV ready. Upload a music sheet.");
-    } else if (Date.now() - started > 45000) {
+    }else if(Date.now()-start > 45000){
       clearInterval(timer);
-      setStatus("OpenCV failed to load. Check internet and reload.");
+      setStatus("OpenCV failed to load. Check your internet and reload.");
     }
-  }, 200);
+  },200);
 }
 waitForOpenCV();
 
-async function refreshCameras() {
-  if (!navigator.mediaDevices?.enumerateDevices) return;
-
-  try {
+async function refreshCameras(){
+  if(!navigator.mediaDevices?.enumerateDevices)return;
+  try{
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter(d => d.kind === "videoinput");
+    const cameras = devices.filter(d=>d.kind==="videoinput");
     const previous = cameraSelect.value;
-
     cameraSelect.replaceChildren();
 
     const first = document.createElement("option");
@@ -139,468 +131,342 @@ async function refreshCameras() {
     first.textContent = "Choose a camera";
     cameraSelect.appendChild(first);
 
-    cameras.forEach((camera, i) => {
+    cameras.forEach((camera,i)=>{
       const option = document.createElement("option");
       option.value = camera.deviceId;
-      option.textContent = camera.label || `Camera ${i + 1}`;
+      option.textContent = camera.label || `Camera ${i+1}`;
       cameraSelect.appendChild(option);
     });
 
-    if (cameras.some(c => c.deviceId === previous)) {
+    if(cameras.some(c=>c.deviceId===previous)){
       cameraSelect.value = previous;
     }
-  } catch (error) {
-    console.error(error);
-  }
+  }catch(error){console.error(error);}
 }
 
-function stopCamera(showMessage = true) {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
+function stopCamera(showMessage=true){
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
   }
-
-  video.srcObject = null;
-  $("captureBtn").disabled = true;
-
-  if (showMessage) setStatus("Camera stopped.");
+  video.srcObject=null;
+  $("captureBtn").disabled=true;
+  if(showMessage)setStatus("Camera stopped.");
 }
 
-async function startCamera(deviceId = null, facing = "environment") {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    setStatus("Camera requires HTTPS or localhost. Upload an image instead.");
+async function startCamera(deviceId=null,facing="environment"){
+  if(!navigator.mediaDevices?.getUserMedia){
+    setStatus("Camera requires HTTPS or localhost. Upload a photo instead.");
     return;
   }
-
   stopCamera(false);
 
-  try {
-    const constraints = deviceId
-      ? {
-          deviceId: { exact: deviceId },
-          width: { ideal: 2560 },
-          height: { ideal: 1440 }
-        }
-      : {
-          facingMode: { ideal: facing },
-          width: { ideal: 2560 },
-          height: { ideal: 1440 }
-        };
+  try{
+    const constraints=deviceId
+      ? {deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1440}}
+      : {facingMode:{ideal:facing},width:{ideal:2560},height:{ideal:1440}};
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: constraints,
-      audio: false
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:constraints,audio:false
     });
-
-    video.srcObject = stream;
+    video.srcObject=stream;
     await video.play();
-
-    $("captureBtn").disabled = false;
+    $("captureBtn").disabled=false;
     await refreshCameras();
-
-    if (deviceId) cameraSelect.value = deviceId;
-
-    setStatus("Camera ready. Position the sheet and capture it.");
-  } catch (error) {
+    if(deviceId)cameraSelect.value=deviceId;
+    setStatus("Camera ready. Capture your sheet.");
+  }catch(error){
     stopCamera(false);
-    setStatus("Camera error: " + error.message);
+    setStatus("Camera error: "+error.message);
   }
 }
 
-function stopMusic() {
+function stopMusic(){
   playbackID++;
-
   playbackTimers.forEach(clearTimeout);
-  playbackTimers = [];
-
-  activeSources.forEach(source => {
-    try { source.stop(); } catch (error) {}
-  });
-  activeSources = [];
-
-  $("stopMusicBtn").disabled = true;
-
-  document.querySelectorAll(".note.active").forEach(el => {
-    el.classList.remove("active");
-  });
+  playbackTimers=[];
+  activeSources.forEach(s=>{try{s.stop();}catch(e){}});
+  activeSources=[];
+  $("stopMusicBtn").disabled=true;
+  document.querySelectorAll(".note.active").forEach(
+    el=>el.classList.remove("active")
+  );
 }
 
-function saveImage(blob) {
-  if (!blob) return;
-
-  imageBlob = blob;
-
-  if (imageURL) URL.revokeObjectURL(imageURL);
-  imageURL = URL.createObjectURL(blob);
-
-  preview.src = imageURL;
-  preview.hidden = false;
-
-  detectedNotes = [];
+function saveImage(blob){
+  if(!blob)return;
+  imageBlob=blob;
+  if(imageURL)URL.revokeObjectURL(imageURL);
+  imageURL=URL.createObjectURL(blob);
+  preview.src=imageURL;
+  preview.hidden=false;
+  detectedNotes=[];
   notesBox.replaceChildren();
-  canvas.hidden = true;
-
-  $("detectBtn").disabled = false;
-  $("playBtn").disabled = true;
-
+  canvas.hidden=true;
+  $("detectBtn").disabled=false;
+  $("playBtn").disabled=true;
   stopMusic();
-
   setStatus("Image ready. Press Detect Notes.");
 }
 
-$("startBtn").addEventListener("click", () => {
-  startCamera(cameraSelect.value || null);
-});
+$("startBtn").onclick=()=>startCamera(cameraSelect.value||null);
+$("frontBtn").onclick=()=>startCamera(null,"user");
+$("backBtn").onclick=()=>startCamera(null,"environment");
+$("stopBtn").onclick=()=>stopCamera();
+cameraSelect.onchange=()=>{if(cameraSelect.value)startCamera(cameraSelect.value);};
 
-$("frontBtn").addEventListener("click", () => {
-  cameraSelect.value = "";
-  startCamera(null, "user");
-});
-
-$("backBtn").addEventListener("click", () => {
-  cameraSelect.value = "";
-  startCamera(null, "environment");
-});
-
-$("stopBtn").addEventListener("click", () => stopCamera());
-
-cameraSelect.addEventListener("change", () => {
-  if (cameraSelect.value) startCamera(cameraSelect.value);
-});
-
-$("captureBtn").addEventListener("click", () => {
-  if (!stream || !video.videoWidth) {
+$("captureBtn").onclick=()=>{
+  if(!stream||!video.videoWidth){
     setStatus("Start the camera first.");
     return;
   }
+  const c=document.createElement("canvas");
+  c.width=video.videoWidth;
+  c.height=video.videoHeight;
+  c.getContext("2d").drawImage(video,0,0,c.width,c.height);
+  c.toBlob(blob=>saveImage(blob),"image/jpeg",0.98);
+};
 
-  const c = document.createElement("canvas");
-  c.width = video.videoWidth;
-  c.height = video.videoHeight;
-
-  c.getContext("2d").drawImage(video, 0, 0, c.width, c.height);
-
-  c.toBlob(blob => {
-    if (blob) saveImage(blob);
-    else setStatus("Could not capture image.");
-  }, "image/jpeg", 0.98);
-});
-
-$("fileInput").addEventListener("change", event => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    setStatus("Please select an image file.");
+$("fileInput").onchange=e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  if(!file.type.startsWith("image/")){
+    setStatus("Please select an image.");
     return;
   }
-
   saveImage(file);
-});
+};
 
-function loadImage(blob) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(blob);
-
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Could not open image."));
-    };
-
-    img.src = url;
+function loadImage(blob){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(blob);
+    img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Cannot open image."));};
+    img.src=url;
   });
 }
 
-// Detect staff lines from horizontal pixel projections.
-function findStaff(binary, width, height) {
-  const scores = new Float32Array(height);
+// Find the most likely five-line staff.
+function findStaff(binary,width,height){
+  const scores=new Float32Array(height);
 
-  for (let y = 0; y < height; y++) {
-    let count = 0;
-
-    for (let x = 0; x < width; x++) {
-      if (binary.ucharPtr(y, x)[0] > 0) count++;
+  for(let y=0;y<height;y++){
+    let count=0;
+    for(let x=0;x<width;x++){
+      if(binary.ucharPtr(y,x)[0]>0)count++;
     }
-
-    scores[y] = count / width;
+    scores[y]=count/width;
   }
 
-  const smooth = new Float32Array(height);
-
-  for (let y = 0; y < height; y++) {
-    let sum = 0, count = 0;
-
-    for (let d = -2; d <= 2; d++) {
-      if (y + d >= 0 && y + d < height) {
-        sum += scores[y + d];
-        count++;
-      }
+  const smooth=new Float32Array(height);
+  for(let y=0;y<height;y++){
+    let sum=0,count=0;
+    for(let d=-2;d<=2;d++){
+      if(y+d>=0&&y+d<height){sum+=scores[y+d];count++;}
     }
-
-    smooth[y] = sum / count;
+    smooth[y]=sum/count;
   }
 
-  const peaks = [];
-  const minDistance = Math.max(2, Math.round(height * 0.002));
+  const peaks=[];
+  const minDistance=Math.max(2,Math.round(height*0.002));
 
-  for (let y = 1; y < height - 1; y++) {
-    if (
-      smooth[y] >= smooth[y - 1] &&
-      smooth[y] >= smooth[y + 1] &&
-      smooth[y] > 0.12
-    ) {
-      const previous = peaks[peaks.length - 1];
-
-      if (previous && y - previous.y <= minDistance) {
-        if (smooth[y] > previous.score) {
-          previous.y = y;
-          previous.score = smooth[y];
-        }
-      } else {
-        peaks.push({ y, score: smooth[y] });
-      }
+  for(let y=1;y<height-1;y++){
+    if(smooth[y]>=smooth[y-1]&&smooth[y]>=smooth[y+1]&&smooth[y]>0.12){
+      const prev=peaks[peaks.length-1];
+      if(prev&&y-prev.y<=minDistance){
+        if(smooth[y]>prev.score){prev.y=y;prev.score=smooth[y];}
+      }else peaks.push({y,score:smooth[y]});
     }
   }
 
-  let best = null;
+  let best=null;
 
-  for (let i = 0; i < peaks.length; i++) {
-    for (let j = i + 1; j < peaks.length; j++) {
-      const gap = (peaks[j].y - peaks[i].y) / (j - i);
+  for(let i=0;i<peaks.length;i++){
+    for(let j=i+1;j<peaks.length;j++){
+      const gap=(peaks[j].y-peaks[i].y)/(j-i);
+      if(gap<3||gap>height*0.06)continue;
 
-      if (gap < 3 || gap > height * 0.06) continue;
+      const lines=[peaks[i].y];
+      let valid=true;
 
-      const lines = [peaks[i].y];
-      let valid = true;
+      for(let k=1;k<5;k++){
+        const target=peaks[i].y+k*gap;
+        let nearest=null,distance=Infinity;
 
-      for (let k = 1; k < 5; k++) {
-        const target = peaks[i].y + k * gap;
-        let nearest = null;
-        let distance = Infinity;
-
-        for (const peak of peaks) {
-          const d = Math.abs(peak.y - target);
-
-          if (d < distance) {
-            distance = d;
-            nearest = peak;
-          }
+        for(const peak of peaks){
+          const d=Math.abs(peak.y-target);
+          if(d<distance){distance=d;nearest=peak;}
         }
 
-        if (!nearest || distance > Math.max(2, gap * 0.22)) {
-          valid = false;
-          break;
+        if(!nearest||distance>Math.max(2,gap*0.22)||lines.includes(nearest.y)){
+          valid=false;break;
         }
-
-        if (lines.includes(nearest.y)) {
-          valid = false;
-          break;
-        }
-
         lines.push(nearest.y);
       }
 
-      if (!valid) continue;
+      if(!valid)continue;
+      lines.sort((a,b)=>a-b);
+      const gaps=lines.slice(1).map((v,k)=>v-lines[k]);
+      const mean=gaps.reduce((a,b)=>a+b,0)/4;
+      const spread=Math.max(...gaps)-Math.min(...gaps);
+      if(spread>mean*0.3)continue;
 
-      lines.sort((a, b) => a - b);
-
-      const gaps = lines.slice(1).map((v, k) => v - lines[k]);
-      const mean = gaps.reduce((a, b) => a + b, 0) / 4;
-      const spread = Math.max(...gaps) - Math.min(...gaps);
-
-      if (spread > mean * 0.3) continue;
-
-      const score = lines.reduce((sum, y) => sum + smooth[y], 0)
-        - spread / mean * 0.2;
-
-      if (!best || score > best.score) {
-        best = { lines, gap: mean, score };
-      }
+      const score=lines.reduce((sum,y)=>sum+smooth[y],0)-spread/mean*0.2;
+      if(!best||score>best.score)best={lines,gap:mean,score};
     }
   }
-
   return best;
 }
 
-// Treble-clef pitch calculation: bottom line is E4.
-function pitchFromY(y, bottomLine, gap) {
-  const steps = Math.round((bottomLine - y) / (gap / 2));
-  const letters = ["C", "D", "E", "F", "G", "A", "B"];
-  const diatonic = 30 + steps;
-
-  const octave = Math.floor(diatonic / 7);
-  const letter = letters[(diatonic % 7 + 7) % 7];
-
-  const semitones = {
-    C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11
-  };
+// Treble clef: bottom line E4.
+function pitchFromY(y,bottomLine,gap){
+  const steps=Math.round((bottomLine-y)/(gap/2));
+  const letters=["C","D","E","F","G","A","B"];
+  const diatonic=30+steps;
+  const octave=Math.floor(diatonic/7);
+  const letter=letters[(diatonic%7+7)%7];
+  const semitones={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 
   return {
-    name: letter + octave,
-    midi: 12 * (octave + 1) + semitones[letter]
+    name:letter+octave,
+    midi:12*(octave+1)+semitones[letter]
   };
 }
 
-async function detectNotes(blob) {
-  if (!cvReady) {
-    throw new Error("OpenCV is loading. Wait a moment and retry.");
-  }
+async function detectNotes(blob){
+  if(!cvReady)throw new Error("OpenCV is still loading. Wait and retry.");
 
-  const img = await loadImage(blob);
-  const scale = Math.min(1, 2200 / img.naturalWidth);
-  const width = Math.round(img.naturalWidth * scale);
-  const height = Math.round(img.naturalHeight * scale);
+  const img=await loadImage(blob);
+  const scale=Math.min(1,2200/img.naturalWidth);
+  const width=Math.round(img.naturalWidth*scale);
+  const height=Math.round(img.naturalHeight*scale);
 
-  canvas.width = width;
-  canvas.height = height;
-  canvas.hidden = false;
+  canvas.width=width;
+  canvas.height=height;
+  canvas.hidden=false;
+  canvas.getContext("2d").drawImage(img,0,0,width,height);
 
-  const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(img, 0, 0, width, height);
+  let src=cv.imread(canvas);
+  let gray=new cv.Mat();
+  let blurred=new cv.Mat();
+  let binary=new cv.Mat();
+  let labels=new cv.Mat();
+  let stats=new cv.Mat();
+  let centroids=new cv.Mat();
+  let kernel=null;
+  let isolated=new cv.Mat();
 
-  let src = cv.imread(canvas);
-  let gray = new cv.Mat();
-  let blurred = new cv.Mat();
-  let binary = new cv.Mat();
-  let labels = new cv.Mat();
-  let stats = new cv.Mat();
-  let centroids = new cv.Mat();
-  let kernel = null;
-  let isolated = new cv.Mat();
+  try{
+    cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+    cv.GaussianBlur(gray,blurred,new cv.Size(3,3),0);
 
-  try {
-    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-    cv.GaussianBlur(gray, blurred, new cv.Size(3, 3), 0);
-
-    const block = Math.max(
-      15,
-      Math.floor(Math.min(width, height) / 30) | 1
-    );
-
+    const block=Math.max(15,Math.floor(Math.min(width,height)/30)|1);
     cv.adaptiveThreshold(
-      blurred, binary, 255,
+      blurred,binary,255,
       cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-      cv.THRESH_BINARY_INV,
-      block,
-      8
+      cv.THRESH_BINARY_INV,block,8
     );
 
-    const staff = findStaff(binary, width, height);
-
-    if (!staff) {
-      throw new Error(
-        "Five staff lines not found. Try a straight photo of one staff."
-      );
+    const staff=findStaff(binary,width,height);
+    if(!staff){
+      throw new Error("Five staff lines not found. Try a straight photo.");
     }
 
-    const gap = staff.gap;
-    const bottomLine = staff.lines[4];
+    const gap=staff.gap;
+    const bottomLine=staff.lines[4];
 
-    // CRITICAL FIX:
-    // Do not erase horizontal staff lines from the binary image.
-    // Opening the original binary image avoids destroying noteheads
-    // by manually deleting rows across the whole sheet.
-    const kw = Math.max(3, Math.round(gap * 0.55) | 1);
-    const kh = Math.max(3, Math.round(gap * 0.35) | 1);
-
-    kernel = cv.getStructuringElement(
+    // Keep original thresholded pixels; do not erase staff rows.
+    kernel=cv.getStructuringElement(
       cv.MORPH_ELLIPSE,
-      new cv.Size(kw, kh)
+      new cv.Size(
+        Math.max(3,Math.round(gap*0.55)|1),
+        Math.max(3,Math.round(gap*0.35)|1)
+      )
     );
 
-    cv.morphologyEx(
-      binary, isolated, cv.MORPH_OPEN, kernel
-    );
-
+    cv.morphologyEx(binary,isolated,cv.MORPH_OPEN,kernel);
     cv.connectedComponentsWithStats(
-      isolated, labels, stats, centroids, 8, cv.CV_32S
+      isolated,labels,stats,centroids,8,cv.CV_32S
     );
 
-    const candidates = [];
+    const candidates=[];
 
-    for (let i = 1; i < stats.rows; i++) {
-      const x = stats.intAt(i, cv.CC_STAT_LEFT);
-      const y = stats.intAt(i, cv.CC_STAT_TOP);
-      const w = stats.intAt(i, cv.CC_STAT_WIDTH);
-      const h = stats.intAt(i, cv.CC_STAT_HEIGHT);
-      const area = stats.intAt(i, cv.CC_STAT_AREA);
+    for(let i=1;i<stats.rows;i++){
+      const x=stats.intAt(i,cv.CC_STAT_LEFT);
+      const y=stats.intAt(i,cv.CC_STAT_TOP);
+      const w=stats.intAt(i,cv.CC_STAT_WIDTH);
+      const h=stats.intAt(i,cv.CC_STAT_HEIGHT);
+      const area=stats.intAt(i,cv.CC_STAT_AREA);
+      const cx=centroids.doubleAt(i,0);
+      const cy=centroids.doubleAt(i,1);
 
-      const cx = centroids.doubleAt(i, 0);
-      const cy = centroids.doubleAt(i, 1);
+      // Ignore the clef and left-side symbols.
+      if(cx<width*0.20)continue;
 
-      const inStaff =
-        cy >= staff.lines[0] - gap * 2 &&
-        cy <= staff.lines[4] + gap * 2;
+      const inStaff=
+        cy>=staff.lines[0]-gap*1.5&&
+        cy<=staff.lines[4]+gap*1.5;
 
-      const reasonableShape =
-        w >= gap * 0.35 &&
-        w <= gap * 1.8 &&
-        h >= gap * 0.18 &&
-        h <= gap * 1.1 &&
-        area >= gap * gap * 0.08 &&
-        area <= gap * gap * 1.8;
+      const reasonableShape=
+        w>=gap*0.35&&w<=gap*1.8&&
+        h>=gap*0.18&&h<=gap*1.1&&
+        area>=gap*gap*0.08&&area<=gap*gap*1.8;
 
-      if (inStaff && reasonableShape) {
-        candidates.push({ x: cx, y: cy, w, h, area });
+      if(inStaff&&reasonableShape){
+        candidates.push({x:cx,y:cy,w,h,area});
       }
     }
 
-    candidates.sort((a, b) => a.x - b.x);
+    candidates.sort((a,b)=>a.x-b.x);
 
-    const merged = [];
+    // Merge detections from the same notehead.
+    const merged=[];
+    for(const p of candidates){
+      const previous=merged[merged.length-1];
 
-    for (const p of candidates) {
-      const previous = merged[merged.length - 1];
-
-      if (
-        previous &&
-        Math.abs(previous.x - p.x) < gap * 0.65 &&
-        Math.abs(previous.y - p.y) < gap * 0.6
-      ) {
-        if (p.area > previous.area) Object.assign(previous, p);
-      } else {
-        merged.push({ ...p });
+      if(previous&&Math.abs(previous.x-p.x)<gap*0.85){
+        if(p.area>previous.area)Object.assign(previous,p);
+      }else{
+        merged.push({...p});
       }
     }
 
-    const notes = merged
-      .map(p => ({
-        ...p,
-        ...pitchFromY(p.y, bottomLine, gap)
-      }))
-      .sort((a, b) => a.x - b.x)
-      .slice(0, 200);
+    // Reject stems and extreme outliers by preferring compact notehead shapes.
+    const filtered=merged.filter(p=>
+      p.w>=gap*0.4&&
+      p.w<=gap*1.6&&
+      p.h>=gap*0.2&&
+      p.h<=gap*0.9&&
+      p.w>=p.h*0.75
+    );
 
-    // Show the staff and detected note centers.
-    cv.imshow(canvas, src);
+    const notes=filtered.map(p=>({
+      ...p,
+      ...pitchFromY(p.y,bottomLine,gap)
+    })).sort((a,b)=>a.x-b.x).slice(0,100);
 
-    const out = canvas.getContext("2d");
-    out.lineWidth = Math.max(1, gap * 0.035);
-    out.strokeStyle = "#2563eb";
+    cv.imshow(canvas,src);
+    const out=canvas.getContext("2d");
+    out.lineWidth=Math.max(1,gap*0.035);
+    out.strokeStyle="#2563eb";
 
-    staff.lines.forEach(y => {
+    staff.lines.forEach(y=>{
       out.beginPath();
-      out.moveTo(0, y);
-      out.lineTo(width, y);
+      out.moveTo(0,y);
+      out.lineTo(width,y);
       out.stroke();
     });
 
-    out.fillStyle = "#ef4444";
-
-    notes.forEach(note => {
+    out.fillStyle="#ef4444";
+    notes.forEach(n=>{
       out.beginPath();
-      out.arc(note.x, note.y, Math.max(4, gap * 0.18), 0, Math.PI * 2);
+      out.arc(n.x,n.y,Math.max(4,gap*0.18),0,Math.PI*2);
       out.fill();
     });
 
     return notes;
-  } finally {
+  }finally{
     src.delete();
     gray.delete();
     blurred.delete();
@@ -609,144 +475,119 @@ async function detectNotes(blob) {
     stats.delete();
     centroids.delete();
     isolated.delete();
-
-    if (kernel) kernel.delete();
+    if(kernel)kernel.delete();
   }
 }
 
-$("detectBtn").addEventListener("click", async () => {
-  if (!imageBlob) return;
-
-  $("detectBtn").disabled = true;
-  $("playBtn").disabled = true;
+$("detectBtn").addEventListener("click",async()=>{
+  if(!imageBlob)return;
+  $("detectBtn").disabled=true;
+  $("playBtn").disabled=true;
   notesBox.replaceChildren();
   stopMusic();
+  setStatus("Detecting noteheads...");
 
-  setStatus("Processing image and searching for noteheads...");
+  try{
+    detectedNotes=await detectNotes(imageBlob);
 
-  try {
-    detectedNotes = await detectNotes(imageBlob);
-
-    if (!detectedNotes.length) {
-      setStatus(
-        "No noteheads found. The image was processed, but the detector " +
-        "could not isolate the note shapes. Try a higher-resolution image."
-      );
+    if(!detectedNotes.length){
+      setStatus("No notes detected. Try another image or crop around the staff.");
       return;
     }
 
-    detectedNotes.forEach((note, index) => {
-      const el = document.createElement("span");
-      el.className = "note";
-      el.textContent = note.name;
-      el.dataset.index = index;
+    detectedNotes.forEach((note,index)=>{
+      const el=document.createElement("span");
+      el.className="note";
+      el.textContent=note.name;
+      el.dataset.index=index;
       notesBox.appendChild(el);
     });
 
-    $("playBtn").disabled = false;
-
+    $("playBtn").disabled=false;
     setStatus(
-      `Found ${detectedNotes.length} candidate notes: ` +
-      detectedNotes.map(n => n.name).join(" – ") +
-      ". Red dots mark estimated positions. Check their accuracy."
+      `Detected ${detectedNotes.length} candidate notes: `+
+      detectedNotes.map(n=>n.name).join(" - ")+
+      ". Check red dots against the actual noteheads."
     );
-  } catch (error) {
-    detectedNotes = [];
-    setStatus("Detection error: " + error.message);
+  }catch(error){
+    detectedNotes=[];
+    setStatus("Detection error: "+error.message);
     console.error(error);
-  } finally {
-    $("detectBtn").disabled = false;
+  }finally{
+    $("detectBtn").disabled=false;
   }
 });
 
-function midiToFrequency(midi) {
-  return 440 * Math.pow(2, (midi - 69) / 12);
+function midiToFrequency(midi){
+  return 440*Math.pow(2,(midi-69)/12);
 }
 
-$("playBtn").addEventListener("click", async () => {
-  if (!detectedNotes.length) return;
-
+$("playBtn").addEventListener("click",async()=>{
+  if(!detectedNotes.length)return;
   stopMusic();
-  const currentPlayback = playbackID;
+  const currentPlayback=playbackID;
 
-  try {
-    const Audio = window.AudioContext || window.webkitAudioContext;
-
-    if (!Audio) throw new Error("Web Audio is not supported.");
-
-    if (!audioContext) audioContext = new Audio();
-
+  try{
+    const Audio=window.AudioContext||window.webkitAudioContext;
+    if(!Audio)throw new Error("Web Audio is not supported.");
+    if(!audioContext)audioContext=new Audio();
     await audioContext.resume();
 
-    const duration = 0.42;
-    const startTime = audioContext.currentTime;
-
-    $("stopMusicBtn").disabled = false;
+    const duration=0.42;
+    const startTime=audioContext.currentTime;
+    $("stopMusicBtn").disabled=false;
     setStatus("Playing detected notes...");
 
-    detectedNotes.forEach((note, index) => {
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
+    detectedNotes.forEach((note,index)=>{
+      const oscillator=audioContext.createOscillator();
+      const gain=audioContext.createGain();
+      const start=startTime+index*duration;
+      const end=start+duration*0.8;
 
-      const start = startTime + index * duration;
-      const end = start + duration * 0.8;
-
-      oscillator.type = "triangle";
-      oscillator.frequency.value = midiToFrequency(note.midi);
-
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.18, start + 0.025);
-      gain.gain.setTargetAtTime(0.0001, end, 0.04);
+      oscillator.type="triangle";
+      oscillator.frequency.value=midiToFrequency(note.midi);
+      gain.gain.setValueAtTime(0.0001,start);
+      gain.gain.exponentialRampToValueAtTime(0.18,start+0.025);
+      gain.gain.setTargetAtTime(0.0001,end,0.04);
 
       oscillator.connect(gain);
       gain.connect(audioContext.destination);
-
       oscillator.start(start);
-      oscillator.stop(start + duration);
+      oscillator.stop(start+duration);
       activeSources.push(oscillator);
 
-      playbackTimers.push(setTimeout(() => {
-        if (currentPlayback !== playbackID) return;
-
-        document.querySelectorAll(".note.active").forEach(el => {
-          el.classList.remove("active");
-        });
-
-        const element = notesBox.querySelector(
-          `[data-index="${index}"]`
+      playbackTimers.push(setTimeout(()=>{
+        if(currentPlayback!==playbackID)return;
+        document.querySelectorAll(".note.active").forEach(
+          el=>el.classList.remove("active")
         );
-
-        if (element) element.classList.add("active");
-      }, index * duration * 1000));
+        const el=notesBox.querySelector(`[data-index="${index}"]`);
+        if(el)el.classList.add("active");
+      },index*duration*1000));
     });
 
-    playbackTimers.push(setTimeout(() => {
-      if (currentPlayback !== playbackID) return;
-
-      activeSources = [];
-      $("stopMusicBtn").disabled = true;
-
-      document.querySelectorAll(".note.active").forEach(el => {
-        el.classList.remove("active");
-      });
-
+    playbackTimers.push(setTimeout(()=>{
+      if(currentPlayback!==playbackID)return;
+      activeSources=[];
+      $("stopMusicBtn").disabled=true;
+      document.querySelectorAll(".note.active").forEach(
+        el=>el.classList.remove("active")
+      );
       setStatus("Playback finished.");
-    }, detectedNotes.length * duration * 1000 + 150));
-
-  } catch (error) {
-    setStatus("Could not play audio: " + error.message);
+    },detectedNotes.length*duration*1000+150));
+  }catch(error){
+    setStatus("Could not play audio: "+error.message);
   }
 });
 
-$("stopMusicBtn").addEventListener("click", () => {
+$("stopMusicBtn").addEventListener("click",()=>{
   stopMusic();
   setStatus("Music stopped.");
 });
 
-if (navigator.mediaDevices?.addEventListener) {
-  navigator.mediaDevices.addEventListener("devicechange", refreshCameras);
+if(navigator.mediaDevices?.addEventListener){
+  navigator.mediaDevices.addEventListener("devicechange",refreshCameras);
 }
-
 refreshCameras();
 </script>
 </body>
