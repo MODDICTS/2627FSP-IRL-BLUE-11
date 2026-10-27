@@ -1,72 +1,42 @@
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartScore | Scan & Play</title>
 
-<!-- Computer vision library -->
 <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;font-family:Arial,sans-serif;
-  background:#f1f5f9;color:#1e293b
-}
-header{
-  background:#172554;color:white;padding:24px;
-  text-align:center
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#1e293b}
+header{background:#172554;color:white;padding:24px;text-align:center}
 header h1{margin:0 0 8px}
 main{max-width:900px;margin:24px auto;padding:15px}
-.card{
-  background:white;padding:20px;margin-bottom:18px;
-  border-radius:15px;box-shadow:0 4px 15px #0001
-}
+.card{background:white;padding:20px;margin-bottom:18px;border-radius:15px;box-shadow:0 4px 15px #0001}
 h2{color:#172554;font-size:20px}
-video,#preview{
-  display:block;width:100%;max-height:440px;
-  object-fit:contain;background:#0f172a;border-radius:10px
-}
+video,#preview{display:block;width:100%;max-height:440px;object-fit:contain;background:#0f172a;border-radius:10px}
 #preview{margin-top:12px;background:#e2e8f0}
-button,select{
-  padding:12px;border:0;border-radius:8px;font-size:14px
-}
-button{
-  background:#2563eb;color:white;cursor:pointer;
-  flex:1;min-width:120px
-}
+button,select{padding:12px;border:0;border-radius:8px;font-size:14px}
+button{background:#2563eb;color:white;cursor:pointer;flex:1;min-width:120px}
 button:disabled{opacity:.5;cursor:not-allowed}
 .secondary{background:#475569}
-select{
-  width:100%;border:1px solid #cbd5e1;
-  background:white;margin:8px 0
-}
+select{width:100%;border:1px solid #cbd5e1;background:white;margin:8px 0}
 .row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
 #fileInput{margin-top:12px;max-width:100%}
-#status{
-  padding:12px;border-radius:8px;background:#eff6ff;
-  line-height:1.6;overflow-wrap:anywhere
-}
+#status{padding:12px;border-radius:8px;background:#eff6ff;line-height:1.6;overflow-wrap:anywhere}
 #notes{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
-.note{
-  background:#dbeafe;border-radius:7px;
-  padding:9px;font-weight:bold
-}
+.note{background:#dbeafe;border-radius:7px;padding:9px;font-weight:bold}
 .note.active{background:#2563eb;color:white}
-#sheetCanvas{
-  display:block;width:100%;height:auto;
-  margin-top:12px;border:1px solid #cbd5e1
-}
+#sheetCanvas{display:block;width:100%;height:auto;margin-top:12px;border:1px solid #cbd5e1}
 .small{color:#64748b;font-size:13px;line-height:1.6}
 </style>
 </head>
 
 <body>
 <header>
-  <h1>🎼 MeloTunes</h1>
+  <h1>🎼 SmartScore</h1>
   <p>Scan sheet music and turn notes into sound.</p>
 </header>
 
@@ -94,8 +64,7 @@ select{
   <input id="fileInput" type="file" accept="image/*">
   <img id="preview" alt="Music sheet preview" hidden>
   <p class="small">
-    Use a high-resolution, straight photo. Make sure the entire
-    staff is visible and the page has good lighting.
+    Use a high-resolution, straight photo. Keep the entire staff visible.
   </p>
 </section>
 
@@ -106,15 +75,12 @@ select{
     <button id="playBtn" disabled>▶ Play Music</button>
     <button id="stopMusicBtn" class="secondary" disabled>■ Stop Music</button>
   </div>
-  <p id="status" role="status" aria-live="polite">
-    Loading image-processing library...
-  </p>
+  <p id="status" role="status" aria-live="polite">Loading OpenCV...</p>
   <div id="notes"></div>
   <canvas id="sheetCanvas" hidden></canvas>
   <p class="small">
-    Experimental treble-clef detector. Correct pitch identification
-    depends on finding the right staff. Rhythm, rests, chords,
-    key signatures and accidentals are not fully recognized.
+    Experimental treble-clef detector. Rhythm, rests, chords, key signatures
+    and accidentals are not fully recognized.
   </p>
 </section>
 </main>
@@ -131,6 +97,7 @@ const canvas = $("sheetCanvas");
 
 let stream = null;
 let imageBlob = null;
+let imageURL = null;
 let detectedNotes = [];
 let audioContext = null;
 let activeSources = [];
@@ -142,21 +109,16 @@ function setStatus(message) {
   statusBox.textContent = message;
 }
 
-// Wait for OpenCV.js to finish initializing.
 function waitForOpenCV() {
   const started = Date.now();
-
   const timer = setInterval(() => {
     if (window.cv && cv.Mat && cv.imread) {
       clearInterval(timer);
       cvReady = true;
-      setStatus("Image-processing library ready. Upload a sheet.");
-    } else if (Date.now() - started > 30000) {
+      setStatus("OpenCV ready. Upload a music sheet.");
+    } else if (Date.now() - started > 45000) {
       clearInterval(timer);
-      setStatus(
-        "OpenCV could not load. Check your internet connection, " +
-        "reload the page, and try again."
-      );
+      setStatus("OpenCV failed to load. Check internet and reload.");
     }
   }, 200);
 }
@@ -197,21 +159,23 @@ function stopCamera(showMessage = true) {
     stream.getTracks().forEach(track => track.stop());
     stream = null;
   }
+
   video.srcObject = null;
   $("captureBtn").disabled = true;
+
   if (showMessage) setStatus("Camera stopped.");
 }
 
 async function startCamera(deviceId = null, facing = "environment") {
   if (!navigator.mediaDevices?.getUserMedia) {
-    setStatus("Camera requires HTTPS or localhost. Upload a photo instead.");
+    setStatus("Camera requires HTTPS or localhost. Upload an image instead.");
     return;
   }
 
   stopCamera(false);
 
   try {
-    const videoConstraints = deviceId
+    const constraints = deviceId
       ? {
           deviceId: { exact: deviceId },
           width: { ideal: 2560 },
@@ -224,15 +188,16 @@ async function startCamera(deviceId = null, facing = "environment") {
         };
 
     stream = await navigator.mediaDevices.getUserMedia({
-      video: videoConstraints,
+      video: constraints,
       audio: false
     });
 
     video.srcObject = stream;
     await video.play();
-    $("captureBtn").disabled = false;
 
+    $("captureBtn").disabled = false;
     await refreshCameras();
+
     if (deviceId) cameraSelect.value = deviceId;
 
     setStatus("Camera ready. Position the sheet and capture it.");
@@ -245,15 +210,16 @@ async function startCamera(deviceId = null, facing = "environment") {
 function stopMusic() {
   playbackID++;
 
-  playbackTimers.forEach(id => clearTimeout(id));
+  playbackTimers.forEach(clearTimeout);
   playbackTimers = [];
 
   activeSources.forEach(source => {
-    try { source.stop(); } catch (e) {}
+    try { source.stop(); } catch (error) {}
   });
   activeSources = [];
 
   $("stopMusicBtn").disabled = true;
+
   document.querySelectorAll(".note.active").forEach(el => {
     el.classList.remove("active");
   });
@@ -263,7 +229,11 @@ function saveImage(blob) {
   if (!blob) return;
 
   imageBlob = blob;
-  preview.src = URL.createObjectURL(blob);
+
+  if (imageURL) URL.revokeObjectURL(imageURL);
+  imageURL = URL.createObjectURL(blob);
+
+  preview.src = imageURL;
   preview.hidden = false;
 
   detectedNotes = [];
@@ -272,13 +242,10 @@ function saveImage(blob) {
 
   $("detectBtn").disabled = false;
   $("playBtn").disabled = true;
+
   stopMusic();
 
-  setStatus(
-    cvReady
-      ? "Image ready. Press Detect Notes."
-      : "Image ready. Waiting for OpenCV to load..."
-  );
+  setStatus("Image ready. Press Detect Notes.");
 }
 
 $("startBtn").addEventListener("click", () => {
@@ -310,8 +277,13 @@ $("captureBtn").addEventListener("click", () => {
   const c = document.createElement("canvas");
   c.width = video.videoWidth;
   c.height = video.videoHeight;
+
   c.getContext("2d").drawImage(video, 0, 0, c.width, c.height);
-  c.toBlob(saveImage, "image/jpeg", 0.98);
+
+  c.toBlob(blob => {
+    if (blob) saveImage(blob);
+    else setStatus("Could not capture image.");
+  }, "image/jpeg", 0.98);
 });
 
 $("fileInput").addEventListener("change", event => {
@@ -319,9 +291,10 @@ $("fileInput").addEventListener("change", event => {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    setStatus("Please select an image.");
+    setStatus("Please select an image file.");
     return;
   }
+
   saveImage(file);
 });
 
@@ -334,38 +307,43 @@ function loadImage(blob) {
       URL.revokeObjectURL(url);
       resolve(img);
     };
+
     img.onerror = () => {
       URL.revokeObjectURL(url);
       reject(new Error("Could not open image."));
     };
+
     img.src = url;
   });
 }
 
-// Find the most likely group of five staff lines.
-// Row projections are smoothed to tolerate small print variations.
+// Detect staff lines from horizontal pixel projections.
 function findStaff(binary, width, height) {
-  const pixels = binary.data;
   const scores = new Float32Array(height);
 
   for (let y = 0; y < height; y++) {
-    let sum = 0;
+    let count = 0;
+
     for (let x = 0; x < width; x++) {
-      sum += pixels[y * width + x] > 0 ? 1 : 0;
+      if (binary.ucharPtr(y, x)[0] > 0) count++;
     }
-    scores[y] = sum / width;
+
+    scores[y] = count / width;
   }
 
   const smooth = new Float32Array(height);
+
   for (let y = 0; y < height; y++) {
-    let total = 0, count = 0;
+    let sum = 0, count = 0;
+
     for (let d = -2; d <= 2; d++) {
       if (y + d >= 0 && y + d < height) {
-        total += scores[y + d];
+        sum += scores[y + d];
         count++;
       }
     }
-    smooth[y] = total / count;
+
+    smooth[y] = sum / count;
   }
 
   const peaks = [];
@@ -375,7 +353,7 @@ function findStaff(binary, width, height) {
     if (
       smooth[y] >= smooth[y - 1] &&
       smooth[y] >= smooth[y + 1] &&
-      smooth[y] > 0.15
+      smooth[y] > 0.12
     ) {
       const previous = peaks[peaks.length - 1];
 
@@ -392,7 +370,6 @@ function findStaff(binary, width, height) {
 
   let best = null;
 
-  // Test groups of five peaks with approximately equal spacing.
   for (let i = 0; i < peaks.length; i++) {
     for (let j = i + 1; j < peaks.length; j++) {
       const gap = (peaks[j].y - peaks[i].y) / (j - i);
@@ -409,6 +386,7 @@ function findStaff(binary, width, height) {
 
         for (const peak of peaks) {
           const d = Math.abs(peak.y - target);
+
           if (d < distance) {
             distance = d;
             nearest = peak;
@@ -419,25 +397,27 @@ function findStaff(binary, width, height) {
           valid = false;
           break;
         }
+
         if (lines.includes(nearest.y)) {
           valid = false;
           break;
         }
+
         lines.push(nearest.y);
       }
 
       if (!valid) continue;
+
       lines.sort((a, b) => a - b);
 
       const gaps = lines.slice(1).map((v, k) => v - lines[k]);
       const mean = gaps.reduce((a, b) => a + b, 0) / 4;
       const spread = Math.max(...gaps) - Math.min(...gaps);
 
-      if (spread > mean * 0.28) continue;
+      if (spread > mean * 0.3) continue;
 
-      const score = lines.reduce(
-        (sum, y) => sum + smooth[y], 0
-      ) - spread / mean * 0.2;
+      const score = lines.reduce((sum, y) => sum + smooth[y], 0)
+        - spread / mean * 0.2;
 
       if (!best || score > best.score) {
         best = { lines, gap: mean, score };
@@ -448,36 +428,31 @@ function findStaff(binary, width, height) {
   return best;
 }
 
+// Treble-clef pitch calculation: bottom line is E4.
 function pitchFromY(y, bottomLine, gap) {
-  // Treble clef: bottom staff line is E4.
   const steps = Math.round((bottomLine - y) / (gap / 2));
   const letters = ["C", "D", "E", "F", "G", "A", "B"];
-
-  // E4 is diatonic index 30 when C0 = 0.
   const diatonic = 30 + steps;
+
   const octave = Math.floor(diatonic / 7);
   const letter = letters[(diatonic % 7 + 7) % 7];
 
-  const semitone = {
+  const semitones = {
     C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11
-  }[letter];
+  };
 
   return {
     name: letter + octave,
-    midi: 12 * (octave + 1) + semitone
+    midi: 12 * (octave + 1) + semitones[letter]
   };
 }
 
 async function detectNotes(blob) {
   if (!cvReady) {
-    throw new Error(
-      "OpenCV is still loading. Check your internet connection and retry."
-    );
+    throw new Error("OpenCV is loading. Wait a moment and retry.");
   }
 
   const img = await loadImage(blob);
-
-  // Preserve detail; limit huge images to avoid excessive memory usage.
   const scale = Math.min(1, 2200 / img.naturalWidth);
   const width = Math.round(img.naturalWidth * scale);
   const height = Math.round(img.naturalHeight * scale);
@@ -493,20 +468,16 @@ async function detectNotes(blob) {
   let gray = new cv.Mat();
   let blurred = new cv.Mat();
   let binary = new cv.Mat();
-  let horizontal = new cv.Mat();
-  let staffOnly = new cv.Mat();
-  let noteImage = new cv.Mat();
-  let kernel = null;
-  let ellipseKernel = null;
   let labels = new cv.Mat();
   let stats = new cv.Mat();
   let centroids = new cv.Mat();
+  let kernel = null;
+  let isolated = new cv.Mat();
 
   try {
     cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
     cv.GaussianBlur(gray, blurred, new cv.Size(3, 3), 0);
 
-    // Adaptive threshold handles uneven lighting and paper shadows.
     const block = Math.max(
       15,
       Math.floor(Math.min(width, height) / 30) | 1
@@ -515,63 +486,36 @@ async function detectNotes(blob) {
     cv.adaptiveThreshold(
       blurred, binary, 255,
       cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-      cv.THRESH_BINARY_INV, block, 8
+      cv.THRESH_BINARY_INV,
+      block,
+      8
     );
 
-    // Locate staff lines using horizontal projections.
     const staff = findStaff(binary, width, height);
 
     if (!staff) {
       throw new Error(
-        "Cannot locate five staff lines. Upload a straight, high-resolution " +
-        "photo showing one complete treble-clef staff."
+        "Five staff lines not found. Try a straight photo of one staff."
       );
     }
 
     const gap = staff.gap;
     const bottomLine = staff.lines[4];
 
-    // Extract long horizontal lines and remove them from the image.
-    const horizontalSize = Math.max(15, Math.round(width * 0.035));
+    // CRITICAL FIX:
+    // Do not erase horizontal staff lines from the binary image.
+    // Opening the original binary image avoids destroying noteheads
+    // by manually deleting rows across the whole sheet.
+    const kw = Math.max(3, Math.round(gap * 0.55) | 1);
+    const kh = Math.max(3, Math.round(gap * 0.35) | 1);
+
     kernel = cv.getStructuringElement(
-      cv.MORPH_RECT,
-      new cv.Size(horizontalSize, 1)
+      cv.MORPH_ELLIPSE,
+      new cv.Size(kw, kh)
     );
 
     cv.morphologyEx(
-      binary, horizontal, cv.MORPH_OPEN, kernel
-    );
-
-    // Remove only the detected staff-line band.
-    cv.subtract(binary, horizontal, noteImage);
-
-    // Remove residual horizontal marks around each staff line.
-    for (const y of staff.lines) {
-      const top = Math.max(0, Math.round(y - gap * 0.09));
-      const bottom = Math.min(
-        height, Math.round(y + gap * 0.09 + 1)
-      );
-
-      for (let yy = top; yy < bottom; yy++) {
-        for (let x = 0; x < width; x++) {
-          noteImage.ucharPtr(yy, x)[0] = 0;
-        }
-      }
-    }
-
-    // Morphological opening isolates compact, oval-like noteheads
-    // from thin stems and many other elongated marks.
-    const kw = Math.max(3, Math.round(gap * 0.95) | 1);
-    const kh = Math.max(3, Math.round(gap * 0.55) | 1);
-
-    ellipseKernel = cv.getStructuringElement(
-      cv.MORPH_ELLIPSE, new cv.Size(kw, kh)
-    );
-
-    const isolated = new cv.Mat();
-
-    cv.morphologyEx(
-      noteImage, isolated, cv.MORPH_OPEN, ellipseKernel
+      binary, isolated, cv.MORPH_OPEN, kernel
     );
 
     cv.connectedComponentsWithStats(
@@ -587,28 +531,28 @@ async function detectNotes(blob) {
       const h = stats.intAt(i, cv.CC_STAT_HEIGHT);
       const area = stats.intAt(i, cv.CC_STAT_AREA);
 
-      if (
-        w >= gap * 0.55 &&
-        w <= gap * 2.4 &&
-        h >= gap * 0.25 &&
-        h <= gap * 1.15 &&
-        area >= gap * gap * 0.12 &&
-        area <= gap * gap * 2.5 &&
-        y + h >= staff.lines[0] - gap * 2 &&
-        y <= staff.lines[4] + gap * 2
-      ) {
-        candidates.push({
-          x: centroids.doubleAt(i, 0),
-          y: centroids.doubleAt(i, 1),
-          w, h, area
-        });
+      const cx = centroids.doubleAt(i, 0);
+      const cy = centroids.doubleAt(i, 1);
+
+      const inStaff =
+        cy >= staff.lines[0] - gap * 2 &&
+        cy <= staff.lines[4] + gap * 2;
+
+      const reasonableShape =
+        w >= gap * 0.35 &&
+        w <= gap * 1.8 &&
+        h >= gap * 0.18 &&
+        h <= gap * 1.1 &&
+        area >= gap * gap * 0.08 &&
+        area <= gap * gap * 1.8;
+
+      if (inStaff && reasonableShape) {
+        candidates.push({ x: cx, y: cy, w, h, area });
       }
     }
 
-    isolated.delete();
-
-    // Merge duplicate detections caused by broken noteheads.
     candidates.sort((a, b) => a.x - b.x);
+
     const merged = [];
 
     for (const p of candidates) {
@@ -616,8 +560,8 @@ async function detectNotes(blob) {
 
       if (
         previous &&
-        Math.abs(previous.x - p.x) < gap * 0.7 &&
-        Math.abs(previous.y - p.y) < gap * 0.65
+        Math.abs(previous.x - p.x) < gap * 0.65 &&
+        Math.abs(previous.y - p.y) < gap * 0.6
       ) {
         if (p.area > previous.area) Object.assign(previous, p);
       } else {
@@ -633,10 +577,10 @@ async function detectNotes(blob) {
       .sort((a, b) => a.x - b.x)
       .slice(0, 200);
 
-    // Draw detected staff and candidate noteheads for visual checking.
+    // Show the staff and detected note centers.
     cv.imshow(canvas, src);
-    const out = canvas.getContext("2d");
 
+    const out = canvas.getContext("2d");
     out.lineWidth = Math.max(1, gap * 0.035);
     out.strokeStyle = "#2563eb";
 
@@ -648,9 +592,10 @@ async function detectNotes(blob) {
     });
 
     out.fillStyle = "#ef4444";
-    notes.forEach(n => {
+
+    notes.forEach(note => {
       out.beginPath();
-      out.arc(n.x, n.y, Math.max(4, gap * 0.18), 0, Math.PI * 2);
+      out.arc(note.x, note.y, Math.max(4, gap * 0.18), 0, Math.PI * 2);
       out.fill();
     });
 
@@ -660,15 +605,12 @@ async function detectNotes(blob) {
     gray.delete();
     blurred.delete();
     binary.delete();
-    horizontal.delete();
-    staffOnly.delete();
-    noteImage.delete();
     labels.delete();
     stats.delete();
     centroids.delete();
+    isolated.delete();
 
     if (kernel) kernel.delete();
-    if (ellipseKernel) ellipseKernel.delete();
   }
 }
 
@@ -679,6 +621,7 @@ $("detectBtn").addEventListener("click", async () => {
   $("playBtn").disabled = true;
   notesBox.replaceChildren();
   stopMusic();
+
   setStatus("Processing image and searching for noteheads...");
 
   try {
@@ -686,8 +629,8 @@ $("detectBtn").addEventListener("click", async () => {
 
     if (!detectedNotes.length) {
       setStatus(
-        "No noteheads found. Try a higher-resolution photo with " +
-        "one complete, straight staff and clear printed notes."
+        "No noteheads found. The image was processed, but the detector " +
+        "could not isolate the note shapes. Try a higher-resolution image."
       );
       return;
     }
@@ -701,11 +644,11 @@ $("detectBtn").addEventListener("click", async () => {
     });
 
     $("playBtn").disabled = false;
+
     setStatus(
       `Found ${detectedNotes.length} candidate notes: ` +
       detectedNotes.map(n => n.name).join(" – ") +
-      ". Red dots show estimated notehead positions. " +
-      "Check the result before playback."
+      ". Red dots mark estimated positions. Check their accuracy."
     );
   } catch (error) {
     detectedNotes = [];
@@ -739,7 +682,7 @@ $("playBtn").addEventListener("click", async () => {
     const startTime = audioContext.currentTime;
 
     $("stopMusicBtn").disabled = false;
-    setStatus("Playing estimated notes...");
+    setStatus("Playing detected notes...");
 
     detectedNotes.forEach((note, index) => {
       const oscillator = audioContext.createOscillator();
@@ -762,7 +705,7 @@ $("playBtn").addEventListener("click", async () => {
       oscillator.stop(start + duration);
       activeSources.push(oscillator);
 
-      const timer = setTimeout(() => {
+      playbackTimers.push(setTimeout(() => {
         if (currentPlayback !== playbackID) return;
 
         document.querySelectorAll(".note.active").forEach(el => {
@@ -772,10 +715,9 @@ $("playBtn").addEventListener("click", async () => {
         const element = notesBox.querySelector(
           `[data-index="${index}"]`
         );
-        if (element) element.classList.add("active");
-      }, index * duration * 1000);
 
-      playbackTimers.push(timer);
+        if (element) element.classList.add("active");
+      }, index * duration * 1000));
     });
 
     playbackTimers.push(setTimeout(() => {
