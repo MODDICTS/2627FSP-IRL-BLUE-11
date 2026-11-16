@@ -267,12 +267,14 @@ function waitForCV(){
       status('MeloTunes recognition engine ready.');
       $('detectBtn').disabled=!imageBlob;
     }
+
     if(Date.now()-started>60000){
       clearInterval(timer);
       status('OpenCV could not load. Check your internet connection.');
     }
   },150);
 }
+
 waitForCV();
 
 /* =========================================
@@ -281,21 +283,29 @@ waitForCV();
 
 async function refreshCameras(){
   if(!navigator.mediaDevices?.enumerateDevices)return;
+
   try{
     const cameras=(await navigator.mediaDevices.enumerateDevices())
       .filter(d=>d.kind==='videoinput');
 
     const previous=$('cameraSelect').value;
-    $('cameraSelect').replaceChildren(new Option('Default camera',''));
+
+    $('cameraSelect').replaceChildren(
+      new Option('Default camera','')
+    );
 
     cameras.forEach((c,i)=>{
-      $('cameraSelect').add(new Option(c.label||`Camera ${i+1}`,c.deviceId));
+      $('cameraSelect').add(
+        new Option(c.label||`Camera ${i+1}`,c.deviceId)
+      );
     });
 
     if(cameras.some(c=>c.deviceId===previous)){
       $('cameraSelect').value=previous;
     }
-  }catch(e){console.warn(e);}
+  }catch(e){
+    console.warn(e);
+  }
 }
 
 function stopCamera(){
@@ -303,36 +313,55 @@ function stopCamera(){
     stream.getTracks().forEach(t=>t.stop());
     stream=null;
   }
+
   video.srcObject=null;
   $('captureBtn').disabled=true;
   status('Camera stopped.');
 }
 
 async function startCamera(deviceId=null,facing='environment'){
+
   if(!navigator.mediaDevices?.getUserMedia){
     status('Camera requires HTTPS or localhost. Upload an image instead.');
     return;
   }
 
-  if(stream)stream.getTracks().forEach(t=>t.stop());
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+  }
 
   try{
+
     const videoConstraint=deviceId
-      ?{deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1440}}
-      :{facingMode:{ideal:facing},width:{ideal:2560},height:{ideal:1440}};
+      ?{
+          deviceId:{exact:deviceId},
+          width:{ideal:2560},
+          height:{ideal:1440}
+        }
+      :{
+          facingMode:{ideal:facing},
+          width:{ideal:2560},
+          height:{ideal:1440}
+        };
 
     stream=await navigator.mediaDevices.getUserMedia({
-      video:videoConstraint,audio:false
+      video:videoConstraint,
+      audio:false
     });
 
     video.srcObject=stream;
     await video.play();
 
     $('captureBtn').disabled=false;
+
     await refreshCameras();
 
-    if(deviceId)$('cameraSelect').value=deviceId;
+    if(deviceId){
+      $('cameraSelect').value=deviceId;
+    }
+
     status('Camera ready. Capture your music sheet.');
+
   }catch(e){
     status('Camera error: '+e.message);
   }
@@ -344,7 +373,9 @@ $('backBtn').onclick=()=>startCamera(null,'environment');
 $('stopBtn').onclick=stopCamera;
 
 $('cameraSelect').onchange=()=>{
-  if($('cameraSelect').value)startCamera($('cameraSelect').value);
+  if($('cameraSelect').value){
+    startCamera($('cameraSelect').value);
+  }
 };
 
 /* =========================================
@@ -352,13 +383,16 @@ $('cameraSelect').onchange=()=>{
 ========================================= */
 
 function stopMusic(){
+
   playbackToken++;
+
   timers.forEach(clearTimeout);
   timers=[];
 
   activeOscillators.forEach(o=>{
     try{o.stop();}catch(e){}
   });
+
   activeOscillators=[];
 
   $('stopMusicBtn').disabled=true;
@@ -368,11 +402,15 @@ function stopMusic(){
 }
 
 function saveImage(blob){
+
   if(!blob)return;
 
   imageBlob=blob;
 
-  if(imageURL)URL.revokeObjectURL(imageURL);
+  if(imageURL){
+    URL.revokeObjectURL(imageURL);
+  }
+
   imageURL=URL.createObjectURL(blob);
 
   preview.src=imageURL;
@@ -391,17 +429,25 @@ function saveImage(blob){
   $('playBtn').disabled=true;
   $('redetectBtn').disabled=true;
 
-  status(cvReady?'Image ready. Detect your notes.':'Waiting for recognition engine...');
+  status(
+    cvReady
+      ?'Image ready. Detect your notes.'
+      :'Waiting for recognition engine...'
+  );
 }
 
 $('captureBtn').onclick=()=>{
+
   if(!stream||!video.videoWidth)return;
 
   const c=document.createElement('canvas');
+
   c.width=video.videoWidth;
   c.height=video.videoHeight;
 
-  c.getContext('2d').drawImage(video,0,0,c.width,c.height);
+  c.getContext('2d').drawImage(
+    video,0,0,c.width,c.height
+  );
 
   c.toBlob(blob=>{
     if(blob)saveImage(blob);
@@ -409,18 +455,23 @@ $('captureBtn').onclick=()=>{
 };
 
 $('fileInput').onchange=e=>{
+
   const file=e.target.files?.[0];
+
   if(!file)return;
 
   if(!file.type.startsWith('image/')){
     status('Please upload an image.');
     return;
   }
+
   saveImage(file);
 };
 
 function loadImage(blob){
+
   return new Promise((resolve,reject)=>{
+
     const img=new Image();
     const url=URL.createObjectURL(blob);
 
@@ -428,10 +479,12 @@ function loadImage(blob){
       URL.revokeObjectURL(url);
       resolve(img);
     };
+
     img.onerror=()=>{
       URL.revokeObjectURL(url);
       reject(new Error('Could not open image.'));
     };
+
     img.src=url;
   });
 }
@@ -441,75 +494,110 @@ function loadImage(blob){
 ========================================= */
 
 function findStaffGroups(mask,width,height){
+
   const scores=new Float32Array(height);
 
   for(let y=0;y<height;y++){
+
     const row=mask.ucharPtr(y);
+
     let count=0;
-    for(let x=0;x<width;x++)if(row[x]>0)count++;
+
+    for(let x=0;x<width;x++){
+      if(row[x]>0)count++;
+    }
+
     scores[y]=count/width;
   }
 
   const smooth=new Float32Array(height);
 
   for(let y=0;y<height;y++){
+
     let sum=0,n=0;
+
     for(let d=-2;d<=2;d++){
+
       if(y+d>=0&&y+d<height){
         sum+=scores[y+d];
         n++;
       }
     }
+
     smooth[y]=sum/n;
   }
 
   const max=Math.max(...smooth);
   const threshold=Math.max(.07,max*.20);
+
   const peaks=[];
 
   let y=0;
 
   while(y<height){
-    if(smooth[y]<threshold){y++;continue;}
+
+    if(smooth[y]<threshold){
+      y++;
+      continue;
+    }
 
     let end=y;
-    let total=0,weighted=0;
+    let total=0;
+    let weighted=0;
 
     while(end<height&&smooth[end]>=threshold){
+
       total+=smooth[end];
       weighted+=end*smooth[end];
+
       end++;
     }
 
     peaks.push(weighted/Math.max(total,.001));
+
     y=end;
   }
 
   const groups=[];
 
   for(let i=0;i<=peaks.length-5;i++){
+
     const lines=peaks.slice(i,i+5);
-    const gaps=lines.slice(1).map((v,k)=>v-lines[k]);
+
+    const gaps=lines.slice(1).map(
+      (v,k)=>v-lines[k]
+    );
 
     const sorted=[...gaps].sort((a,b)=>a-b);
     const gap=sorted[2];
 
-    if(gap<3||gap>Math.min(120,height*.09))continue;
+    if(gap<3||gap>Math.min(120,height*.09)){
+      continue;
+    }
 
     const spread=Math.max(...gaps)-Math.min(...gaps);
-    if(spread>gap*.28)continue;
+
+    if(spread>gap*.28){
+      continue;
+    }
 
     const duplicate=groups.some(g=>
-      g.lines.filter(a=>lines.some(b=>Math.abs(a-b)<gap*.55)).length>=3
+      g.lines.filter(a=>
+        lines.some(b=>Math.abs(a-b)<gap*.55)
+      ).length>=3
     );
 
     if(duplicate)continue;
 
-    let left=width,right=0;
+    let left=width;
+    let right=0;
 
     for(const ly of lines){
+
       const row=mask.ucharPtr(Math.round(ly));
+
       for(let x=0;x<width;x++){
+
         if(row[x]>0){
           left=Math.min(left,x);
           right=Math.max(right,x);
@@ -518,6 +606,7 @@ function findStaffGroups(mask,width,height){
     }
 
     if(right-left>width*.18){
+
       groups.push({
         lines,
         gap,
@@ -534,9 +623,6 @@ function findStaffGroups(mask,width,height){
 
 /* =========================================
    NOTEHEAD DETECTION
-
-   Scans the original binary image so that
-   staff lines do not cut noteheads apart.
 ========================================= */
 
 function detectNoteheads(clean,staff,originalBinary){
@@ -544,6 +630,7 @@ function detectNoteheads(clean,staff,originalBinary){
   const gap=staff.gap;
   const width=originalBinary.cols;
   const height=originalBinary.rows;
+
   const imageRows=[];
 
   for(let y=0;y<height;y++){
@@ -551,22 +638,25 @@ function detectNoteheads(clean,staff,originalBinary){
   }
 
   const lineYs=staff.lines.map(v=>Math.round(v));
+
   const rx=Math.max(4,gap*.73);
   const ry=Math.max(2,gap*.34);
+
   const sampleCount=48;
+
   const candidates=[];
 
   function isStaffInk(x,y){
+
     for(const ly of lineYs){
+
       if(Math.abs(y-ly)<=Math.max(1.4,gap*.105)){
         return true;
       }
     }
+
     return false;
   }
-
-  // Scan staff positions and ledger-space positions.
-  // Treble E4 / bass G2 are the bottom staff lines.
 
   const minStep=-4;
   const maxStep=12;
@@ -575,14 +665,29 @@ function detectNoteheads(clean,staff,originalBinary){
 
     const cy=staff.bottom-step*(gap/2);
 
-    if(cy<staff.top-gap*1.2||cy>staff.bottom+gap*1.2){
+    if(
+      cy<staff.top-gap*1.2||
+      cy>staff.bottom+gap*1.2
+    ){
       continue;
     }
 
     const scores=[];
 
-    const xStart=Math.max(2,Math.ceil(staff.left+gap*2.5));
-    const xEnd=Math.min(width-2,Math.floor(staff.right-gap*.65));
+    // IMPORTANT:
+    // Start farther from the left staff edge.
+    // This prevents the clef from being detected
+    // as a group of musical noteheads.
+
+    const xStart=Math.max(
+      2,
+      Math.ceil(staff.left+gap*4.5)
+    );
+
+    const xEnd=Math.min(
+      width-2,
+      Math.floor(staff.right-gap*.65)
+    );
 
     for(let x=xStart;x<=xEnd;x+=2){
 
@@ -591,8 +696,6 @@ function detectNoteheads(clean,staff,originalBinary){
 
       const sectors=new Array(8).fill(0);
       const sectorTotals=new Array(8).fill(0);
-
-      // Inspect the oval outline.
 
       for(let k=0;k<sampleCount;k++){
 
@@ -629,6 +732,7 @@ function detectNoteheads(clean,staff,originalBinary){
       let covered=0;
 
       for(let q=0;q<8;q++){
+
         if(
           sectorTotals[q]&&
           sectors[q]/sectorTotals[q]>.20
@@ -637,13 +741,11 @@ function detectNoteheads(clean,staff,originalBinary){
         }
       }
 
-      // Check the inner oval too.
-      // Filled notes and hollow notes are both supported.
-
       let innerDark=0;
       let innerValid=0;
 
       for(let yy=-1;yy<=1;yy++){
+
         for(let xx=-2;xx<=2;xx++){
 
           const px=x+xx*gap*.10;
@@ -686,8 +788,6 @@ function detectNoteheads(clean,staff,originalBinary){
       });
     }
 
-    // Keep local peaks only.
-
     for(let i=1;i<scores.length-1;i++){
 
       const c=scores[i];
@@ -726,8 +826,6 @@ function detectNoteheads(clean,staff,originalBinary){
   }
 
   // Non-maximum suppression.
-  // Same notehead = one red dot.
-  // Different pitches in a chord remain separate.
 
   candidates.sort((a,b)=>b.confidence-a.confidence);
 
@@ -745,196 +843,204 @@ function detectNoteheads(clean,staff,originalBinary){
     }
   }
 
-  return unique.sort((a,b)=>a.x-b.x||a.y-b.y);
+  return unique.sort(
+    (a,b)=>a.x-b.x||a.y-b.y
+  );
 }
 
 /* =========================================
-   BARLINE DETECTION
+   IMPROVED BARLINE DETECTION
 
-   A confirmed barline must:
-   - Span almost the entire staff.
-   - Be vertically continuous.
-   - Intersect all five staff lines.
-   - Not be attached to a notehead.
+   Instead of relying on a morphology kernel
+   taller than the staff, this version checks
+   the actual vertical ink between every pair
+   of adjacent staff lines.
+
+   A real barline must:
+   1. Cross all four staff spaces.
+   2. Have continuous vertical ink.
+   3. Have sufficient coverage in every space.
+   4. Not be an ordinary note stem.
 ========================================= */
 
 function detectBarLines(binary,staff,noteheads){
 
   const gap=staff.gap;
+  const width=binary.cols;
+  const height=binary.rows;
 
-  const kernelHeight=Math.max(
-    14,
-    Math.round(gap*4.45)
+  const lines=staff.lines.map(
+    y=>Math.round(y)
   );
 
-  const kernel=cv.getStructuringElement(
-    cv.MORPH_RECT,
-    new cv.Size(1,kernelHeight)
-  );
-
-  const vertical=new cv.Mat();
-  const contours=new cv.MatVector();
-  const hierarchy=new cv.Mat();
   const candidates=[];
 
-  try{
+  // Ignore the clef area and the final edge
+  // of the staff.
 
-    cv.morphologyEx(
-      binary,
-      vertical,
-      cv.MORPH_OPEN,
-      kernel
-    );
+  const xStart=Math.max(
+    0,
+    Math.ceil(staff.left+gap*3.8)
+  );
 
-    cv.findContours(
-      vertical,
-      contours,
-      hierarchy,
-      cv.RETR_EXTERNAL,
-      cv.CHAIN_APPROX_SIMPLE
-    );
+  const xEnd=Math.min(
+    width-1,
+    Math.floor(staff.right-gap*.35)
+  );
 
-    for(let i=0;i<contours.size();i++){
+  const top=lines[0];
+  const bottom=lines[4];
 
-      const rect=cv.boundingRect(contours.get(i));
-      const x=Math.round(rect.x+rect.width/2);
+  function hasInk(x,y){
 
-      if(rect.width>gap*.24)continue;
+    for(let dx=-1;dx<=1;dx++){
+
+      const xx=x+dx;
 
       if(
-        x<staff.left+gap*2||
-        x>staff.right-gap*.35
+        xx>=0&&
+        xx<width&&
+        binary.ucharPtr(y)[xx]>0
       ){
-        continue;
+        return true;
       }
+    }
 
-      // Must span essentially the entire staff.
-      // No overhang is required.
+    return false;
+  }
 
-      if(rect.y>staff.top+gap*.14)continue;
+  for(let x=xStart;x<=xEnd;x++){
 
-      if(
-        rect.y+rect.height<
-        staff.bottom-gap*.14
-      ){
-        continue;
-      }
+    const spaceScores=[];
 
-      if(rect.height<gap*3.85)continue;
+    let totalHits=0;
+    let totalPixels=0;
 
-      // Check vertical continuity.
+    // Test all four spaces separately.
+    // Horizontal staff lines are excluded.
 
-      let hit=0;
-      let total=0;
+    for(let s=0;s<4;s++){
 
-      const y0=Math.max(
-        0,
-        Math.floor(staff.top)
+      const y0=Math.ceil(
+        lines[s]+gap*.16
       );
 
-      const y1=Math.min(
-        binary.rows-1,
-        Math.ceil(staff.bottom)
+      const y1=Math.floor(
+        lines[s+1]-gap*.16
       );
+
+      let hits=0;
+      let count=0;
 
       for(let y=y0;y<=y1;y++){
 
-        total++;
+        count++;
 
-        let found=false;
-
-        for(let dx=-1;dx<=1;dx++){
-
-          const xx=x+dx;
-
-          if(
-            xx>=0&&
-            xx<binary.cols&&
-            binary.ucharPtr(y)[xx]>0
-          ){
-            found=true;
-            break;
-          }
+        if(hasInk(x,y)){
+          hits++;
         }
-
-        if(found)hit++;
       }
 
-      const continuity=hit/Math.max(1,total);
+      spaceScores.push(
+        hits/Math.max(1,count)
+      );
 
-      if(continuity<.82)continue;
-
-      // All five staff lines must intersect the candidate.
-
-      let intersections=0;
-
-      for(const ly of staff.lines){
-
-        const yy=Math.round(ly);
-        let found=false;
-
-        for(let dx=-2;dx<=2;dx++){
-
-          const xx=x+dx;
-
-          if(
-            xx>=0&&
-            xx<binary.cols&&
-            yy>=0&&
-            yy<binary.rows&&
-            binary.ucharPtr(yy)[xx]>0
-          ){
-            found=true;
-            break;
-          }
-        }
-
-        if(found)intersections++;
-      }
-
-      if(intersections!==5)continue;
-
-      // Reject note stems attached to noteheads.
-
-      if(
-        noteheads.some(n=>
-          Math.abs(n.x-x)<gap*1.05
-        )
-      ){
-        continue;
-      }
-
-      candidates.push({
-        x,
-        continuity,
-        intersections
-      });
+      totalHits+=hits;
+      totalPixels+=count;
     }
 
-    candidates.sort((a,b)=>a.x-b.x);
+    const overall=
+      totalHits/Math.max(1,totalPixels);
 
-    const unique=[];
+    // Every space must contain a substantial
+    // vertical stroke. This rejects most note stems.
 
-    for(const p of candidates){
+    const minimumSpace=Math.min(...spaceScores);
 
-      const last=unique[unique.length-1];
+    const averageSpace=
+      spaceScores.reduce((a,b)=>a+b,0)/4;
 
-      if(!last||p.x-last.x>gap*.85){
-        unique.push(p);
-      }else if(p.continuity>last.continuity){
-        unique[unique.length-1]=p;
+    if(minimumSpace<.42)continue;
+    if(averageSpace<.56)continue;
+    if(overall<.56)continue;
+
+    // Confirm that the vertical stroke reaches
+    // near both the top and bottom staff lines.
+
+    let topHit=false;
+    let bottomHit=false;
+
+    for(let y=Math.max(0,top-2);y<=Math.min(height-1,top+2);y++){
+      if(hasInk(x,y)){
+        topHit=true;
+        break;
       }
     }
 
-    return unique.map(p=>p.x);
+    for(let y=Math.max(0,bottom-2);y<=Math.min(height-1,bottom+2);y++){
+      if(hasInk(x,y)){
+        bottomHit=true;
+        break;
+      }
+    }
 
-  }finally{
+    if(!topHit||!bottomHit)continue;
 
-    kernel.delete();
-    vertical.delete();
-    contours.delete();
-    hierarchy.delete();
+    // Reject a candidate if it belongs to a note stem.
+
+    const attachedToNote=noteheads.some(n=>
+      Math.abs(n.x-x)<gap*.95
+    );
+
+    if(attachedToNote)continue;
+
+    candidates.push({
+      x,
+      score:averageSpace+overall
+    });
   }
+
+  // Merge neighboring pixels belonging to
+  // the same vertical barline.
+
+  candidates.sort((a,b)=>a.x-b.x);
+
+  const merged=[];
+
+  for(const candidate of candidates){
+
+    const last=merged[merged.length-1];
+
+    if(
+      !last||
+      candidate.x-last.end>gap*.35
+    ){
+
+      merged.push({
+        x:candidate.x,
+        end:candidate.x,
+        score:candidate.score,
+        count:1
+      });
+
+    }else{
+
+      last.end=candidate.x;
+      last.count++;
+
+      if(candidate.score>last.score){
+        last.x=candidate.x;
+        last.score=candidate.score;
+      }
+    }
+  }
+
+  // Return one central x-coordinate per line.
+
+  return merged
+    .filter(item=>item.count<=Math.max(1,gap*.35))
+    .map(item=>item.x)
+    .sort((a,b)=>a-b);
 }
 
 /* =========================================
@@ -1054,8 +1160,8 @@ function groupMeasures(notes,staffs){
       );
     }
 
-    // Pause only when a confirmed barline exists
-    // between the current note and the next note.
+    // Check whether an actual detected barline
+    // lies between two consecutive note events.
 
     for(let i=0;i<grouped.length;i++){
 
@@ -1091,6 +1197,8 @@ function drawResults(ctx,staffs,notes){
 
   ctx.save();
 
+  // Staff lines.
+
   ctx.strokeStyle='#2563eb';
   ctx.lineWidth=2;
 
@@ -1104,7 +1212,7 @@ function drawResults(ctx,staffs,notes){
       ctx.stroke();
     });
 
-    // Green markers are only confirmed barlines.
+    // Confirmed measure boundaries only.
 
     ctx.strokeStyle='#16a34a';
     ctx.lineWidth=2.5;
@@ -1112,8 +1220,10 @@ function drawResults(ctx,staffs,notes){
     staff.bars.forEach(x=>{
 
       ctx.beginPath();
+
       ctx.moveTo(x,staff.top-3);
       ctx.lineTo(x,staff.bottom+3);
+
       ctx.stroke();
     });
 
@@ -1140,6 +1250,7 @@ function drawResults(ctx,staffs,notes){
 
     ctx.strokeStyle='white';
     ctx.lineWidth=1.5;
+
     ctx.stroke();
   });
 
@@ -1224,6 +1335,7 @@ async function detectSheet(blob){
     );
 
     if(!rawStaffs.length){
+
       throw new Error(
         'Could not detect five staff lines. Try a clearer image.'
       );
@@ -1245,15 +1357,14 @@ async function detectSheet(blob){
 
       const staff=rawStaffs[s];
 
-      // Detect noteheads using original image pixels.
-
       const heads=detectNoteheads(
         clean,
         staff,
         binary
       );
 
-      // Detect barlines after notehead detection.
+      // Detect measure lines using the five
+      // staff lines and the vertical ink between them.
 
       staff.bars=detectBarLines(
         binary,
@@ -1290,6 +1401,7 @@ async function detectSheet(blob){
     }
 
     if(!allNotes.length){
+
       throw new Error(
         'No noteheads found. Try a clearer or closer image.'
       );
@@ -1304,7 +1416,7 @@ async function detectSheet(blob){
       resultStaffs
     );
 
-    // Restore original image before drawing overlays.
+    // Restore the original image before drawing.
 
     ctx.drawImage(img,0,0,w,h);
 
@@ -1400,7 +1512,7 @@ async function runDetection(){
     status(
       `Detected ${staffs.length} staff system(s), `+
       `${detectedNotes.length} candidate noteheads and `+
-      `${barCount} possible measure boundary/boundaries. Check the overlay before playback.`
+      `${barCount} confirmed measure boundary/boundaries.`
     );
 
   }catch(e){
@@ -1584,7 +1696,9 @@ $('playBtn').onclick=async()=>{
 
       cursor+=event.beats*beat;
 
-      // Pause only at confirmed measure boundaries.
+      // IMPORTANT:
+      // The pause is added only when a confirmed
+      // green barline exists between two note events.
 
       if(event.barAfter){
         cursor+=pause;
