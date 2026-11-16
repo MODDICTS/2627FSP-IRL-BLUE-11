@@ -197,7 +197,7 @@ input[type=range]{width:100%;margin-top:9px}
       Measure pause: <span id="pauseValue">0.25 beats</span>
     </label>
     <input id="barPause" type="range" min="0" max="1" step=".05" value=".25">
-    <p class="small">Adjusts the short break between measures. Actual musical rests are treated separately.</p>
+    <p class="small">Controls the additional pause after detected measure boundaries.</p>
   </div>
 </section>
 
@@ -218,7 +218,14 @@ input[type=range]{width:100%;margin-top:9px}
   <div class="legend">
     <span><i class="dot" style="background:#ef4444"></i>Noteheads</span>
     <span><i class="dot" style="background:#2563eb"></i>Staff lines</span>
-    <span><i class="dot" style="background:#16a34a"></i>Confirmed barlines</span>
+    <span><i class="dot" style="background:#16a34a"></i>Detected barlines</span>
+  </div>
+
+  <div class="info">
+    <strong>Recognition information</strong><br>
+    Green lines indicate detected measure boundaries.
+    Red circles indicate recognized notehead centers.
+    Note duration is currently estimated rather than read from the musical notation.
   </div>
 </section>
 
@@ -254,24 +261,35 @@ function status(s){
 }
 
 /* =========================================
-   OPENCV
+   OPENCV INITIALIZATION
 ========================================= */
 
 function waitForCV(){
+
   const started=Date.now();
 
   const timer=setInterval(()=>{
+
     if(window.cv&&window.cv.Mat&&window.cv.imread){
-      clearInterval(timer);
-      cvReady=true;
-      status('MeloTunes recognition engine ready.');
-      $('detectBtn').disabled=!imageBlob;
+
+      if(typeof window.cv.Mat==='function'){
+
+        clearInterval(timer);
+        cvReady=true;
+
+        status('MeloTunes recognition engine ready.');
+
+        $('detectBtn').disabled=!imageBlob;
+      }
     }
 
     if(Date.now()-started>60000){
+
       clearInterval(timer);
+
       status('OpenCV could not load. Check your internet connection.');
     }
+
   },150);
 }
 
@@ -282,9 +300,11 @@ waitForCV();
 ========================================= */
 
 async function refreshCameras(){
+
   if(!navigator.mediaDevices?.enumerateDevices)return;
 
   try{
+
     const cameras=(await navigator.mediaDevices.enumerateDevices())
       .filter(d=>d.kind==='videoinput');
 
@@ -303,31 +323,38 @@ async function refreshCameras(){
     if(cameras.some(c=>c.deviceId===previous)){
       $('cameraSelect').value=previous;
     }
+
   }catch(e){
     console.warn(e);
   }
 }
 
 function stopCamera(){
+
   if(stream){
     stream.getTracks().forEach(t=>t.stop());
     stream=null;
   }
 
   video.srcObject=null;
+
   $('captureBtn').disabled=true;
+
   status('Camera stopped.');
 }
 
 async function startCamera(deviceId=null,facing='environment'){
 
   if(!navigator.mediaDevices?.getUserMedia){
+
     status('Camera requires HTTPS or localhost. Upload an image instead.');
+
     return;
   }
 
   if(stream){
     stream.getTracks().forEach(t=>t.stop());
+    stream=null;
   }
 
   try{
@@ -350,6 +377,7 @@ async function startCamera(deviceId=null,facing='environment'){
     });
 
     video.srcObject=stream;
+
     await video.play();
 
     $('captureBtn').disabled=false;
@@ -363,6 +391,7 @@ async function startCamera(deviceId=null,facing='environment'){
     status('Camera ready. Capture your music sheet.');
 
   }catch(e){
+
     status('Camera error: '+e.message);
   }
 }
@@ -373,13 +402,14 @@ $('backBtn').onclick=()=>startCamera(null,'environment');
 $('stopBtn').onclick=stopCamera;
 
 $('cameraSelect').onchange=()=>{
+
   if($('cameraSelect').value){
     startCamera($('cameraSelect').value);
   }
 };
 
 /* =========================================
-   IMAGE
+   IMAGE MANAGEMENT
 ========================================= */
 
 function stopMusic(){
@@ -421,6 +451,7 @@ function saveImage(blob){
   staffs=[];
 
   notesBox.replaceChildren();
+
   canvas.hidden=true;
 
   stopMusic();
@@ -473,6 +504,7 @@ function loadImage(blob){
   return new Promise((resolve,reject)=>{
 
     const img=new Image();
+
     const url=URL.createObjectURL(blob);
 
     img.onload=()=>{
@@ -490,7 +522,7 @@ function loadImage(blob){
 }
 
 /* =========================================
-   STAFF LINE DETECTION
+   STAFF DETECTION
 ========================================= */
 
 function findStaffGroups(mask,width,height){
@@ -514,7 +546,8 @@ function findStaffGroups(mask,width,height){
 
   for(let y=0;y<height;y++){
 
-    let sum=0,n=0;
+    let sum=0;
+    let n=0;
 
     for(let d=-2;d<=2;d++){
 
@@ -528,7 +561,8 @@ function findStaffGroups(mask,width,height){
   }
 
   const max=Math.max(...smooth);
-  const threshold=Math.max(.07,max*.20);
+
+  const threshold=Math.max(.055,max*.19);
 
   const peaks=[];
 
@@ -569,6 +603,7 @@ function findStaffGroups(mask,width,height){
     );
 
     const sorted=[...gaps].sort((a,b)=>a-b);
+
     const gap=sorted[2];
 
     if(gap<3||gap>Math.min(120,height*.09)){
@@ -577,13 +612,13 @@ function findStaffGroups(mask,width,height){
 
     const spread=Math.max(...gaps)-Math.min(...gaps);
 
-    if(spread>gap*.28){
+    if(spread>gap*.30){
       continue;
     }
 
     const duplicate=groups.some(g=>
       g.lines.filter(a=>
-        lines.some(b=>Math.abs(a-b)<gap*.55)
+        lines.some(b=>Math.abs(a-b)<gap*.5)
       ).length>=3
     );
 
@@ -594,7 +629,9 @@ function findStaffGroups(mask,width,height){
 
     for(const ly of lines){
 
-      const row=mask.ucharPtr(Math.round(ly));
+      const row=mask.ucharPtr(
+        Math.max(0,Math.min(height-1,Math.round(ly)))
+      );
 
       for(let x=0;x<width;x++){
 
@@ -622,12 +659,19 @@ function findStaffGroups(mask,width,height){
 }
 
 /* =========================================
-   NOTEHEAD DETECTION
+   IMPROVED NOTEHEAD DETECTION
+
+   Main improvements:
+   - Excludes the clef and key signature region.
+   - Checks notehead shape and dark-pixel coverage.
+   - Uses local maximum suppression.
+   - Rejects weak detections.
 ========================================= */
 
 function detectNoteheads(clean,staff,originalBinary){
 
   const gap=staff.gap;
+
   const width=originalBinary.cols;
   const height=originalBinary.rows;
 
@@ -639,10 +683,10 @@ function detectNoteheads(clean,staff,originalBinary){
 
   const lineYs=staff.lines.map(v=>Math.round(v));
 
-  const rx=Math.max(4,gap*.73);
-  const ry=Math.max(2,gap*.34);
+  const rx=Math.max(4,gap*.68);
+  const ry=Math.max(2,gap*.32);
 
-  const sampleCount=48;
+  const sampleCount=64;
 
   const candidates=[];
 
@@ -650,7 +694,7 @@ function detectNoteheads(clean,staff,originalBinary){
 
     for(const ly of lineYs){
 
-      if(Math.abs(y-ly)<=Math.max(1.4,gap*.105)){
+      if(Math.abs(y-ly)<=Math.max(1.2,gap*.10)){
         return true;
       }
     }
@@ -658,36 +702,49 @@ function detectNoteheads(clean,staff,originalBinary){
     return false;
   }
 
-  const minStep=-4;
-  const maxStep=12;
+  /*
+    The clef is not a note.
+
+    Start scanning farther into the staff so
+    the treble/bass clef and key signature
+    cannot create false note detections.
+
+    The starting point is also limited by the
+    actual first available note area.
+  */
+
+  const xStart=Math.max(
+    2,
+    Math.ceil(staff.left+gap*5.2)
+  );
+
+  const xEnd=Math.min(
+    width-2,
+    Math.floor(staff.right-gap*.55)
+  );
+
+  /*
+    Scan the musical pitch positions.
+
+    Half a staff-space corresponds to one
+    diatonic pitch step.
+  */
+
+  const minStep=-8;
+  const maxStep=16;
 
   for(let step=minStep;step<=maxStep;step++){
 
     const cy=staff.bottom-step*(gap/2);
 
     if(
-      cy<staff.top-gap*1.2||
-      cy>staff.bottom+gap*1.2
+      cy<staff.top-gap*2||
+      cy>staff.bottom+gap*2
     ){
       continue;
     }
 
     const scores=[];
-
-    // IMPORTANT:
-    // Start farther from the left staff edge.
-    // This prevents the clef from being detected
-    // as a group of musical noteheads.
-
-    const xStart=Math.max(
-      2,
-      Math.ceil(staff.left+gap*4.5)
-    );
-
-    const xEnd=Math.min(
-      width-2,
-      Math.floor(staff.right-gap*.65)
-    );
 
     for(let x=xStart;x<=xEnd;x+=2){
 
@@ -722,7 +779,9 @@ function detectNoteheads(clean,staff,originalBinary){
         sectorTotals[sector]++;
 
         if(imageRows[iy][ix]>0){
+
           dark++;
+
           sectors[sector]++;
         }
       }
@@ -748,11 +807,8 @@ function detectNoteheads(clean,staff,originalBinary){
 
         for(let xx=-2;xx<=2;xx++){
 
-          const px=x+xx*gap*.10;
-          const py=cy+yy*gap*.09;
-
-          const ix=Math.round(px);
-          const iy=Math.round(py);
+          const ix=Math.round(x+xx*gap*.10);
+          const iy=Math.round(cy+yy*gap*.09);
 
           if(
             ix<0||ix>=width||
@@ -783,8 +839,8 @@ function detectNoteheads(clean,staff,originalBinary){
         ringScore,
         covered,
         innerScore,
-        step,
-        valid
+        valid,
+        step
       });
     }
 
@@ -800,14 +856,14 @@ function detectNoteheads(clean,staff,originalBinary){
       }
 
       if(
-        c.ringScore<.37||
+        c.ringScore<.39||
         c.covered<5||
         c.valid<16
       ){
         continue;
       }
 
-      if(c.innerScore<.015&&c.ringScore<.55){
+      if(c.innerScore<.035&&c.ringScore<.54){
         continue;
       }
 
@@ -816,16 +872,22 @@ function detectNoteheads(clean,staff,originalBinary){
         y:c.y,
         width:rx*2,
         height:ry*2,
-        area:c.ringScore*gap*gap,
         fill:c.ringScore,
-        aspect:rx/ry,
         confidence:c.score+c.covered*.01,
         step:c.step
       });
     }
   }
 
-  // Non-maximum suppression.
+  /*
+    Non-maximum suppression.
+
+    A notehead may generate several candidate
+    centers because the scanning grid is dense.
+
+    Keep the strongest candidate within the
+    same local notehead area.
+  */
 
   candidates.sort((a,b)=>b.confidence-a.confidence);
 
@@ -834,8 +896,9 @@ function detectNoteheads(clean,staff,originalBinary){
   for(const point of candidates){
 
     const duplicate=unique.find(other=>
-      Math.abs(point.x-other.x)<gap*.82&&
-      Math.abs(point.y-other.y)<gap*.42
+
+      Math.abs(point.x-other.x)<gap*.75&&
+      Math.abs(point.y-other.y)<gap*.28
     );
 
     if(!duplicate){
@@ -843,7 +906,17 @@ function detectNoteheads(clean,staff,originalBinary){
     }
   }
 
-  return unique.sort(
+  /*
+    Remove isolated detections that are
+    inconsistent with the expected notehead size.
+  */
+
+  const filtered=unique.filter(point=>
+    point.confidence>.55&&
+    point.fill>.37
+  );
+
+  return filtered.sort(
     (a,b)=>a.x-b.x||a.y-b.y
   );
 }
@@ -851,21 +924,24 @@ function detectNoteheads(clean,staff,originalBinary){
 /* =========================================
    IMPROVED BARLINE DETECTION
 
-   Instead of relying on a morphology kernel
-   taller than the staff, this version checks
-   the actual vertical ink between every pair
-   of adjacent staff lines.
+   The previous algorithm had a critical error:
+   it rejected barlines near noteheads.
 
-   A real barline must:
-   1. Cross all four staff spaces.
-   2. Have continuous vertical ink.
-   3. Have sufficient coverage in every space.
-   4. Not be an ordinary note stem.
+   This is incorrect because a barline can
+   legitimately stand right beside a note.
+
+   This version:
+   1. Examines the full staff height.
+   2. Tests all four spaces independently.
+   3. Allows small gaps caused by scanning noise.
+   4. Rejects short note stems.
+   5. Groups neighboring pixels into one line.
 ========================================= */
 
-function detectBarLines(binary,staff,noteheads){
+function detectBarLines(binary,staff){
 
   const gap=staff.gap;
+
   const width=binary.cols;
   const height=binary.rows;
 
@@ -873,23 +949,27 @@ function detectBarLines(binary,staff,noteheads){
     y=>Math.round(y)
   );
 
-  const candidates=[];
+  const top=lines[0];
+  const bottom=lines[4];
 
-  // Ignore the clef area and the final edge
-  // of the staff.
+  const candidates=[];
 
   const xStart=Math.max(
     0,
-    Math.ceil(staff.left+gap*3.8)
+    Math.ceil(staff.left+gap*3.5)
   );
 
   const xEnd=Math.min(
     width-1,
-    Math.floor(staff.right-gap*.35)
+    Math.floor(staff.right-gap*.25)
   );
 
-  const top=lines[0];
-  const bottom=lines[4];
+  /*
+    Read a small horizontal neighborhood.
+
+    This makes detection less sensitive to
+    anti-aliasing and thin photographed strokes.
+  */
 
   function hasInk(x,y){
 
@@ -897,11 +977,9 @@ function detectBarLines(binary,staff,noteheads){
 
       const xx=x+dx;
 
-      if(
-        xx>=0&&
-        xx<width&&
-        binary.ucharPtr(y)[xx]>0
-      ){
+      if(xx<0||xx>=width)continue;
+
+      if(binary.ucharPtr(y)[xx]>0){
         return true;
       }
     }
@@ -916,17 +994,21 @@ function detectBarLines(binary,staff,noteheads){
     let totalHits=0;
     let totalPixels=0;
 
-    // Test all four spaces separately.
-    // Horizontal staff lines are excluded.
+    /*
+      Check every space separately.
+
+      A genuine barline should pass through
+      all four spaces, unlike a note stem.
+    */
 
     for(let s=0;s<4;s++){
 
       const y0=Math.ceil(
-        lines[s]+gap*.16
+        lines[s]+gap*.12
       );
 
       const y1=Math.floor(
-        lines[s+1]-gap*.16
+        lines[s+1]-gap*.12
       );
 
       let hits=0;
@@ -952,32 +1034,45 @@ function detectBarLines(binary,staff,noteheads){
     const overall=
       totalHits/Math.max(1,totalPixels);
 
-    // Every space must contain a substantial
-    // vertical stroke. This rejects most note stems.
-
     const minimumSpace=Math.min(...spaceScores);
 
     const averageSpace=
       spaceScores.reduce((a,b)=>a+b,0)/4;
 
-    if(minimumSpace<.42)continue;
-    if(averageSpace<.56)continue;
-    if(overall<.56)continue;
+    /*
+      A real barline must have evidence in
+      every staff space.
 
-    // Confirm that the vertical stroke reaches
-    // near both the top and bottom staff lines.
+      Note stems generally fail this test
+      because they don't span the whole staff.
+    */
+
+    if(minimumSpace<.48)continue;
+    if(averageSpace<.59)continue;
+    if(overall<.57)continue;
+
+    /*
+      Confirm the stroke reaches the top
+      and bottom staff lines.
+    */
 
     let topHit=false;
     let bottomHit=false;
 
-    for(let y=Math.max(0,top-2);y<=Math.min(height-1,top+2);y++){
+    for(let y=Math.max(0,top-2);
+        y<=Math.min(height-1,top+2);
+        y++){
+
       if(hasInk(x,y)){
         topHit=true;
         break;
       }
     }
 
-    for(let y=Math.max(0,bottom-2);y<=Math.min(height-1,bottom+2);y++){
+    for(let y=Math.max(0,bottom-2);
+        y<=Math.min(height-1,bottom+2);
+        y++){
+
       if(hasInk(x,y)){
         bottomHit=true;
         break;
@@ -986,22 +1081,18 @@ function detectBarLines(binary,staff,noteheads){
 
     if(!topHit||!bottomHit)continue;
 
-    // Reject a candidate if it belongs to a note stem.
-
-    const attachedToNote=noteheads.some(n=>
-      Math.abs(n.x-x)<gap*.95
-    );
-
-    if(attachedToNote)continue;
-
     candidates.push({
       x,
       score:averageSpace+overall
     });
   }
 
-  // Merge neighboring pixels belonging to
-  // the same vertical barline.
+  /*
+    Merge neighboring pixels.
+
+    A single printed barline may be
+    1-4 pixels wide.
+  */
 
   candidates.sort((a,b)=>a.x-b.x);
 
@@ -1013,12 +1104,13 @@ function detectBarLines(binary,staff,noteheads){
 
     if(
       !last||
-      candidate.x-last.end>gap*.35
+      candidate.x-last.end>Math.max(2,gap*.30)
     ){
 
       merged.push({
-        x:candidate.x,
+        start:candidate.x,
         end:candidate.x,
+        x:candidate.x,
         score:candidate.score,
         count:1
       });
@@ -1026,6 +1118,7 @@ function detectBarLines(binary,staff,noteheads){
     }else{
 
       last.end=candidate.x;
+
       last.count++;
 
       if(candidate.score>last.score){
@@ -1035,11 +1128,16 @@ function detectBarLines(binary,staff,noteheads){
     }
   }
 
-  // Return one central x-coordinate per line.
+  /*
+    A barline should form a narrow continuous
+    vertical stroke, not an excessively wide region.
+  */
 
   return merged
-    .filter(item=>item.count<=Math.max(1,gap*.35))
-    .map(item=>item.x)
+    .filter(item=>
+      item.end-item.start<=Math.max(5,gap*.55)
+    )
+    .map(item=>Math.round((item.start+item.end)/2))
     .sort((a,b)=>a-b);
 }
 
@@ -1071,9 +1169,18 @@ const KEY_ALTER={
 
 function pitchForStep(step,clef,key){
 
+  /*
+    Treble clef:
+    Bottom staff line = E4.
+
+    Bass clef:
+    Bottom staff line = G2.
+  */
+
   const base=clef==='bass'?18:30;
 
   const d=base+step;
+
   const octave=Math.floor(d/7);
 
   const letter=[
@@ -1106,9 +1213,17 @@ function pitchForStep(step,clef,key){
 
 function rhythmForNote(note,staff){
 
+  /*
+    This is intentionally marked as an estimate.
+
+    Correct duration recognition requires
+    analyzing notehead fill, stems, flags,
+    beams, dots and rests.
+  */
+
   return{
     beats:1,
-    label:'Estimated note'
+    label:'Estimated duration'
   };
 }
 
@@ -1130,13 +1245,15 @@ function groupMeasures(notes,staffs){
 
     const grouped=[];
 
-    // Notes at almost the same horizontal position
-    // are played together as a chord.
+    /*
+      Group noteheads at approximately the same
+      horizontal position into chords.
+    */
 
     for(const note of local){
 
       let event=grouped.find(item=>
-        Math.abs(item.x-note.x)<staff.gap*.62
+        Math.abs(item.x-note.x)<staff.gap*.48
       );
 
       if(!event){
@@ -1160,8 +1277,14 @@ function groupMeasures(notes,staffs){
       );
     }
 
-    // Check whether an actual detected barline
-    // lies between two consecutive note events.
+    grouped.sort((a,b)=>a.x-b.x);
+
+    /*
+      Find a real barline between two events.
+
+      A boundary is counted only when a detected
+      barline lies between their notehead centers.
+    */
 
     for(let i=0;i<grouped.length;i++){
 
@@ -1175,8 +1298,8 @@ function groupMeasures(notes,staffs){
       if(next){
 
         current.barAfter=staff.bars.some(x=>
-          x>current.x+staff.gap*.45&&
-          x<next.x-staff.gap*.45
+          x>current.x+staff.gap*.25&&
+          x<next.x-staff.gap*.25
         );
       }
     }
@@ -1197,7 +1320,9 @@ function drawResults(ctx,staffs,notes){
 
   ctx.save();
 
-  // Staff lines.
+  /*
+    Draw staff lines.
+  */
 
   ctx.strokeStyle='#2563eb';
   ctx.lineWidth=2;
@@ -1207,22 +1332,26 @@ function drawResults(ctx,staffs,notes){
     staff.lines.forEach(y=>{
 
       ctx.beginPath();
+
       ctx.moveTo(staff.left,y);
       ctx.lineTo(staff.right,y);
+
       ctx.stroke();
     });
 
-    // Confirmed measure boundaries only.
+    /*
+      Draw detected measure boundaries.
+    */
 
     ctx.strokeStyle='#16a34a';
-    ctx.lineWidth=2.5;
+    ctx.lineWidth=3;
 
     staff.bars.forEach(x=>{
 
       ctx.beginPath();
 
-      ctx.moveTo(x,staff.top-3);
-      ctx.lineTo(x,staff.bottom+3);
+      ctx.moveTo(x,staff.top-5);
+      ctx.lineTo(x,staff.bottom+5);
 
       ctx.stroke();
     });
@@ -1231,16 +1360,23 @@ function drawResults(ctx,staffs,notes){
     ctx.lineWidth=2;
   });
 
-  // One red marker per detected notehead.
+  /*
+    Draw notehead centers.
+  */
 
   notes.forEach(n=>{
+
+    const radius=Math.max(
+      3.5,
+      staffs[n.staff].gap*.17
+    );
 
     ctx.beginPath();
 
     ctx.arc(
       n.x,
       n.y,
-      Math.max(3.2,staffs[n.staff].gap*.16),
+      radius,
       0,
       Math.PI*2
     );
@@ -1249,7 +1385,7 @@ function drawResults(ctx,staffs,notes){
     ctx.fill();
 
     ctx.strokeStyle='white';
-    ctx.lineWidth=1.5;
+    ctx.lineWidth=1.3;
 
     ctx.stroke();
   });
@@ -1267,7 +1403,7 @@ async function detectSheet(blob){
 
   const scale=Math.min(
     1,
-    1800/img.naturalWidth
+    2000/img.naturalWidth
   );
 
   const w=Math.round(img.naturalWidth*scale);
@@ -1291,7 +1427,7 @@ async function detectSheet(blob){
   const horizontalKernel=cv.getStructuringElement(
     cv.MORPH_RECT,
     new cv.Size(
-      Math.max(22,Math.round(w*.16)),
+      Math.max(25,Math.round(w*.14)),
       1
     )
   );
@@ -1319,7 +1455,9 @@ async function detectSheet(blob){
       cv.THRESH_BINARY_INV+cv.THRESH_OTSU
     );
 
-    // Extract horizontal staff lines.
+    /*
+      Extract long horizontal staff lines.
+    */
 
     cv.morphologyEx(
       binary,
@@ -1337,9 +1475,16 @@ async function detectSheet(blob){
     if(!rawStaffs.length){
 
       throw new Error(
-        'Could not detect five staff lines. Try a clearer image.'
+        'Could not detect five staff lines. Try a clearer, straighter image.'
       );
     }
+
+    /*
+      Remove staff lines for notehead analysis.
+
+      Original binary is preserved for barline
+      detection because barlines intersect staff lines.
+    */
 
     cv.subtract(
       binary,
@@ -1357,19 +1502,26 @@ async function detectSheet(blob){
 
       const staff=rawStaffs[s];
 
+      /*
+        Detect noteheads.
+      */
+
       const heads=detectNoteheads(
         clean,
         staff,
         binary
       );
 
-      // Detect measure lines using the five
-      // staff lines and the vertical ink between them.
+      /*
+        Detect barlines independently of noteheads.
+
+        IMPORTANT: No rejection based on proximity
+        to noteheads.
+      */
 
       staff.bars=detectBarLines(
         binary,
-        staff,
-        heads
+        staff
       );
 
       resultStaffs.push(staff);
@@ -1386,29 +1538,37 @@ async function detectSheet(blob){
           key
         );
 
-        const note={
+        const rhythm=rhythmForNote(
+          pitch,
+          staff
+        );
+
+        allNotes.push({
+
           ...pitch,
+
           x:head.x,
           y:head.y,
-          staff:s,
-          beats:1,
-          label:'Estimated note',
-          confidence:head.confidence
-        };
 
-        allNotes.push(note);
+          staff:s,
+
+          beats:rhythm.beats,
+          label:rhythm.label,
+
+          confidence:head.confidence
+        });
       }
     }
 
     if(!allNotes.length){
 
       throw new Error(
-        'No noteheads found. Try a clearer or closer image.'
+        'No noteheads found. Try a closer, clearer image.'
       );
     }
 
     allNotes.sort((a,b)=>
-      a.staff-b.staff||a.x-b.x
+      a.staff-b.staff||a.x-b.x||a.y-b.y
     );
 
     const events=groupMeasures(
@@ -1416,7 +1576,9 @@ async function detectSheet(blob){
       resultStaffs
     );
 
-    // Restore the original image before drawing.
+    /*
+      Restore original image before annotations.
+    */
 
     ctx.drawImage(img,0,0,w,h);
 
@@ -1465,7 +1627,8 @@ function renderNotes(){
 
     const small=document.createElement('small');
 
-    small.textContent=note.label;
+    small.textContent=
+      note.label+' · Staff '+(note.staff+1);
 
     chip.append(name,small);
 
@@ -1481,6 +1644,13 @@ async function runDetection(){
 
   if(!imageBlob)return;
 
+  if(!cvReady){
+
+    status('Recognition engine is still loading.');
+
+    return;
+  }
+
   $('detectBtn').disabled=true;
   $('redetectBtn').disabled=true;
   $('playBtn').disabled=true;
@@ -1488,7 +1658,7 @@ async function runDetection(){
   stopMusic();
 
   status(
-    'Detecting staff lines, noteheads and measure boundaries...'
+    'Analyzing staff lines, noteheads and measure boundaries...'
   );
 
   try{
@@ -1509,16 +1679,26 @@ async function runDetection(){
       0
     );
 
+    const eventCount=playbackEvents.length;
+
     status(
-      `Detected ${staffs.length} staff system(s), `+
-      `${detectedNotes.length} candidate noteheads and `+
-      `${barCount} confirmed measure boundary/boundaries.`
+      `Recognition complete: ${staffs.length} staff system(s), `+
+      `${detectedNotes.length} noteheads, `+
+      `${eventCount} note event(s), and `+
+      `${barCount} detected barline(s).`
     );
+
+    if(barCount===0){
+
+      statusBox.textContent+=
+        ' Warning: no barlines were confirmed. Check the green-line overlay.';
+    }
 
   }catch(e){
 
     detectedNotes=[];
     playbackEvents=[];
+    staffs=[];
 
     status('Detection error: '+e.message);
 
@@ -1526,7 +1706,7 @@ async function runDetection(){
 
   }finally{
 
-    $('detectBtn').disabled=false;
+    $('detectBtn').disabled=!imageBlob;
   }
 }
 
@@ -1586,6 +1766,7 @@ function playTone(midi,start,duration,mode){
   partials.forEach((amp,i)=>{
 
     const osc=audioContext.createOscillator();
+
     const gain=audioContext.createGain();
 
     osc.type=
@@ -1646,6 +1827,7 @@ $('playBtn').onclick=async()=>{
     );
 
     const beat=60/tempo;
+
     const mode=$('sound').value;
 
     const pause=
@@ -1663,7 +1845,9 @@ $('playBtn').onclick=async()=>{
 
       const eventStart=start+cursor;
 
-      // Notes in a chord play simultaneously.
+      /*
+        Notes in a chord play simultaneously.
+      */
 
       event.notes.forEach(note=>{
 
@@ -1696,9 +1880,10 @@ $('playBtn').onclick=async()=>{
 
       cursor+=event.beats*beat;
 
-      // IMPORTANT:
-      // The pause is added only when a confirmed
-      // green barline exists between two note events.
+      /*
+        Add a pause only when an actual
+        barline was detected between events.
+      */
 
       if(event.barAfter){
         cursor+=pause;
