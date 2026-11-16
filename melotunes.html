@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartScore | Scan & Play</title>
 <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+
 <style>
-:root{--navy:#172554;--blue:#2563eb;--pale:#eff6ff;--ink:#1e293b;--muted:#64748b;--border:#dbe3ef}
+:root{
+--navy:#172554;
+--blue:#2563eb;
+--pale:#eff6ff;
+--ink:#1e293b;
+--muted:#64748b;
+--border:#dbe3ef
+}
 *{box-sizing:border-box}
 body{margin:0;background:#f3f6fb;color:var(--ink);font-family:Arial,sans-serif}
 header{background:linear-gradient(125deg,#111c43,#263f78);color:white;text-align:center;padding:26px 18px}
@@ -39,6 +46,7 @@ video,#preview{width:100%;max-height:460px;object-fit:contain;background:#111827
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 .info{background:#f8fafc;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
+
 @media(max-width:600px){
 .card{padding:15px}
 button{flex:1}
@@ -48,6 +56,7 @@ button{flex:1}
 </head>
 
 <body>
+
 <header>
 <h1>🎼 SmartScore</h1>
 <p>Scan sheet music, identify notes, and hear them in sequence.</p>
@@ -57,11 +66,13 @@ button{flex:1}
 
 <section class="card">
 <h2>1. Choose a camera</h2>
+
 <label>Available camera
 <select id="cameraSelect">
 <option value="">Default camera</option>
 </select>
 </label>
+
 <div class="row">
 <button id="frontBtn" class="secondary">Front camera</button>
 <button id="backBtn" class="secondary">Back camera</button>
@@ -72,19 +83,28 @@ button{flex:1}
 
 <section class="card">
 <h2>2. Scan or upload a music sheet</h2>
+
 <video id="video" autoplay playsinline muted></video>
+
 <div class="row">
 <button id="captureBtn" disabled>📷 Capture sheet</button>
+
 <label>Upload image
 <input id="fileInput" type="file" accept="image/*">
 </label>
 </div>
+
 <img id="preview" alt="Music sheet preview" hidden>
-<p class="small">Use a sharp, straight photo with one complete staff visible. Crop away large empty margins and avoid shadows.</p>
+
+<p class="small">
+Use a sharp, straight photo with one complete staff visible.
+Crop away large empty margins and avoid shadows.
+</p>
 </section>
 
 <section class="card">
 <h2>3. Set the notation</h2>
+
 <div class="settings">
 
 <label>Clef
@@ -136,10 +156,12 @@ button{flex:1}
 4. Keep one strongest center for each oval, preventing duplicate detections.<br>
 5. Snap the measured center to the nearest line or space to calculate pitch and octave.
 </div>
+
 </section>
 
 <section class="card">
 <h2>4. Detect and play</h2>
+
 <div class="row">
 <button id="detectBtn" disabled>🔎 Detect notes</button>
 <button id="playBtn" disabled>▶ Play music</button>
@@ -147,8 +169,12 @@ button{flex:1}
 <button id="redetectBtn" class="secondary" disabled>↻ Re-detect</button>
 </div>
 
-<p id="status" role="status" aria-live="polite">Loading the music-recognition engine…</p>
+<p id="status" role="status" aria-live="polite">
+Loading the music-recognition engine…
+</p>
+
 <div id="notes" aria-live="polite"></div>
+
 <canvas id="sheetCanvas" hidden></canvas>
 
 <div class="legend">
@@ -159,6 +185,7 @@ button{flex:1}
 <p class="small">
 This version identifies physical noteheads first, then maps their measured centers to staff positions. Whole, half and quarter durations are estimated; flags, beams, dots, rests, ties and local accidentals are not yet reliably recognized.
 </p>
+
 </section>
 
 </main>
@@ -192,339 +219,663 @@ statusBox.textContent=message;
 /* OPEN CV */
 
 function waitForOpenCV(){
+
 const started=Date.now();
+
 const timer=setInterval(()=>{
+
 if(window.cv&&window.cv.Mat&&window.cv.imread){
+
 clearInterval(timer);
 cvReady=true;
+
 status('Recognition engine ready. Upload a sheet or start the camera.');
+
 if(imageBlob)$('detectBtn').disabled=false;
+
 }else if(Date.now()-started>60000){
+
 clearInterval(timer);
 status('OpenCV did not load. Check your internet connection and reload.');
+
 }
+
 },150);
+
 }
+
 waitForOpenCV();
 
 /* CAMERA */
 
 function stopCamera(show=true){
+
 if(stream){
 stream.getTracks().forEach(t=>t.stop());
 stream=null;
 }
+
 video.srcObject=null;
 $('captureBtn').disabled=true;
+
 if(show)status('Camera stopped.');
+
 }
 
 async function refreshCameras(){
+
 if(!navigator.mediaDevices?.enumerateDevices)return;
+
 try{
-const cams=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+
+const cams=(await navigator.mediaDevices.enumerateDevices())
+.filter(d=>d.kind==='videoinput');
+
 const old=cameraSelect.value;
+
 cameraSelect.replaceChildren(new Option('Default camera',''));
-cams.forEach((c,i)=>cameraSelect.add(new Option(c.label||`Camera ${i+1}`,c.deviceId)));
+
+cams.forEach((c,i)=>
+cameraSelect.add(new Option(c.label||`Camera ${i+1}`,c.deviceId))
+);
+
 if(cams.some(c=>c.deviceId===old))cameraSelect.value=old;
-}catch(e){console.warn(e);}
+
+}catch(e){
+console.warn(e);
+}
+
 }
 
 async function startCamera(deviceId=null,facing='environment'){
+
 if(!navigator.mediaDevices?.getUserMedia){
 status('Camera access needs HTTPS or localhost. Upload an image instead.');
 return;
 }
+
 stopCamera(false);
+
 try{
+
 const v=deviceId
 ?{deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1440}}
 :{facingMode:{ideal:facing},width:{ideal:2560},height:{ideal:1440}};
-stream=await navigator.mediaDevices.getUserMedia({video:v,audio:false});
+
+stream=await navigator.mediaDevices.getUserMedia({
+video:v,
+audio:false
+});
+
 video.srcObject=stream;
+
 await video.play();
+
 $('captureBtn').disabled=false;
+
 await refreshCameras();
+
 if(deviceId)cameraSelect.value=deviceId;
+
 status('Camera ready. Capture the complete staff.');
+
 }catch(e){
+
 stopCamera(false);
 status('Camera error: '+e.message);
+
 }
+
 }
 
 function stopMusic(){
+
 playbackToken++;
+
 playbackTimers.forEach(clearTimeout);
 playbackTimers=[];
-activeOscillators.forEach(o=>{try{o.stop();}catch(e){}});
+
+activeOscillators.forEach(o=>{
+try{o.stop();}catch(e){}
+});
+
 activeOscillators=[];
+
 $('stopMusicBtn').disabled=true;
-document.querySelectorAll('.note-chip.active').forEach(el=>el.classList.remove('active'));
+
+document.querySelectorAll('.note-chip.active')
+.forEach(el=>el.classList.remove('active'));
+
 }
 
 function saveImage(blob){
+
 if(!blob)return;
+
 imageBlob=blob;
+
 if(imageURL)URL.revokeObjectURL(imageURL);
+
 imageURL=URL.createObjectURL(blob);
+
 preview.src=imageURL;
 preview.hidden=false;
+
 detectedNotes=[];
 playbackEvents=[];
+
 notesBox.replaceChildren();
 canvas.hidden=true;
+
 $('detectBtn').disabled=!cvReady;
 $('playBtn').disabled=true;
 $('redetectBtn').disabled=true;
+
 stopMusic();
-status(cvReady?'Image ready. Select the clef and key, then detect notes.':'Image ready. Waiting for the recognition engine…');
+
+status(
+cvReady
+?'Image ready. Select the clef and key, then detect notes.'
+:'Image ready. Waiting for the recognition engine…'
+);
+
 }
 
 $('startBtn').onclick=()=>startCamera(cameraSelect.value||null);
 $('frontBtn').onclick=()=>startCamera(null,'user');
 $('backBtn').onclick=()=>startCamera(null,'environment');
 $('stopBtn').onclick=()=>stopCamera();
-cameraSelect.onchange=()=>{if(cameraSelect.value)startCamera(cameraSelect.value);};
+
+cameraSelect.onchange=()=>{
+if(cameraSelect.value)startCamera(cameraSelect.value);
+};
 
 $('captureBtn').onclick=()=>{
+
 if(!stream||!video.videoWidth){
 status('Start the camera first.');
 return;
 }
+
 const c=document.createElement('canvas');
+
 c.width=video.videoWidth;
 c.height=video.videoHeight;
+
 c.getContext('2d').drawImage(video,0,0,c.width,c.height);
-c.toBlob(blob=>{if(blob)saveImage(blob);},'image/jpeg',.98);
+
+c.toBlob(blob=>{
+if(blob)saveImage(blob);
+},'image/jpeg',.98);
+
 };
 
 $('fileInput').onchange=e=>{
+
 const f=e.target.files?.[0];
+
 if(f){
+
 if(!f.type.startsWith('image/')){
 status('Please select an image.');
 return;
 }
+
 saveImage(f);
+
 }
+
 };
 
 function loadImage(blob){
+
 return new Promise((resolve,reject)=>{
+
 const im=new Image();
 const url=URL.createObjectURL(blob);
-im.onload=()=>{URL.revokeObjectURL(url);resolve(im);};
-im.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('The image could not be opened.'));};
+
+im.onload=()=>{
+URL.revokeObjectURL(url);
+resolve(im);
+};
+
+im.onerror=()=>{
+URL.revokeObjectURL(url);
+reject(new Error('The image could not be opened.'));
+};
+
 im.src=url;
+
 });
+
 }
 
 /* STAFF DETECTION */
 
 function staffBounds(lineMask,lines,width,height){
+
 let left=width,right=0;
+
 for(const line of lines){
+
 const mid=Math.round(line);
+
 for(let y=Math.max(0,mid-2);y<=Math.min(height-1,mid+2);y++){
+
 const row=lineMask.ucharPtr(y);
+
 for(let x=0;x<width;x++){
+
 if(row[x]>0){
+
 if(x<left)left=x;
 if(x>right)right=x;
+
 }
+
 }
+
 }
+
 }
-if(right<=left){left=0;right=width-1;}
+
+if(right<=left){
+left=0;
+right=width-1;
+}
+
 return{left,right,width:right-left};
+
 }
 
 function findStaffGroups(lineMask,width,height){
+
 const scores=new Float32Array(height);
+
 for(let y=0;y<height;y++){
+
 const row=lineMask.ucharPtr(y);
+
 let count=0;
-for(let x=0;x<width;x++)if(row[x]>0)count++;
-scores[y]=count/width;
+
+for(let x=0;x<width;x++){
+if(row[x]>0)count++;
 }
+
+scores[y]=count/width;
+
+}
+
 const smooth=new Float32Array(height);
+
 for(let y=0;y<height;y++){
+
 let sum=0,n=0;
+
 for(let d=-1;d<=1;d++){
+
 if(y+d>=0&&y+d<height){
+
 sum+=scores[y+d];
 n++;
+
 }
+
 }
+
 smooth[y]=sum/n;
+
 }
+
 let max=0;
-for(const v of smooth)if(v>max)max=v;
+
+for(const v of smooth){
+if(v>max)max=v;
+}
+
 const cutoff=Math.max(.075,max*.22);
+
 const peaks=[];
 let y=0;
+
 while(y<height){
+
 if(smooth[y]>=cutoff){
+
 let end=y,weighted=0,total=0,strength=0;
+
 while(end<height&&smooth[end]>=cutoff){
+
 weighted+=end*smooth[end];
 total+=smooth[end];
+
 strength=Math.max(strength,smooth[end]);
+
 end++;
+
 }
-peaks.push({y:weighted/Math.max(total,.001),strength});
+
+peaks.push({
+y:weighted/Math.max(total,.001),
+strength
+});
+
 y=end;
-}else y++;
+
+}else{
+y++;
 }
+
+}
+
 const candidates=[];
+
 for(let i=0;i<=peaks.length-5;i++){
+
 const p=peaks.slice(i,i+5);
-const diff=p.slice(1).map((v,k)=>v.y-p[k].y).sort((a,b)=>a-b);
+
+const diff=p.slice(1)
+.map((v,k)=>v.y-p[k].y)
+.sort((a,b)=>a-b);
+
 const gap=diff[2];
+
 if(gap<3||gap>Math.min(120,height*.09))continue;
+
 const spread=Math.max(...diff)-Math.min(...diff);
+
 if(spread>gap*.30)continue;
+
 const strength=p.reduce((s,v)=>s+v.strength,0)/5;
-candidates.push({lines:p.map(v=>v.y),gap,score:strength-spread/gap*.18});
+
+candidates.push({
+lines:p.map(v=>v.y),
+gap,
+score:strength-spread/gap*.18
+});
+
 }
+
 candidates.sort((a,b)=>b.score-a.score);
+
 const selected=[];
+
 for(const c of candidates){
+
 const overlap=selected.some(s=>
-s.lines.filter(a=>c.lines.some(b=>Math.abs(a-b)<Math.min(s.gap,c.gap)*.55)).length>=3
+s.lines.filter(a=>
+c.lines.some(b=>
+Math.abs(a-b)<Math.min(s.gap,c.gap)*.55
+)
+).length>=3
 );
+
 if(!overlap){
+
 const bounds=staffBounds(lineMask,c.lines,width,height);
-if(bounds.width>width*.18)selected.push({...c,...bounds});
+
+if(bounds.width>width*.18){
+selected.push({...c,...bounds});
 }
+
 }
+
+}
+
 return selected.sort((a,b)=>a.lines[0]-b.lines[0]);
+
 }
 
 function nearStaffRow(y,lines,gap){
-const tolerance=Math.max(1,gap*.075);
-for(const line of lines)if(Math.abs(y-line)<=tolerance)return true;
+
+const tolerance=Math.max(1.5,gap*.14);
+
+for(const line of lines){
+if(Math.abs(y-line)<=tolerance)return true;
+}
+
 return false;
+
 }
 
 /* OVAL NOTEHEAD RECOGNITION */
 
 function makeHeadOffsets(gap){
-const rx=.66*gap,ry=.43*gap,ix=.35*gap,iy=.23*gap;
+
+const rx=.66*gap,ry=.43*gap;
+const ix=.35*gap,iy=.23*gap;
+
 const angle=-20*Math.PI/180;
-const cos=Math.cos(angle),sin=Math.sin(angle);
+
+const cos=Math.cos(angle);
+const sin=Math.sin(angle);
+
 const core=[],ring=[];
+
 for(let dy=-Math.ceil(ry);dy<=Math.ceil(ry);dy++){
+
 for(let dx=-Math.ceil(rx);dx<=Math.ceil(rx);dx++){
+
 const xr=dx*cos+dy*sin;
 const yr=-dx*sin+dy*cos;
+
 const outer=xr*xr/(rx*rx)+yr*yr/(ry*ry);
 const inner=xr*xr/(ix*ix)+yr*yr/(iy*iy);
+
 if(outer<=1){
+
 const p={dx,dy,xr,yr};
+
 if(inner<=1)core.push(p);
 else ring.push(p);
+
 }
+
 }
+
 }
+
 return{core,ring};
+
 }
 
 function headMetrics(binary,x,y,gap,lines,offsets){
-let coreDark=0,coreTotal=0,ringDark=0,ringTotal=0;
+
+let coreDark=0,coreTotal=0;
+let ringDark=0,ringTotal=0;
+
 const quadrants=[
-{d:0,n:0},{d:0,n:0},{d:0,n:0},{d:0,n:0}
+{d:0,n:0},
+{d:0,n:0},
+{d:0,n:0},
+{d:0,n:0}
 ];
 
 for(const p of offsets.core){
-const xx=x+p.dx,yy=y+p.dy;
-if(xx<0||xx>=binary.cols||yy<0||yy>=binary.rows||nearStaffRow(yy,lines,gap))continue;
+
+const xx=x+p.dx;
+const yy=y+p.dy;
+
+if(
+xx<0||xx>=binary.cols||
+yy<0||yy>=binary.rows||
+nearStaffRow(yy,lines,gap)
+)continue;
+
 coreTotal++;
+
 if(binary.ucharPtr(yy)[xx]>0)coreDark++;
+
 }
 
 for(const p of offsets.ring){
-const xx=x+p.dx,yy=y+p.dy;
-if(xx<0||xx>=binary.cols||yy<0||yy>=binary.rows||nearStaffRow(yy,lines,gap))continue;
+
+const xx=x+p.dx;
+const yy=y+p.dy;
+
+if(
+xx<0||xx>=binary.cols||
+yy<0||yy>=binary.rows||
+nearStaffRow(yy,lines,gap)
+)continue;
+
 ringTotal++;
+
 const q=(p.xr>=0?1:0)+(p.yr>=0?2:0);
+
 quadrants[q].n++;
+
 if(binary.ucharPtr(yy)[xx]>0){
+
 ringDark++;
 quadrants[q].d++;
+
 }
+
 }
 
 const core=coreDark/Math.max(1,coreTotal);
 const ring=ringDark/Math.max(1,ringTotal);
-const coverage=quadrants.filter(q=>q.n>0&&q.d/q.n>.20).length;
+
+const coverage=quadrants.filter(q=>
+q.n>0&&q.d/q.n>.20
+).length;
+
 const filled=core>=.50&&ring>=.48&&coverage>=3;
 const hollow=core<=.34&&ring>=.25&&coverage>=3;
 
 return{
-core,ring,coverage,filled,hollow,
-confidence:filled?Math.min(core,ring):hollow?ring*.78:0
+core,
+ring,
+coverage,
+filled,
+hollow,
+confidence:filled
+?Math.min(core,ring)
+:hollow?ring*.78:0
 };
+
 }
 
 /* PITCH MAPPING */
 
-const NATURAL={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const NATURAL={
+C:0,D:2,E:4,F:5,G:7,A:9,B:11
+};
 
 const KEY_ALTER={
-C:{},G:{F:1},D:{F:1,C:1},A:{F:1,C:1,G:1},
-E:{F:1,C:1,G:1,D:1},B:{F:1,C:1,G:1,D:1,A:1},
+
+C:{},
+G:{F:1},
+D:{F:1,C:1},
+A:{F:1,C:1,G:1},
+
+E:{F:1,C:1,G:1,D:1},
+B:{F:1,C:1,G:1,D:1,A:1},
+
 'F#':{F:1,C:1,G:1,D:1,A:1,E:1},
 'C#':{F:1,C:1,G:1,D:1,A:1,E:1,B:1},
-F:{B:-1},Bb:{B:-1,E:-1},
+
+F:{B:-1},
+Bb:{B:-1,E:-1},
 Eb:{B:-1,E:-1,A:-1},
 Ab:{B:-1,E:-1,A:-1,D:-1},
 Db:{B:-1,E:-1,A:-1,D:-1,G:-1},
 Gb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1},
 Cb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1,F:-1}
+
 };
 
 function pitchForStep(step,clef,key){
+
 const base=clef==='bass'?18:30;
+
 const d=base+step;
+
 const oct=Math.floor(d/7);
+
 const letter=['C','D','E','F','G','A','B'][(d%7+7)%7];
+
 const alter=(KEY_ALTER[key]||{})[letter]||0;
+
 const midi=12*(oct+1)+NATURAL[letter]+alter;
+
 const acc=alter===1?'♯':alter===-1?'♭':'';
-return{name:letter+acc+oct,letter,octave:oct,midi,step};
+
+return{
+name:letter+acc+oct,
+letter,
+octave:oct,
+midi,
+step
+};
+
 }
 
-/* PHYSICAL NOTEHEAD DETECTION */
+/* PHYSICAL NOTEHEAD DETECTION - IMPROVED */
 
 function detectStaffNotes(binary,staff,staffIndex,clef,key){
+
 const gap=staff.gap;
 const bottom=staff.lines[4];
+
 const offsets=makeHeadOffsets(gap);
 
-const minX=Math.max(0,Math.round(staff.left+staff.width*.18));
-const maxX=Math.min(binary.cols-1,Math.round(staff.right-gap*.35));
-const minY=Math.max(0,Math.floor(staff.lines[0]-gap*2));
-const maxY=Math.min(binary.rows-1,Math.ceil(staff.lines[4]+gap*2));
+// Leave room for the first notes while still skipping the clef/time-signature area.
+const minX=Math.max(
+0,
+Math.round(staff.left+gap*4.2)
+);
+
+const maxX=Math.min(
+binary.cols-1,
+Math.round(staff.right-gap*.35)
+);
+
+// Include notes above the staff, but avoid scanning far outside the notation.
+const minY=Math.max(
+0,
+Math.floor(staff.lines[0]-gap*1.5)
+);
+
+// A tighter lower bound helps prevent printed note-name labels
+// beneath the staff from being read as musical notes.
+const maxY=Math.min(
+binary.rows-1,
+Math.ceil(staff.lines[4]+gap*1.25)
+);
 
 const xStep=Math.max(1,Math.round(gap/15));
 const yStep=Math.max(1,Math.round(gap/18));
+
 const candidates=[];
 
 if(maxX<=minX||maxY<=minY)return [];
 
 for(let y=minY;y<=maxY;y+=yStep){
+
 for(let x=minX;x<=maxX;x+=xStep){
 
-const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
-const goodFilled=m.filled&&m.core>=.72&&m.ring>=.68&&m.confidence>=.70;
-const goodHollow=m.hollow&&m.ring>=.58&&m.coverage>=3;
+const m=headMetrics(
+binary,x,y,gap,staff.lines,offsets
+);
+
+const goodFilled=
+m.filled&&
+m.core>=.72&&
+m.ring>=.68&&
+m.confidence>=.70;
+
+const goodHollow=
+m.hollow&&
+m.ring>=.58&&
+m.coverage>=3;
 
 if(!goodFilled&&!goodHollow)continue;
 
 candidates.push({
-x,y,
+x,
+y,
 head:goodHollow&&!goodFilled?'hollow':'filled',
 confidence:m.confidence,
 core:m.core,
@@ -533,6 +884,7 @@ coverage:m.coverage
 });
 
 }
+
 }
 
 /* Prevent duplicate detections of one oval. */
@@ -540,15 +892,19 @@ coverage:m.coverage
 candidates.sort((a,b)=>b.confidence-a.confidence);
 
 const peaks=[];
+
 const radiusX=gap*.52;
 const radiusY=gap*.52;
 
 for(const p of candidates){
+
 const duplicate=peaks.some(q=>
 Math.pow((p.x-q.x)/radiusX,2)+
 Math.pow((p.y-q.y)/radiusY,2)<1
 );
+
 if(!duplicate)peaks.push(p);
+
 }
 
 /* Refine each center at single-pixel resolution. */
@@ -556,35 +912,59 @@ if(!duplicate)peaks.push(p);
 const refined=[];
 
 for(const peak of peaks){
+
 let best=peak;
 
-for(let dy=-Math.max(2,yStep);dy<=Math.max(2,yStep);dy++){
-for(let dx=-Math.max(2,xStep);dx<=Math.max(2,xStep);dx++){
+for(
+let dy=-Math.max(2,yStep);
+dy<=Math.max(2,yStep);
+dy++
+){
+
+for(
+let dx=-Math.max(2,xStep);
+dx<=Math.max(2,xStep);
+dx++
+){
 
 const x=Math.round(peak.x+dx);
 const y=Math.round(peak.y+dy);
 
 if(x<minX||x>maxX||y<minY||y>maxY)continue;
 
-const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
-const validFilled=m.filled&&m.core>=.72&&m.ring>=.68;
-const validHollow=m.hollow&&m.ring>=.58&&m.coverage>=3;
+const m=headMetrics(
+binary,x,y,gap,staff.lines,offsets
+);
 
-if((validFilled||validHollow)&&m.confidence>best.confidence){
+const validFilled=
+m.filled&&m.core>=.72&&m.ring>=.68;
+
+const validHollow=
+m.hollow&&m.ring>=.58&&m.coverage>=3;
+
+if(
+(validFilled||validHollow)&&
+m.confidence>best.confidence
+){
+
 best={
-x,y,
+x,
+y,
 head:validHollow&&!validFilled?'hollow':'filled',
 confidence:m.confidence,
 core:m.core,
 ring:m.ring,
 coverage:m.coverage
 };
+
 }
 
 }
+
 }
 
 refined.push(best);
+
 }
 
 /* Map measured centers to the nearest line or space. */
@@ -592,125 +972,228 @@ refined.push(best);
 const notes=[];
 
 for(const p of refined){
+
 const rawStep=(bottom-p.y)/(gap/2);
+
 const step=Math.round(rawStep);
+
 const positionError=Math.abs(rawStep-step);
 
-if(positionError>.34||step < -4||step > 12)continue;
+// Reject uncertain note positions.
+if(positionError>.38||step < -2||step > 12)continue;
 
 const pitch=pitchForStep(step,clef,key);
 
 notes.push({
+
 ...pitch,
+
 x:p.x,
 y:p.y,
+
 staff:staffIndex,
 head:p.head,
 confidence:p.confidence,
+
 positionError,
 coreRatio:p.core,
 ringRatio:p.ring
+
 });
+
 }
 
 return notes.sort((a,b)=>a.x-b.x);
+
 }
 
 /* BASIC RHYTHM ESTIMATION */
 
 function stemScore(binary,x,cy,direction,gap,lines){
-const start=direction==='up'?Math.round(cy-gap*.35):Math.round(cy+gap*.35);
-const end=direction==='up'?Math.round(cy-gap*4.2):Math.round(cy+gap*4.2);
-const lo=Math.min(start,end),hi=Math.max(start,end);
+
+const start=direction==='up'
+?Math.round(cy-gap*.35)
+:Math.round(cy+gap*.35);
+
+const end=direction==='up'
+?Math.round(cy-gap*4.2)
+:Math.round(cy+gap*4.2);
+
+const lo=Math.min(start,end);
+const hi=Math.max(start,end);
+
 let dark=0,total=0,run=0,bestRun=0,first=-1,last=-1;
 
 for(let y=lo;y<=hi;y++){
+
 if(y<0||y>=binary.rows||nearStaffRow(y,lines,gap))continue;
+
 total++;
+
 const on=binary.ucharPtr(y)[x]>0;
 
 if(on){
-dark++;run++;
+
+dark++;
+run++;
+
 if(first<0)first=y;
+
 last=y;
+
 bestRun=Math.max(bestRun,run);
-}else run=0;
+
+}else{
+run=0;
 }
 
-return{ratio:dark/Math.max(1,total),dark,total,bestRun,first,last,x,direction};
+}
+
+return{
+ratio:dark/Math.max(1,total),
+dark,
+total,
+bestRun,
+first,
+last,
+x,
+direction
+};
+
 }
 
 function findStem(binary,note,staff){
-const gap=staff.gap,tries=[];
+
+const gap=staff.gap;
+const tries=[];
 
 for(const side of [-1,1]){
+
 for(const factor of [.48,.55,.62]){
+
 const x=Math.round(note.x+side*gap*factor);
+
 if(x<0||x>=binary.cols)continue;
 
 for(const dir of ['up','down']){
-tries.push(stemScore(binary,x,note.y,dir,gap,staff.lines));
+
+tries.push(
+stemScore(binary,x,note.y,dir,gap,staff.lines)
+);
+
 }
+
 }
+
 }
 
 tries.sort((a,b)=>b.ratio-a.ratio);
 
 const best=tries[0];
 
-return best&&best.ratio>.48&&best.bestRun>gap*1.2?best:null;
+return best&&best.ratio>.48&&best.bestRun>gap*1.2
+?best:null;
+
 }
 
 function flagCount(binary,stem,staff){
+
 if(!stem)return 0;
 
 const gap=staff.gap;
 const up=stem.direction==='up';
+
 const end=up?stem.first:stem.last;
 
-const x0=up?stem.x+1:Math.max(0,Math.floor(stem.x-gap*1.2));
-const x1=up?Math.min(binary.cols-1,Math.ceil(stem.x+gap*1.2)):stem.x-1;
-const y0=up?Math.max(0,Math.floor(end-gap*.12)):Math.max(0,Math.floor(end-gap*1.1));
-const y1=up?Math.min(binary.rows-1,Math.ceil(end+gap*1.1)):Math.min(binary.rows-1,Math.ceil(end+gap*.12));
+const x0=up
+?stem.x+1
+:Math.max(0,Math.floor(stem.x-gap*1.2));
+
+const x1=up
+?Math.min(binary.cols-1,Math.ceil(stem.x+gap*1.2))
+:stem.x-1;
+
+const y0=up
+?Math.max(0,Math.floor(end-gap*.12))
+:Math.max(0,Math.floor(end-gap*1.1));
+
+const y1=up
+?Math.min(binary.rows-1,Math.ceil(end+gap*1.1))
+:Math.min(binary.rows-1,Math.ceil(end+gap*.12));
 
 const rowHits=[];
 
 for(let y=y0;y<=y1;y++){
+
 if(nearStaffRow(y,staff.lines,gap))continue;
+
 let count=0;
-for(let x=x0;x<=x1;x++)if(binary.ucharPtr(y)[x]>0)count++;
+
+for(let x=x0;x<=x1;x++){
+if(binary.ucharPtr(y)[x]>0)count++;
+}
+
 if(count>=gap*.14)rowHits.push(y);
+
 }
 
 if(rowHits.length<2)return 0;
 
 let bands=1;
+
 for(let i=1;i<rowHits.length;i++){
+
 if(rowHits[i]-rowHits[i-1]>2)bands++;
+
 }
 
 return Math.min(2,bands);
+
 }
 
 function dottedNote(binary,note,staff){
+
 const gap=staff.gap;
+
 let count=0;
 
-for(let y=Math.max(0,Math.floor(note.y-gap*.24));y<=Math.min(binary.rows-1,Math.ceil(note.y+gap*.24));y++){
+for(
+let y=Math.max(0,Math.floor(note.y-gap*.24));
+y<=Math.min(binary.rows-1,Math.ceil(note.y+gap*.24));
+y++
+){
+
 if(nearStaffRow(y,staff.lines,gap))continue;
-for(let x=Math.max(0,Math.floor(note.x+gap*.82));x<=Math.min(binary.cols-1,Math.ceil(note.x+gap*1.22));x++){
+
+for(
+let x=Math.max(0,Math.floor(note.x+gap*.82));
+x<=Math.min(binary.cols-1,Math.ceil(note.x+gap*1.22));
+x++
+){
+
 if(binary.ucharPtr(y)[x]>0)count++;
+
 }
+
 }
+
 return count>=Math.max(3,gap*.18);
+
 }
 
 function estimateRhythm(binary,note,staff){
+
 /* Conservative mode: do not invent durations from uncertain marks. */
+
 const stem=findStem(binary,note,staff);
+
 const hollow=note.head==='hollow';
+
 const beats=hollow?(stem?2:4):1;
-const label=hollow?(stem?'Half note':'Whole note'):'Quarter note';
+
+const label=hollow
+?(stem?'Half note':'Whole note')
+:'Quarter note';
 
 return{
 beats,
@@ -720,16 +1203,21 @@ flags:0,
 dotted:false,
 rhythmNeedsReview:true
 };
+
 }
 
 /* GROUP CHORDS AND EVENTS */
 
 function groupEvents(notes,staffs){
+
 const events=[];
 
 for(let s=0;s<staffs.length;s++){
 
-const same=notes.filter(n=>n.staff===s).sort((a,b)=>a.x-b.x);
+const same=notes
+.filter(n=>n.staff===s)
+.sort((a,b)=>a.x-b.x);
+
 const local=[];
 
 for(const note of same){
@@ -739,58 +1227,92 @@ Math.abs(e.x-note.x)<staffs[s].gap*.55
 );
 
 if(!event){
-event={x:note.x,notes:[],beats:note.beats,staff:s};
+
+event={
+x:note.x,
+notes:[],
+beats:note.beats,
+staff:s
+};
+
 local.push(event);
+
 }
 
 event.notes.push(note);
+
 event.beats=Math.max(event.beats,note.beats);
 
 }
 
 events.push(...local.sort((a,b)=>a.x-b.x));
+
 }
 
 return events;
+
 }
 
 /* DRAW DETECTION RESULTS */
 
 function drawOverlay(ctx,staffs,notes){
+
 ctx.save();
+
 ctx.lineWidth=2;
 ctx.strokeStyle='#2563eb';
 
 staffs.forEach(s=>{
+
 s.lines.forEach(y=>{
+
 ctx.beginPath();
 ctx.moveTo(s.left,y);
 ctx.lineTo(s.right,y);
 ctx.stroke();
+
 });
+
 });
 
 notes.forEach(n=>{
+
 ctx.beginPath();
-ctx.arc(n.x,n.y,Math.max(5,staffs[n.staff].gap*.24),0,Math.PI*2);
+
+ctx.arc(
+n.x,
+n.y,
+Math.max(5,staffs[n.staff].gap*.24),
+0,
+Math.PI*2
+);
+
 ctx.fillStyle='#ef4444';
 ctx.fill();
+
 ctx.strokeStyle='white';
 ctx.lineWidth=1.5;
+
 ctx.stroke();
+
 });
 
 ctx.restore();
+
 }
 
 /* MAIN SCANNING PROCESS */
 
 async function detectSheet(blob){
 
-if(!cvReady)throw new Error('The recognition engine is still loading.');
+if(!cvReady){
+throw new Error('The recognition engine is still loading.');
+}
 
 const im=await loadImage(blob);
+
 const scale=Math.min(1,1800/im.naturalWidth);
+
 const w=Math.max(1,Math.round(im.naturalWidth*scale));
 const h=Math.max(1,Math.round(im.naturalHeight*scale));
 
@@ -799,6 +1321,7 @@ canvas.height=h;
 canvas.hidden=false;
 
 const ctx=canvas.getContext('2d');
+
 ctx.drawImage(im,0,0,w,h);
 
 let src=cv.imread(canvas);
@@ -811,10 +1334,19 @@ let lineKernel=null;
 try{
 
 cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
-cv.GaussianBlur(gray,blur,new cv.Size(3,3),0);
+
+cv.GaussianBlur(
+gray,
+blur,
+new cv.Size(3,3),
+0
+);
 
 cv.threshold(
-blur,binary,0,255,
+blur,
+binary,
+0,
+255,
 cv.THRESH_BINARY_INV+cv.THRESH_OTSU
 );
 
@@ -824,43 +1356,63 @@ new cv.Size(Math.max(22,Math.round(w*.16)),1)
 );
 
 cv.morphologyEx(
-binary,lineMask,cv.MORPH_OPEN,lineKernel
+binary,
+lineMask,
+cv.MORPH_OPEN,
+lineKernel
 );
 
 const staffs=findStaffGroups(lineMask,w,h);
 
 if(!staffs.length){
-throw new Error('I could not find five evenly spaced staff lines. Try a sharper, straighter image.');
+
+throw new Error(
+'I could not find five evenly spaced staff lines. Try a sharper, straighter image.'
+);
+
 }
 
 const clef=$('clef').value;
 const key=$('keySignature').value;
+
 const allNotes=[];
 
 for(let s=0;s<staffs.length;s++){
 
 const found=detectStaffNotes(
-binary,staffs[s],s,clef,key
+binary,
+staffs[s],
+s,
+clef,
+key
 );
 
 for(const n of found){
 
 const rhythm=estimateRhythm(
-binary,n,staffs[s]
+binary,
+n,
+staffs[s]
 );
 
 allNotes.push({...n,...rhythm});
+
 }
 
 }
 
 if(!allNotes.length){
-throw new Error('Staff lines were found, but no oval noteheads passed the shape test. Crop closer to the staff and try again.');
+
+throw new Error(
+'Staff lines were found, but no oval noteheads passed the shape test. Crop closer to the staff and try again.'
+);
+
 }
 
 allNotes.sort((a,b)=>a.staff-b.staff||a.x-b.x);
 
 ctx.drawImage(im,0,0,w,h);
+
 drawOverlay(ctx,staffs,allNotes);
 
 return{
@@ -886,16 +1438,21 @@ if(lineKernel)lineKernel.delete();
 /* DISPLAY DETECTED NOTES */
 
 function esc(s){
+
 return String(s).replace(/[&<>"']/g,c=>({
+
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
+
 }[c]));
+
 }
 
 function renderNotes(){
+
 notesBox.replaceChildren();
 
 detectedNotes.forEach((n,i)=>{
@@ -911,6 +1468,7 @@ el.innerHTML=
 notesBox.appendChild(el);
 
 });
+
 }
 
 async function runDetection(){
@@ -922,9 +1480,12 @@ $('redetectBtn').disabled=true;
 $('playBtn').disabled=true;
 
 notesBox.replaceChildren();
+
 stopMusic();
 
-status('Finding staff lines and locating each physical oval notehead…');
+status(
+'Finding staff lines and locating each physical oval notehead…'
+);
 
 try{
 
@@ -950,7 +1511,9 @@ status(
 
 detectedNotes=[];
 playbackEvents=[];
+
 status('Detection: '+e.message);
+
 console.error(e);
 
 }finally{
@@ -958,6 +1521,7 @@ console.error(e);
 $('detectBtn').disabled=false;
 
 }
+
 }
 
 $('detectBtn').onclick=runDetection;
@@ -974,7 +1538,9 @@ if(imageBlob)$('redetectBtn').disabled=false;
 /* AUDIO PLAYBACK */
 
 function midiFrequency(midi){
+
 return 440*Math.pow(2,(midi-69)/12);
+
 }
 
 function playTone(midi,start,duration,mode){
@@ -989,7 +1555,11 @@ mode==='soft'?[1]:
 const master=audioContext.createGain();
 
 master.gain.setValueAtTime(.0001,start);
-master.gain.linearRampToValueAtTime(.13,start+.018);
+
+master.gain.linearRampToValueAtTime(
+.13,
+start+.018
+);
 
 master.gain.setTargetAtTime(
 .0001,
@@ -1004,7 +1574,10 @@ partials.forEach((amp,i)=>{
 const osc=audioContext.createOscillator();
 const gain=audioContext.createGain();
 
-osc.type=mode==='organ'?'sine':i===0?'triangle':'sine';
+osc.type=mode==='organ'
+?'sine'
+:i===0?'triangle':'sine';
+
 osc.frequency.value=f*(i+1);
 
 gain.gain.value=amp;
@@ -1035,9 +1608,13 @@ try{
 
 const AC=window.AudioContext||window.webkitAudioContext;
 
-if(!AC)throw new Error('Web Audio is not supported.');
+if(!AC){
+throw new Error('Web Audio is not supported.');
+}
 
-if(!audioContext)audioContext=new AC();
+if(!audioContext){
+audioContext=new AC();
+}
 
 await audioContext.resume();
 
@@ -1048,13 +1625,16 @@ Math.max(40,Number($('tempo').value)||100)
 
 const beat=60/tempo;
 const mode=$('sound').value;
+
 const start=audioContext.currentTime+.12;
 
 let cursor=0;
 
 $('stopMusicBtn').disabled=false;
 
-status(`Playing at ${tempo} BPM. Notes at the same horizontal position play together.`);
+status(
+`Playing at ${tempo} BPM. Notes at the same horizontal position play together.`
+);
 
 playbackEvents.forEach(event=>{
 
@@ -1078,7 +1658,9 @@ if(token!==playbackToken)return;
 document.querySelectorAll('.note-chip.active')
 .forEach(el=>el.classList.remove('active'));
 
-const chip=notesBox.querySelector(`[data-index="${i}"]`);
+const chip=notesBox.querySelector(
+`[data-index="${i}"]`
+);
 
 if(chip)chip.classList.add('active');
 
@@ -1095,18 +1677,22 @@ playbackTimers.push(setTimeout(()=>{
 if(token!==playbackToken)return;
 
 activeOscillators=[];
+
 $('stopMusicBtn').disabled=true;
 
 document.querySelectorAll('.note-chip.active')
 .forEach(el=>el.classList.remove('active'));
 
-status('Playback finished. Compare the sequence and rhythm with the sheet.');
+status(
+'Playback finished. Compare the sequence and rhythm with the sheet.'
+);
 
 },(cursor+.3)*1000));
 
 }catch(e){
 
 stopMusic();
+
 status('Audio error: '+e.message);
 
 }
@@ -1114,14 +1700,22 @@ status('Audio error: '+e.message);
 };
 
 $('stopMusicBtn').onclick=()=>{
+
 stopMusic();
+
 status('Playback stopped.');
+
 };
 
 /* INITIALIZATION */
 
 if(navigator.mediaDevices?.addEventListener){
-navigator.mediaDevices.addEventListener('devicechange',refreshCameras);
+
+navigator.mediaDevices.addEventListener(
+'devicechange',
+refreshCameras
+);
+
 }
 
 refreshCameras();
