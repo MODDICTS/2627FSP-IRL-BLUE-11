@@ -17,40 +17,30 @@
 --muted:#64748b;
 --border:#dbe3ef;
 }
-
 *{box-sizing:border-box}
-
 body{
 margin:0;
 background:#f3f6fb;
 color:var(--ink);
 font-family:Arial,sans-serif;
 }
-
 header{
 background:linear-gradient(125deg,#111c43,#263f78);
 color:white;
 text-align:center;
 padding:26px 18px;
 }
-
 header h1{
 margin:0 0 7px;
-font-size:clamp(26px,4vw,36px);
+font-size:34px;
 letter-spacing:2px;
 }
-
-header p{
-margin:0;
-color:#dbeafe;
-}
-
+header p{margin:0;color:#dbeafe}
 main{
 width:min(1050px,100%);
 margin:22px auto;
 padding:0 14px 36px;
 }
-
 .card{
 background:white;
 border:1px solid #e5eaf2;
@@ -59,13 +49,7 @@ padding:20px;
 margin-bottom:17px;
 box-shadow:0 6px 22px #1e293b0b;
 }
-
-h2{
-margin:0 0 14px;
-color:var(--navy);
-font-size:19px;
-}
-
+h2{margin:0 0 14px;color:var(--navy);font-size:19px}
 .row{
 display:flex;
 gap:9px;
@@ -73,11 +57,7 @@ flex-wrap:wrap;
 align-items:center;
 margin-top:12px;
 }
-
-button,select,input{
-font:inherit;
-}
-
+button,select,input{font:inherit}
 button{
 border:0;
 border-radius:9px;
@@ -88,22 +68,9 @@ font-weight:650;
 cursor:pointer;
 transition:.2s;
 }
-
-button:hover{
-filter:brightness(1.1);
-transform:translateY(-1px);
-}
-
-button.secondary{
-background:#475569;
-}
-
-button:disabled{
-opacity:.45;
-cursor:not-allowed;
-transform:none;
-}
-
+button:hover{filter:brightness(1.1);transform:translateY(-1px)}
+button.secondary{background:#475569}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 select,input[type=number]{
 border:1px solid #cbd5e1;
 border-radius:9px;
@@ -111,7 +78,6 @@ background:white;
 padding:10px;
 color:var(--ink);
 }
-
 label{
 font-size:13px;
 color:#475569;
@@ -121,7 +87,6 @@ gap:8px;
 align-items:center;
 flex-wrap:wrap;
 }
-
 video,#preview{
 width:100%;
 max-height:460px;
@@ -131,11 +96,7 @@ border-radius:11px;
 display:block;
 margin-top:12px;
 }
-
-#preview{
-background:#e2e8f0;
-}
-
+#preview{background:#e2e8f0}
 #sheetCanvas{
 width:100%;
 height:auto;
@@ -144,13 +105,7 @@ border-radius:9px;
 margin-top:12px;
 display:block;
 }
-
-.small{
-font-size:13px;
-line-height:1.6;
-color:var(--muted);
-}
-
+.small{font-size:13px;line-height:1.6;color:var(--muted)}
 #status{
 padding:12px 14px;
 border-radius:9px;
@@ -159,14 +114,12 @@ line-height:1.55;
 margin:12px 0;
 overflow-wrap:anywhere;
 }
-
 #notes{
 display:flex;
 flex-wrap:wrap;
 gap:8px;
 margin-top:12px;
 }
-
 .note-chip{
 background:#e8efff;
 border:1px solid #c8d8ff;
@@ -175,7 +128,6 @@ padding:9px 11px;
 font-weight:700;
 min-width:92px;
 }
-
 .note-chip small{
 display:block;
 color:#536781;
@@ -183,35 +135,32 @@ font-size:11px;
 font-weight:500;
 margin-top:3px;
 }
-
 .note-chip.active{
 background:#1d4ed8;
 border-color:#1d4ed8;
 color:white;
 box-shadow:0 0 0 3px #bfdbfe;
 }
-
-.note-chip.active small{
-color:#dbeafe;
-}
-
+.note-chip.active small{color:#dbeafe}
 .settings{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
 gap:12px;
 }
-
-.settings label{
-display:block;
-}
-
-.settings select,
-.settings input{
+.settings label{display:block}
+.settings select,.settings input{
 display:block;
 width:100%;
 margin-top:6px;
 }
-
+.info{
+background:#f8fafc;
+border-radius:10px;
+padding:12px;
+font-size:13px;
+line-height:1.7;
+margin-top:12px;
+}
 .legend{
 display:flex;
 gap:14px;
@@ -220,7 +169,6 @@ font-size:12px;
 color:var(--muted);
 margin-top:10px;
 }
-
 .dot{
 display:inline-block;
 width:9px;
@@ -228,16 +176,12 @@ height:9px;
 border-radius:50%;
 margin-right:5px;
 }
-
-.info{
+input[type=range]{width:100%;margin-top:9px}
+.setting-box{
 background:#f8fafc;
 border-radius:10px;
 padding:12px;
-font-size:13px;
-line-height:1.6;
-margin-top:12px;
 }
-
 @media(max-width:600px){
 .card{padding:15px}
 button{flex:1}
@@ -280,7 +224,6 @@ Available camera
 
 <div class="row">
 <button id="captureBtn" disabled>📷 Capture sheet</button>
-
 <label>
 Upload image
 <input id="fileInput" type="file" accept="image/*">
@@ -290,13 +233,12 @@ Upload image
 <img id="preview" alt="Music sheet preview" hidden>
 
 <p class="small">
-Use a sharp, straight photo with one complete staff visible.
-Crop away large empty margins and avoid shadows.
+For best results, use a clear, straight photo showing the entire music staff. Avoid shadows and blurry images.
 </p>
 </section>
 
 <section class="card">
-<h2>3. Set the notation</h2>
+<h2>3. Music settings</h2>
 
 <div class="settings">
 
@@ -345,13 +287,31 @@ Sound
 
 </div>
 
+<div class="setting-box" style="margin-top:14px">
+<label for="barPause">
+Pause at measure lines:
+<span id="pauseValue">0.25 beats</span>
+</label>
+<input
+type="range"
+id="barPause"
+min="0"
+max="1"
+step="0.05"
+value="0.25">
+<p class="small">
+Controls the short break between measures. This is separate from the actual duration of musical rests.
+</p>
+</div>
+
 <div class="info">
 <b>Recognition process</b><br>
-1. Detect the five staff lines.<br>
-2. Exclude the clef and key-signature area.<br>
-3. Identify individual noteheads.<br>
+1. Detect the five horizontal staff lines.<br>
+2. Find vertical measure barlines.<br>
+3. Identify notehead centers.<br>
 4. Remove duplicate detections.<br>
-5. Calculate musical pitches.
+5. Calculate pitches and note durations.<br>
+6. Play each measure with a short separation.
 </div>
 </section>
 
@@ -374,12 +334,13 @@ Loading recognition engine...
 <canvas id="sheetCanvas" hidden></canvas>
 
 <div class="legend">
-<span><i class="dot" style="background:#ef4444"></i>Detected noteheads</span>
+<span><i class="dot" style="background:#ef4444"></i>Detected notes</span>
 <span><i class="dot" style="background:#2563eb"></i>Staff lines</span>
+<span><i class="dot" style="background:#16a34a"></i>Measure boundaries</span>
 </div>
 
 <p class="small">
-Rhythm is estimated from notehead and stem appearance. Flags, beams, rests, ties, dots and local accidentals are not yet reliably recognized.
+Green lines indicate detected measure boundaries. Red circles indicate detected noteheads.
 </p>
 </section>
 
@@ -401,8 +362,11 @@ let cvReady=false;
 let stream=null;
 let imageBlob=null;
 let imageURL=null;
+
 let detectedNotes=[];
 let playbackEvents=[];
+let detectedStaffs=[];
+
 let audioContext=null;
 let activeOscillators=[];
 let playbackTimers=[];
@@ -412,9 +376,9 @@ function status(message){
 statusBox.textContent=message;
 }
 
-/* =========================
+/* =====================================
    OPENCV INITIALIZATION
-========================= */
+===================================== */
 
 function waitForOpenCV(){
 
@@ -437,9 +401,7 @@ $('detectBtn').disabled=false;
 
 clearInterval(timer);
 
-status(
-'OpenCV failed to load. Check your internet connection.'
-);
+status('OpenCV failed to load. Check your internet connection.');
 
 }
 
@@ -449,9 +411,9 @@ status(
 
 waitForOpenCV();
 
-/* =========================
+/* =====================================
    CAMERA
-========================= */
+===================================== */
 
 function stopCamera(show=true){
 
@@ -465,9 +427,7 @@ stream=null;
 video.srcObject=null;
 $('captureBtn').disabled=true;
 
-if(show){
-status('Camera stopped.');
-}
+if(show)status('Camera stopped.');
 
 }
 
@@ -508,10 +468,7 @@ async function startCamera(deviceId=null,facing='environment'){
 
 if(!navigator.mediaDevices?.getUserMedia){
 
-status(
-'Camera requires HTTPS or localhost. Upload an image instead.'
-);
-
+status('Camera requires HTTPS or localhost. Upload an image instead.');
 return;
 
 }
@@ -538,32 +495,28 @@ audio:false
 });
 
 video.srcObject=stream;
-
 await video.play();
 
 $('captureBtn').disabled=false;
 
 await refreshCameras();
 
-if(deviceId){
-cameraSelect.value=deviceId;
-}
+if(deviceId)cameraSelect.value=deviceId;
 
 status('Camera ready. Capture your sheet music.');
 
 }catch(e){
 
 stopCamera(false);
-
 status('Camera error: '+e.message);
 
 }
 
 }
 
-/* =========================
+/* =====================================
    IMAGE HANDLING
-========================= */
+===================================== */
 
 function stopMusic(){
 
@@ -573,9 +526,7 @@ playbackTimers.forEach(clearTimeout);
 playbackTimers=[];
 
 activeOscillators.forEach(o=>{
-
 try{o.stop();}catch(e){}
-
 });
 
 activeOscillators=[];
@@ -593,9 +544,7 @@ if(!blob)return;
 
 imageBlob=blob;
 
-if(imageURL){
-URL.revokeObjectURL(imageURL);
-}
+if(imageURL)URL.revokeObjectURL(imageURL);
 
 imageURL=URL.createObjectURL(blob);
 
@@ -604,9 +553,9 @@ preview.hidden=false;
 
 detectedNotes=[];
 playbackEvents=[];
+detectedStaffs=[];
 
 notesBox.replaceChildren();
-
 canvas.hidden=true;
 
 $('detectBtn').disabled=!cvReady;
@@ -617,35 +566,26 @@ stopMusic();
 
 status(
 cvReady
-?'Image ready. Select your clef and key, then detect notes.'
+?'Image ready. Select your settings and detect notes.'
 :'Image ready. Waiting for OpenCV...'
 );
 
 }
 
 $('startBtn').onclick=()=>startCamera(cameraSelect.value||null);
-
 $('frontBtn').onclick=()=>startCamera(null,'user');
-
 $('backBtn').onclick=()=>startCamera(null,'environment');
-
 $('stopBtn').onclick=()=>stopCamera();
 
 cameraSelect.onchange=()=>{
-
-if(cameraSelect.value){
-startCamera(cameraSelect.value);
-}
-
+if(cameraSelect.value)startCamera(cameraSelect.value);
 };
 
 $('captureBtn').onclick=()=>{
 
 if(!stream||!video.videoWidth){
-
 status('Start the camera first.');
 return;
-
 }
 
 const c=document.createElement('canvas');
@@ -653,16 +593,10 @@ const c=document.createElement('canvas');
 c.width=video.videoWidth;
 c.height=video.videoHeight;
 
-c.getContext('2d').drawImage(
-video,0,0,c.width,c.height
-);
+c.getContext('2d').drawImage(video,0,0,c.width,c.height);
 
 c.toBlob(blob=>{
-
-if(blob){
-saveImage(blob);
-}
-
+if(blob)saveImage(blob);
 },'image/jpeg',.98);
 
 };
@@ -674,10 +608,8 @@ const f=e.target.files?.[0];
 if(!f)return;
 
 if(!f.type.startsWith('image/')){
-
 status('Please upload an image file.');
 return;
-
 }
 
 saveImage(f);
@@ -692,17 +624,13 @@ const im=new Image();
 const url=URL.createObjectURL(blob);
 
 im.onload=()=>{
-
 URL.revokeObjectURL(url);
 resolve(im);
-
 };
 
 im.onerror=()=>{
-
 URL.revokeObjectURL(url);
 reject(new Error('Image could not be opened.'));
-
 };
 
 im.src=url;
@@ -711,56 +639,9 @@ im.src=url;
 
 }
 
-/* =========================
+/* =====================================
    STAFF DETECTION
-========================= */
-
-function staffBounds(lineMask,lines,width,height){
-
-let left=width;
-let right=0;
-
-for(const line of lines){
-
-const mid=Math.round(line);
-
-for(
-let y=Math.max(0,mid-2);
-y<=Math.min(height-1,mid+2);
-y++
-){
-
-const row=lineMask.ucharPtr(y);
-
-for(let x=0;x<width;x++){
-
-if(row[x]>0){
-
-left=Math.min(left,x);
-right=Math.max(right,x);
-
-}
-
-}
-
-}
-
-}
-
-if(right<=left){
-
-left=0;
-right=width-1;
-
-}
-
-return{
-left,
-right,
-width:right-left
-};
-
-}
+===================================== */
 
 function findStaffGroups(lineMask,width,height){
 
@@ -769,15 +650,10 @@ const scores=new Float32Array(height);
 for(let y=0;y<height;y++){
 
 const row=lineMask.ucharPtr(y);
-
 let count=0;
 
 for(let x=0;x<width;x++){
-
-if(row[x]>0){
-count++;
-}
-
+if(row[x]>0)count++;
 }
 
 scores[y]=count/width;
@@ -788,16 +664,13 @@ const smooth=new Float32Array(height);
 
 for(let y=0;y<height;y++){
 
-let sum=0;
-let n=0;
+let sum=0,n=0;
 
 for(let d=-1;d<=1;d++){
 
 if(y+d>=0&&y+d<height){
-
 sum+=scores[y+d];
 n++;
-
 }
 
 }
@@ -808,9 +681,7 @@ smooth[y]=sum/n;
 
 let max=0;
 
-for(const v of smooth){
-max=Math.max(max,v);
-}
+for(const v of smooth)max=Math.max(max,v);
 
 const cutoff=Math.max(.075,max*.22);
 
@@ -825,30 +696,23 @@ if(smooth[y]>=cutoff){
 let end=y;
 let weighted=0;
 let total=0;
-let strength=0;
 
 while(end<height&&smooth[end]>=cutoff){
 
 weighted+=end*smooth[end];
 total+=smooth[end];
-
-strength=Math.max(strength,smooth[end]);
-
 end++;
 
 }
 
 peaks.push({
-y:weighted/Math.max(total,.001),
-strength
+y:weighted/Math.max(total,.001)
 });
 
 y=end;
 
 }else{
-
 y++;
-
 }
 
 }
@@ -865,23 +729,16 @@ const diff=p.slice(1)
 
 const gap=diff[2];
 
-if(
-gap<3||
-gap>Math.min(120,height*.09)
-)continue;
+if(gap<3||gap>Math.min(120,height*.09))continue;
 
 const spread=Math.max(...diff)-Math.min(...diff);
 
 if(spread>gap*.30)continue;
 
-const strength=p.reduce(
-(s,v)=>s+v.strength,0
-)/5;
-
 candidates.push({
 lines:p.map(v=>v.y),
 gap,
-score:strength-spread/gap*.18
+score:1-spread/gap
 });
 
 }
@@ -902,38 +759,167 @@ Math.abs(a-b)<Math.min(s.gap,c.gap)*.55
 
 if(overlap)continue;
 
-const bounds=staffBounds(
-lineMask,c.lines,width,height
-);
+let left=width;
+let right=0;
 
-if(bounds.width>width*.18){
+for(const line of c.lines){
+
+const yy=Math.round(line);
+
+if(yy<0||yy>=height)continue;
+
+const row=lineMask.ucharPtr(yy);
+
+for(let x=0;x<width;x++){
+
+if(row[x]>0){
+left=Math.min(left,x);
+right=Math.max(right,x);
+}
+
+}
+
+}
+
+if(right-left>width*.18){
 
 selected.push({
 ...c,
-...bounds
+left,
+right,
+top:c.lines[0],
+bottom:c.lines[4]
 });
 
 }
 
 }
 
-return selected.sort((a,b)=>a.lines[0]-b.lines[0]);
+return selected.sort((a,b)=>a.top-b.top);
 
 }
 
 function nearStaffRow(y,lines,gap){
 
-const tolerance=Math.max(1.5,gap*.14);
-
 return lines.some(line=>
-Math.abs(y-line)<=tolerance
+Math.abs(y-line)<=Math.max(1.5,gap*.14)
 );
 
 }
 
-/* =========================
+/* =====================================
+   BARLINE DETECTION
+
+   This detects the long vertical lines
+   that divide one measure from another.
+
+   Short note stems are filtered out by
+   their height and location.
+===================================== */
+
+function detectBarLines(binary,staff){
+
+const gap=staff.gap;
+
+const verticalKernel=cv.getStructuringElement(
+cv.MORPH_RECT,
+new cv.Size(
+1,
+Math.max(8,Math.round(gap*3.6))
+)
+);
+
+const vertical=new cv.Mat();
+
+const contours=new cv.MatVector();
+const hierarchy=new cv.Mat();
+
+try{
+
+cv.morphologyEx(
+binary,
+vertical,
+cv.MORPH_OPEN,
+verticalKernel
+);
+
+cv.findContours(
+vertical,
+contours,
+hierarchy,
+cv.RETR_EXTERNAL,
+cv.CHAIN_APPROX_SIMPLE
+);
+
+const bars=[];
+
+for(let i=0;i<contours.size();i++){
+
+const rect=cv.boundingRect(contours.get(i));
+
+const x=rect.x+rect.width/2;
+
+const height=rect.height;
+const width=rect.width;
+
+const coversStaff=
+rect.y<=staff.top+gap*.35&&
+rect.y+height>=staff.bottom-gap*.35;
+
+const tallEnough=height>=gap*3.5;
+const narrowEnough=width<=gap*.42;
+
+const insideStaff=
+x>staff.left+gap*2&&
+x<staff.right-gap*.5;
+
+if(
+coversStaff&&
+tallEnough&&
+narrowEnough&&
+insideStaff
+){
+
+bars.push(x);
+
+}
+
+}
+
+/* Merge multiple detections of one barline. */
+
+bars.sort((a,b)=>a-b);
+
+const unique=[];
+
+for(const x of bars){
+
+const last=unique[unique.length-1];
+
+if(last===undefined||Math.abs(x-last)>gap*.75){
+
+unique.push(x);
+
+}
+
+}
+
+return unique;
+
+}finally{
+
+verticalKernel.delete();
+vertical.delete();
+contours.delete();
+hierarchy.delete();
+
+}
+
+}
+
+/* =====================================
    NOTEHEAD SHAPE DETECTION
-========================= */
+===================================== */
 
 function makeHeadOffsets(gap){
 
@@ -951,36 +937,22 @@ const sin=Math.sin(angle);
 const core=[];
 const ring=[];
 
-for(
-let dy=-Math.ceil(ry);
-dy<=Math.ceil(ry);
-dy++
-){
+for(let dy=-Math.ceil(ry);dy<=Math.ceil(ry);dy++){
 
-for(
-let dx=-Math.ceil(rx);
-dx<=Math.ceil(rx);
-dx++
-){
+for(let dx=-Math.ceil(rx);dx<=Math.ceil(rx);dx++){
 
 const xr=dx*cos+dy*sin;
 const yr=-dx*sin+dy*cos;
 
-const outer=
-xr*xr/(rx*rx)+yr*yr/(ry*ry);
-
-const inner=
-xr*xr/(ix*ix)+yr*yr/(iy*iy);
+const outer=xr*xr/(rx*rx)+yr*yr/(ry*ry);
+const inner=xr*xr/(ix*ix)+yr*yr/(iy*iy);
 
 if(outer<=1){
 
 const p={dx,dy,xr,yr};
 
-if(inner<=1){
-core.push(p);
-}else{
-ring.push(p);
-}
+if(inner<=1)core.push(p);
+else ring.push(p);
 
 }
 
@@ -994,11 +966,8 @@ return{core,ring};
 
 function headMetrics(binary,x,y,gap,lines,offsets){
 
-let coreDark=0;
-let coreTotal=0;
-
-let ringDark=0;
-let ringTotal=0;
+let coreDark=0,coreTotal=0;
+let ringDark=0,ringTotal=0;
 
 const quadrants=[
 {d:0,n:0},
@@ -1020,9 +989,7 @@ nearStaffRow(yy,lines,gap)
 
 coreTotal++;
 
-if(binary.ucharPtr(yy)[xx]>0){
-coreDark++;
-}
+if(binary.ucharPtr(yy)[xx]>0)coreDark++;
 
 }
 
@@ -1039,8 +1006,7 @@ nearStaffRow(yy,lines,gap)
 
 ringTotal++;
 
-const q=
-(p.xr>=0?1:0)+(p.yr>=0?2:0);
+const q=(p.xr>=0?1:0)+(p.yr>=0?2:0);
 
 quadrants[q].n++;
 
@@ -1060,15 +1026,8 @@ const coverage=quadrants.filter(q=>
 q.n>0&&q.d/q.n>.20
 ).length;
 
-const filled=
-core>=.50&&
-ring>=.48&&
-coverage>=3;
-
-const hollow=
-core<=.34&&
-ring>=.25&&
-coverage>=3;
+const filled=core>=.50&&ring>=.48&&coverage>=3;
+const hollow=core<=.34&&ring>=.25&&coverage>=3;
 
 return{
 core,
@@ -1083,32 +1042,23 @@ confidence:filled
 
 }
 
-/* =========================
+/* =====================================
    PITCH MAPPING
-========================= */
+===================================== */
 
 const NATURAL={
-C:0,
-D:2,
-E:4,
-F:5,
-G:7,
-A:9,
-B:11
+C:0,D:2,E:4,F:5,G:7,A:9,B:11
 };
 
 const KEY_ALTER={
-
 C:{},
 G:{F:1},
 D:{F:1,C:1},
 A:{F:1,C:1,G:1},
 E:{F:1,C:1,G:1,D:1},
 B:{F:1,C:1,G:1,D:1,A:1},
-
 'F#':{F:1,C:1,G:1,D:1,A:1,E:1},
 'C#':{F:1,C:1,G:1,D:1,A:1,E:1,B:1},
-
 F:{B:-1},
 Bb:{B:-1,E:-1},
 Eb:{B:-1,E:-1,A:-1},
@@ -1116,7 +1066,6 @@ Ab:{B:-1,E:-1,A:-1,D:-1},
 Db:{B:-1,E:-1,A:-1,D:-1,G:-1},
 Gb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1},
 Cb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1,F:-1}
-
 };
 
 function pitchForStep(step,clef,key){
@@ -1124,7 +1073,6 @@ function pitchForStep(step,clef,key){
 const base=clef==='bass'?18:30;
 
 const d=base+step;
-
 const octave=Math.floor(d/7);
 
 const letter=[
@@ -1150,9 +1098,9 @@ step
 
 }
 
-/* =========================
+/* =====================================
    NOTE DETECTION
-========================= */
+===================================== */
 
 function detectStaffNotes(
 binary,
@@ -1167,18 +1115,9 @@ const bottom=staff.lines[4];
 
 const offsets=makeHeadOffsets(gap);
 
-/*
-Exclude clef and key signature.
-*/
-
-const clefAndSignatureMargin=Math.max(
-gap*5.5,
-staff.width*.075
-);
-
 const minX=Math.max(
 0,
-Math.round(staff.left+clefAndSignatureMargin)
+Math.round(staff.left+gap*5.5)
 );
 
 const maxX=Math.min(
@@ -1200,12 +1139,6 @@ const xStep=Math.max(1,Math.round(gap/15));
 const yStep=Math.max(1,Math.round(gap/18));
 
 const candidates=[];
-
-if(maxX<=minX||maxY<=minY){
-return [];
-}
-
-/* Find potential noteheads. */
 
 for(let y=minY;y<=maxY;y+=yStep){
 
@@ -1230,16 +1163,14 @@ if(!goodFilled&&!goodHollow)continue;
 
 candidates.push({
 
-x,
-y,
+x,y,
 
 head:goodHollow&&!goodFilled
 ?'hollow':'filled',
 
 confidence:m.confidence,
 core:m.core,
-ring:m.ring,
-coverage:m.coverage
+ring:m.ring
 
 });
 
@@ -1248,65 +1179,49 @@ coverage:m.coverage
 }
 
 /*
-FIX 1:
-Strong duplicate filtering.
+FIX A:
+Group detections by horizontal position.
 
-The previous method required both X and Y
-to be close. This allowed multiple detections
-on different parts of the same oval.
-
-For this monophonic melody, nearby X positions
-belong to the same notehead.
+The same oval notehead may produce several
+candidate centers at slightly different Y
+positions. Keep only the strongest center.
 */
 
-candidates.sort((a,b)=>
-b.confidence-a.confidence
-);
+candidates.sort((a,b)=>b.confidence-a.confidence);
 
 const peaks=[];
-
 const radiusX=gap*1.25;
 
 for(const p of candidates){
 
-let duplicateIndex=-1;
+let index=-1;
 
 for(let i=0;i<peaks.length;i++){
 
-const q=peaks[i];
+if(Math.abs(p.x-peaks[i].x)<radiusX){
 
-if(Math.abs(p.x-q.x)<radiusX){
-
-duplicateIndex=i;
+index=i;
 break;
 
 }
 
 }
 
-if(duplicateIndex===-1){
+if(index===-1){
 
 peaks.push(p);
 
-}else{
+}else if(p.confidence>peaks[index].confidence){
 
-const existing=peaks[duplicateIndex];
-
-if(p.confidence>existing.confidence){
-
-peaks[duplicateIndex]=p;
+peaks[index]=p;
 
 }
 
 }
-
-}
-
-peaks.sort((a,b)=>a.x-b.x);
 
 /*
-FIX 2:
-Refine the center of each notehead.
+FIX B:
+Refine the detected center.
 */
 
 const refined=[];
@@ -1315,17 +1230,9 @@ for(const peak of peaks){
 
 let best=peak;
 
-for(
-let dy=-Math.max(2,yStep);
-dy<=Math.max(2,yStep);
-dy++
-){
+for(let dy=-Math.max(2,yStep);dy<=Math.max(2,yStep);dy++){
 
-for(
-let dx=-Math.max(2,xStep);
-dx<=Math.max(2,xStep);
-dx++
-){
+for(let dx=-Math.max(2,xStep);dx<=Math.max(2,xStep);dx++){
 
 const x=Math.round(peak.x+dx);
 const y=Math.round(peak.y+dy);
@@ -1340,14 +1247,10 @@ binary,x,y,gap,staff.lines,offsets
 );
 
 const validFilled=
-m.filled&&
-m.core>=.72&&
-m.ring>=.68;
+m.filled&&m.core>=.72&&m.ring>=.68;
 
 const validHollow=
-m.hollow&&
-m.ring>=.58&&
-m.coverage>=3;
+m.hollow&&m.ring>=.58&&m.coverage>=3;
 
 if(
 (validFilled||validHollow)&&
@@ -1355,14 +1258,11 @@ m.confidence>best.confidence
 ){
 
 best={
-x,
-y,
-head:validHollow&&!validFilled
-?'hollow':'filled',
+x,y,
+head:validHollow&&!validFilled?'hollow':'filled',
 confidence:m.confidence,
 core:m.core,
-ring:m.ring,
-coverage:m.coverage
+ring:m.ring
 };
 
 }
@@ -1376,31 +1276,45 @@ refined.push(best);
 }
 
 /*
-FIX 3:
-Convert each center into a pitch.
+FIX C:
+Reject note candidates too close to
+another note center.
 */
+
+const clean=[];
+
+for(const p of refined.sort((a,b)=>a.x-b.x)){
+
+const last=clean[clean.length-1];
+
+if(last&&p.x-last.x<gap*.9){
+
+if(p.confidence>last.confidence){
+clean[clean.length-1]=p;
+}
+
+}else{
+
+clean.push(p);
+
+}
+
+}
 
 const notes=[];
 
-for(const p of refined){
+for(const p of clean){
 
 const rawStep=(bottom-p.y)/(gap/2);
-
 const step=Math.round(rawStep);
 
-const positionError=Math.abs(rawStep-step);
-
 if(
-positionError>.38||
+Math.abs(rawStep-step)>.38||
 step < -2||
 step > 12
 )continue;
 
-const pitch=pitchForStep(
-step,
-clef,
-key
-);
+const pitch=pitchForStep(step,clef,key);
 
 notes.push({
 
@@ -1411,12 +1325,7 @@ y:p.y,
 
 staff:staffIndex,
 head:p.head,
-
-confidence:p.confidence,
-positionError,
-
-coreRatio:p.core,
-ringRatio:p.ring
+confidence:p.confidence
 
 });
 
@@ -1426,13 +1335,11 @@ return notes.sort((a,b)=>a.x-b.x);
 
 }
 
-/* =========================
+/* =====================================
    RHYTHM ESTIMATION
-========================= */
+===================================== */
 
-function stemScore(
-binary,x,cy,direction,gap,lines
-){
+function stemScore(binary,x,cy,direction,gap,lines){
 
 const start=direction==='up'
 ?Math.round(cy-gap*.35)
@@ -1442,15 +1349,12 @@ const end=direction==='up'
 ?Math.round(cy-gap*4.2)
 :Math.round(cy+gap*4.2);
 
-const lo=Math.min(start,end);
-const hi=Math.max(start,end);
-
 let dark=0;
 let total=0;
 let run=0;
 let bestRun=0;
 
-for(let y=lo;y<=hi;y++){
+for(let y=Math.min(start,end);y<=Math.max(start,end);y++){
 
 if(
 y<0||y>=binary.rows||
@@ -1465,7 +1369,6 @@ if(on){
 
 dark++;
 run++;
-
 bestRun=Math.max(bestRun,run);
 
 }else{
@@ -1478,9 +1381,7 @@ run=0;
 
 return{
 ratio:dark/Math.max(1,total),
-bestRun,
-x,
-direction
+bestRun
 };
 
 }
@@ -1500,16 +1401,11 @@ if(x<0||x>=binary.cols)continue;
 
 for(const dir of ['up','down']){
 
-tries.push(
-stemScore(
-binary,
-x,
-note.y,
-dir,
-gap,
-staff.lines
-)
+const m=stemScore(
+binary,x,note.y,dir,gap,staff.lines
 );
+
+tries.push(m);
 
 }
 
@@ -1523,15 +1419,13 @@ const best=tries[0];
 
 return best&&
 best.ratio>.48&&
-best.bestRun>gap*1.2
-?best:null;
+best.bestRun>gap*1.2;
 
 }
 
 function estimateRhythm(binary,note,staff){
 
 const stem=findStem(binary,note,staff);
-
 const hollow=note.head==='hollow';
 
 const beats=hollow
@@ -1539,28 +1433,29 @@ const beats=hollow
 :1;
 
 return{
-
 beats,
-
 label:hollow
 ?(stem?'Half note':'Whole note')
-:'Quarter note',
-
-stem:!!stem
-
+:'Quarter note'
 };
 
 }
 
-/* =========================
-   CHORD / EVENT GROUPING
-========================= */
+/* =====================================
+   MEASURE GROUPING
+
+   Every note is assigned to the measure
+   on its left. Barline boundaries create
+   a small playback pause between measures.
+===================================== */
 
 function groupEvents(notes,staffs){
 
 const events=[];
 
 for(let s=0;s<staffs.length;s++){
+
+const staff=staffs[s];
 
 const same=notes
 .filter(n=>n.staff===s)
@@ -1571,7 +1466,7 @@ const local=[];
 for(const note of same){
 
 let event=local.find(e=>
-Math.abs(e.x-note.x)<staffs[s].gap*.55
+Math.abs(e.x-note.x)<staff.gap*.55
 );
 
 if(!event){
@@ -1579,8 +1474,10 @@ if(!event){
 event={
 x:note.x,
 notes:[],
-beats:note.beats,
-staff:s
+beats:note.beats||1,
+staff:s,
+measure:0,
+barAfter:false
 };
 
 local.push(event);
@@ -1591,24 +1488,55 @@ event.notes.push(note);
 
 event.beats=Math.max(
 event.beats,
-note.beats
+note.beats||1
 );
 
 }
 
-events.push(
-...local.sort((a,b)=>a.x-b.x)
+local.sort((a,b)=>a.x-b.x);
+
+/*
+A measure changes whenever the note
+moves past a detected vertical barline.
+*/
+
+for(const event of local){
+
+event.measure=staff.bars.filter(
+x=>x<event.x
+).length;
+
+}
+
+/*
+Mark the final event before each barline.
+This is where the short measure pause
+will be inserted during playback.
+*/
+
+for(const event of local){
+
+const next=local.find(e=>e.x>event.x);
+
+if(next&&next.measure>event.measure){
+event.barAfter=true;
+}
+
+}
+
+events.push(...local);
+
+}
+
+return events.sort((a,b)=>
+a.staff-b.staff||a.x-b.x
 );
 
 }
 
-return events;
-
-}
-
-/* =========================
-   DRAW OVERLAY
-========================= */
+/* =====================================
+   DRAW STAFF AND DETECTIONS
+===================================== */
 
 function drawOverlay(ctx,staffs,notes){
 
@@ -1617,20 +1545,37 @@ ctx.save();
 ctx.lineWidth=2;
 ctx.strokeStyle='#2563eb';
 
-staffs.forEach(s=>{
+staffs.forEach(staff=>{
 
-s.lines.forEach(y=>{
+staff.lines.forEach(y=>{
 
 ctx.beginPath();
-
-ctx.moveTo(s.left,y);
-ctx.lineTo(s.right,y);
-
+ctx.moveTo(staff.left,y);
+ctx.lineTo(staff.right,y);
 ctx.stroke();
 
 });
 
+/* Green vertical measure lines. */
+
+ctx.strokeStyle='#16a34a';
+ctx.lineWidth=2.5;
+
+staff.bars.forEach(x=>{
+
+ctx.beginPath();
+ctx.moveTo(x,staff.top-3);
+ctx.lineTo(x,staff.bottom+3);
+ctx.stroke();
+
 });
+
+ctx.strokeStyle='#2563eb';
+ctx.lineWidth=2;
+
+});
+
+/* Red circles around detected noteheads. */
 
 notes.forEach(n=>{
 
@@ -1639,7 +1584,7 @@ ctx.beginPath();
 ctx.arc(
 n.x,
 n.y,
-Math.max(5,staffs[n.staff].gap*.24),
+Math.max(4.5,staffs[n.staff].gap*.23),
 0,
 Math.PI*2
 );
@@ -1649,7 +1594,6 @@ ctx.fill();
 
 ctx.strokeStyle='white';
 ctx.lineWidth=1.5;
-
 ctx.stroke();
 
 });
@@ -1658,36 +1602,22 @@ ctx.restore();
 
 }
 
-/* =========================
-   MAIN IMAGE PROCESSING
-========================= */
+/* =====================================
+   IMAGE PROCESSING
+===================================== */
 
 async function detectSheet(blob){
 
 if(!cvReady){
-
-throw new Error(
-'Recognition engine is still loading.'
-);
-
+throw new Error('Recognition engine is still loading.');
 }
 
 const im=await loadImage(blob);
 
-const scale=Math.min(
-1,
-1800/im.naturalWidth
-);
+const scale=Math.min(1,1800/im.naturalWidth);
 
-const w=Math.max(
-1,
-Math.round(im.naturalWidth*scale)
-);
-
-const h=Math.max(
-1,
-Math.round(im.naturalHeight*scale)
-);
+const w=Math.max(1,Math.round(im.naturalWidth*scale));
+const h=Math.max(1,Math.round(im.naturalHeight*scale));
 
 canvas.width=w;
 canvas.height=h;
@@ -1702,21 +1632,15 @@ let gray=new cv.Mat();
 let blur=new cv.Mat();
 let binary=new cv.Mat();
 let lineMask=new cv.Mat();
+let cleanBinary=new cv.Mat();
 let lineKernel=null;
 
 try{
 
-cv.cvtColor(
-src,
-gray,
-cv.COLOR_RGBA2GRAY
-);
+cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
 
 cv.GaussianBlur(
-gray,
-blur,
-new cv.Size(3,3),
-0
+gray,blur,new cv.Size(3,3),0
 );
 
 cv.threshold(
@@ -1727,12 +1651,11 @@ binary,
 cv.THRESH_BINARY_INV+cv.THRESH_OTSU
 );
 
+/* Detect horizontal staff lines. */
+
 lineKernel=cv.getStructuringElement(
 cv.MORPH_RECT,
-new cv.Size(
-Math.max(22,Math.round(w*.16)),
-1
-)
+new cv.Size(Math.max(22,Math.round(w*.16)),1)
 );
 
 cv.morphologyEx(
@@ -1742,28 +1665,51 @@ cv.MORPH_OPEN,
 lineKernel
 );
 
-const staffs=findStaffGroups(
+const rawStaffs=findStaffGroups(
 lineMask,w,h
 );
 
-if(!staffs.length){
+if(!rawStaffs.length){
 
 throw new Error(
-'Five staff lines could not be detected. Try a clearer, straighter image.'
+'Five staff lines could not be detected. Try a clearer image.'
 );
 
 }
 
+/*
+Remove horizontal staff lines from the note
+image. This helps prevent staff lines from
+being mistaken for filled noteheads.
+*/
+
+cv.subtract(
+binary,
+lineMask,
+cleanBinary
+);
+
+const staffs=[];
+const allNotes=[];
+
 const clef=$('clef').value;
 const key=$('keySignature').value;
 
-const allNotes=[];
+for(let s=0;s<rawStaffs.length;s++){
 
-for(let s=0;s<staffs.length;s++){
+const staff=rawStaffs[s];
+
+/* Find vertical measure barlines. */
+
+staff.bars=detectBarLines(binary,staff);
+
+staffs.push(staff);
+
+/* Detect individual noteheads. */
 
 const found=detectStaffNotes(
-binary,
-staffs[s],
+cleanBinary,
+staff,
 s,
 clef,
 key
@@ -1772,9 +1718,7 @@ key
 for(const n of found){
 
 const rhythm=estimateRhythm(
-binary,
-n,
-staffs[s]
+cleanBinary,n,staff
 );
 
 allNotes.push({
@@ -1789,7 +1733,7 @@ allNotes.push({
 if(!allNotes.length){
 
 throw new Error(
-'Staff lines were found, but no noteheads were recognized. Try cropping closer to the music.'
+'Staff lines were detected, but no noteheads were recognized. Try cropping closer to the music.'
 );
 
 }
@@ -1798,25 +1742,18 @@ allNotes.sort((a,b)=>
 a.staff-b.staff||a.x-b.x
 );
 
+const events=groupEvents(allNotes,staffs);
+
+/* Display all detections. */
+
 ctx.drawImage(im,0,0,w,h);
 
-drawOverlay(
-ctx,
-staffs,
-allNotes
-);
+drawOverlay(ctx,staffs,allNotes);
 
 return{
-
 notes:allNotes,
-
-events:groupEvents(
-allNotes,
+events,
 staffs
-),
-
-staffs
-
 };
 
 }finally{
@@ -1826,33 +1763,29 @@ gray.delete();
 blur.delete();
 binary.delete();
 lineMask.delete();
+cleanBinary.delete();
 
-if(lineKernel){
-lineKernel.delete();
-}
-
-}
+if(lineKernel)lineKernel.delete();
 
 }
 
-/* =========================
+}
+
+/* =====================================
    DISPLAY NOTES
-========================= */
+===================================== */
 
 function esc(s){
 
 return String(s).replace(
 /[&<>"']/g,
 c=>({
-
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
-
 }[c])
-
 );
 
 }
@@ -1880,9 +1813,9 @@ notesBox.appendChild(el);
 
 }
 
-/* =========================
-   DETECTION BUTTON
-========================= */
+/* =====================================
+   DETECT BUTTON
+===================================== */
 
 async function runDetection(){
 
@@ -1896,9 +1829,7 @@ notesBox.replaceChildren();
 
 stopMusic();
 
-status(
-'Scanning staff lines and identifying noteheads...'
-);
+status('Scanning staff lines, barlines and noteheads...');
 
 try{
 
@@ -1906,18 +1837,23 @@ const result=await detectSheet(imageBlob);
 
 detectedNotes=result.notes;
 playbackEvents=result.events;
+detectedStaffs=result.staffs;
 
 renderNotes();
 
 $('playBtn').disabled=false;
 $('redetectBtn').disabled=false;
 
-const sequence=result.events.map(e=>
+const barCount=detectedStaffs.reduce(
+(sum,s)=>sum+s.bars.length,0
+);
+
+const sequence=playbackEvents.map(e=>
 e.notes.map(n=>n.name).join('+')
 ).join(' | ');
 
 status(
-`Found ${result.staffs.length} staff system(s) and ${detectedNotes.length} notehead(s). Sequence: ${sequence}.`
+`Found ${detectedStaffs.length} staff system(s), ${detectedNotes.length} notehead(s), and ${barCount} measure barline(s). Sequence: ${sequence}`
 );
 
 }catch(e){
@@ -1938,44 +1874,38 @@ $('detectBtn').disabled=false;
 }
 
 $('detectBtn').onclick=runDetection;
-
 $('redetectBtn').onclick=runDetection;
 
 $('clef').onchange=()=>{
-
-if(imageBlob){
-$('redetectBtn').disabled=false;
-}
-
+if(imageBlob)$('redetectBtn').disabled=false;
 };
 
 $('keySignature').onchange=()=>{
+if(imageBlob)$('redetectBtn').disabled=false;
+};
 
-if(imageBlob){
-$('redetectBtn').disabled=false;
-}
+/* =====================================
+   BARLINE PAUSE SETTING
+===================================== */
+
+$('barPause').oninput=()=>{
+
+$('pauseValue').textContent=
+Number($('barPause').value).toFixed(2)+' beats';
 
 };
 
-/* =========================
+/* =====================================
    AUDIO PLAYBACK
-========================= */
+===================================== */
 
 function midiFrequency(midi){
 
-return 440*Math.pow(
-2,
-(midi-69)/12
-);
+return 440*Math.pow(2,(midi-69)/12);
 
 }
 
-function playTone(
-midi,
-start,
-duration,
-mode
-){
+function playTone(midi,start,duration,mode){
 
 const f=midiFrequency(midi);
 
@@ -1991,8 +1921,7 @@ const master=audioContext.createGain();
 master.gain.setValueAtTime(.0001,start);
 
 master.gain.linearRampToValueAtTime(
-.13,
-start+.018
+.13,start+.018
 );
 
 master.gain.setTargetAtTime(
@@ -2006,7 +1935,6 @@ master.connect(audioContext.destination);
 partials.forEach((amp,i)=>{
 
 const osc=audioContext.createOscillator();
-
 const gain=audioContext.createGain();
 
 osc.type=mode==='organ'
@@ -2014,7 +1942,6 @@ osc.type=mode==='organ'
 :i===0?'triangle':'sine';
 
 osc.frequency.value=f*(i+1);
-
 gain.gain.value=amp;
 
 osc.connect(gain);
@@ -2029,9 +1956,14 @@ activeOscillators.push(osc);
 
 }
 
-/* =========================
-   PLAY MUSIC
-========================= */
+/* =====================================
+   PLAYBACK
+
+   Notes play in sequence.
+   A configurable short pause is added
+   when an event is followed by a new
+   measure.
+===================================== */
 
 $('playBtn').onclick=async()=>{
 
@@ -2048,11 +1980,7 @@ window.AudioContext||
 window.webkitAudioContext;
 
 if(!AC){
-
-throw new Error(
-'Web Audio is not supported.'
-);
-
+throw new Error('Web Audio is not supported.');
 }
 
 if(!audioContext){
@@ -2067,7 +1995,11 @@ Math.max(40,Number($('tempo').value)||100)
 );
 
 const beat=60/tempo;
+
 const mode=$('sound').value;
+
+const pause=
+Number($('barPause').value)*beat;
 
 const start=audioContext.currentTime+.12;
 
@@ -2077,20 +2009,20 @@ $('stopMusicBtn').disabled=false;
 
 status(`Playing at ${tempo} BPM.`);
 
-playbackEvents.forEach(event=>{
+playbackEvents.forEach((event,eventIndex)=>{
 
 const eventStart=start+cursor;
 
-event.notes.forEach(n=>{
+event.notes.forEach(note=>{
 
 playTone(
-n.midi,
+note.midi,
 eventStart,
-Math.max(.08,n.beats*beat*.90),
+Math.max(.08,note.beats*beat*.90),
 mode
 );
 
-const i=detectedNotes.indexOf(n);
+const index=detectedNotes.indexOf(note);
 
 playbackTimers.push(setTimeout(()=>{
 
@@ -2100,18 +2032,36 @@ document.querySelectorAll('.note-chip.active')
 .forEach(el=>el.classList.remove('active'));
 
 const chip=notesBox.querySelector(
-`[data-index="${i}"]`
+`[data-index="${index}"]`
 );
 
-if(chip){
-chip.classList.add('active');
-}
+if(chip)chip.classList.add('active');
 
 },cursor*1000));
 
 });
 
+/*
+Advance by note duration.
+*/
+
 cursor+=event.beats*beat;
+
+/*
+Insert a short break at the end of
+a measure, not after every note.
+*/
+
+if(event.barAfter){
+
+cursor+=pause;
+
+}
+
+/*
+Small visual delay only; no artificial
+delay is added between ordinary notes.
+*/
 
 });
 
@@ -2128,7 +2078,7 @@ document.querySelectorAll('.note-chip.active')
 
 status('Playback finished.');
 
-},(cursor+.3)*1000));
+},(cursor+.35)*1000));
 
 }catch(e){
 
@@ -2143,14 +2093,13 @@ status('Audio error: '+e.message);
 $('stopMusicBtn').onclick=()=>{
 
 stopMusic();
-
 status('Playback stopped.');
 
 };
 
-/* =========================
+/* =====================================
    INITIALIZATION
-========================= */
+===================================== */
 
 if(navigator.mediaDevices?.addEventListener){
 
