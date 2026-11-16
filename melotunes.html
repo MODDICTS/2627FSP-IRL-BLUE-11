@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,40 +14,107 @@
 --pale:#eff6ff;
 --ink:#1e293b;
 --muted:#64748b;
---border:#dbe3ef
+--border:#dbe3ef;
 }
 *{box-sizing:border-box}
-body{margin:0;background:#f3f6fb;color:var(--ink);font-family:Arial,sans-serif}
-header{background:linear-gradient(125deg,#111c43,#263f78);color:white;text-align:center;padding:26px 18px}
+body{
+margin:0;
+background:#f3f6fb;
+color:var(--ink);
+font-family:Arial,sans-serif;
+}
+header{
+background:linear-gradient(125deg,#111c43,#263f78);
+color:white;
+text-align:center;
+padding:26px 18px;
+}
 header h1{margin:0 0 7px;font-size:clamp(24px,4vw,34px)}
 header p{margin:0;color:#dbeafe}
 main{width:min(1050px,100%);margin:22px auto;padding:0 14px 36px}
-.card{background:white;border:1px solid #e5eaf2;border-radius:16px;padding:20px;margin-bottom:17px;box-shadow:0 6px 22px #1e293b0b}
+.card{
+background:white;
+border:1px solid #e5eaf2;
+border-radius:16px;
+padding:20px;
+margin-bottom:17px;
+box-shadow:0 6px 22px #1e293b0b;
+}
 h2{margin:0 0 14px;color:var(--navy);font-size:19px}
 .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
 button,select,input{font:inherit}
-button{border:0;border-radius:9px;background:var(--blue);color:white;padding:11px 15px;font-weight:650;cursor:pointer}
+button{
+border:0;border-radius:9px;
+background:var(--blue);
+color:white;padding:11px 15px;
+font-weight:650;cursor:pointer;
+}
 button.secondary{background:#475569}
 button:disabled{opacity:.45;cursor:not-allowed}
-select,input[type=number]{border:1px solid #cbd5e1;border-radius:9px;background:white;padding:10px;color:var(--ink)}
-label{font-size:13px;color:#475569;font-weight:650;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-video,#preview{width:100%;max-height:460px;object-fit:contain;background:#111827;border-radius:11px;display:block;margin-top:12px}
+select,input[type=number]{
+border:1px solid #cbd5e1;
+border-radius:9px;
+background:white;padding:10px;color:var(--ink);
+}
+label{
+font-size:13px;color:#475569;
+font-weight:650;display:flex;
+gap:8px;align-items:center;flex-wrap:wrap;
+}
+video,#preview{
+width:100%;max-height:460px;
+object-fit:contain;background:#111827;
+border-radius:11px;display:block;margin-top:12px;
+}
 #preview{background:#e2e8f0}
-#sheetCanvas{width:100%;height:auto;border:1px solid var(--border);border-radius:9px;margin-top:12px;display:block}
+#sheetCanvas{
+width:100%;height:auto;
+border:1px solid var(--border);
+border-radius:9px;margin-top:12px;display:block;
+}
 .small{font-size:13px;line-height:1.6;color:var(--muted)}
-#status{padding:12px 14px;border-radius:9px;background:var(--pale);line-height:1.55;margin:12px 0;overflow-wrap:anywhere}
+#status{
+padding:12px 14px;border-radius:9px;
+background:var(--pale);line-height:1.55;
+margin:12px 0;overflow-wrap:anywhere;
+}
 #notes{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.note-chip{background:#e8efff;border:1px solid #c8d8ff;border-radius:9px;padding:9px 11px;font-weight:700;min-width:92px}
-.note-chip small{display:block;color:#536781;font-size:11px;font-weight:500;margin-top:3px}
-.note-chip.active{background:#1d4ed8;border-color:#1d4ed8;color:white;box-shadow:0 0 0 3px #bfdbfe}
+.note-chip{
+background:#e8efff;border:1px solid #c8d8ff;
+border-radius:9px;padding:9px 11px;
+font-weight:700;min-width:92px;
+}
+.note-chip small{
+display:block;color:#536781;
+font-size:11px;font-weight:500;margin-top:3px;
+}
+.note-chip.active{
+background:#1d4ed8;border-color:#1d4ed8;
+color:white;box-shadow:0 0 0 3px #bfdbfe;
+}
 .note-chip.active small{color:#dbeafe}
-.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.settings{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+gap:12px;
+}
 .settings label{display:block}
-.settings select,.settings input{display:block;width:100%;margin-top:6px}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
-.info{background:#f8fafc;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin-top:12px}
-
+.settings select,.settings input{
+display:block;width:100%;margin-top:6px;
+}
+.legend{
+display:flex;gap:14px;flex-wrap:wrap;
+font-size:12px;color:var(--muted);margin-top:10px;
+}
+.dot{
+display:inline-block;width:9px;height:9px;
+border-radius:50%;margin-right:5px;
+}
+.info{
+background:#f8fafc;border-radius:10px;
+padding:12px;font-size:13px;
+line-height:1.6;margin-top:12px;
+}
 @media(max-width:600px){
 .card{padding:15px}
 button{flex:1}
@@ -88,7 +156,6 @@ button{flex:1}
 
 <div class="row">
 <button id="captureBtn" disabled>📷 Capture sheet</button>
-
 <label>Upload image
 <input id="fileInput" type="file" accept="image/*">
 </label>
@@ -117,20 +184,20 @@ Crop away large empty margins and avoid shadows.
 <label>Key signature
 <select id="keySignature">
 <option value="C">C major / A minor</option>
-<option value="G">G major / E minor (1 sharp)</option>
-<option value="D">D major / B minor (2 sharps)</option>
-<option value="A">A major / F# minor (3 sharps)</option>
-<option value="E">E major / C# minor (4 sharps)</option>
-<option value="B">B major / G# minor (5 sharps)</option>
-<option value="F#">F# major / D# minor (6 sharps)</option>
-<option value="C#">C# major / A# minor (7 sharps)</option>
-<option value="F">F major / D minor (1 flat)</option>
-<option value="Bb">Bb major / G minor (2 flats)</option>
-<option value="Eb">Eb major / C minor (3 flats)</option>
-<option value="Ab">Ab major / F minor (4 flats)</option>
-<option value="Db">Db major / Bb minor (5 flats)</option>
-<option value="Gb">Gb major / Eb minor (6 flats)</option>
-<option value="Cb">Cb major / Ab minor (7 flats)</option>
+<option value="G">G major / E minor</option>
+<option value="D">D major / B minor</option>
+<option value="A">A major / F# minor</option>
+<option value="E">E major / C# minor</option>
+<option value="B">B major / G# minor</option>
+<option value="F#">F# major / D# minor</option>
+<option value="C#">C# major / A# minor</option>
+<option value="F">F major / D minor</option>
+<option value="Bb">Bb major / G minor</option>
+<option value="Eb">Eb major / C minor</option>
+<option value="Ab">Ab major / F minor</option>
+<option value="Db">Db major / Bb minor</option>
+<option value="Gb">Gb major / Eb minor</option>
+<option value="Cb">Cb major / Ab minor</option>
 </select>
 </label>
 
@@ -149,14 +216,13 @@ Crop away large empty margins and avoid shadows.
 </div>
 
 <div class="info">
-<b>How note recognition works</b><br>
-1. Find the five staff lines and their spacing.<br>
-2. Ignore the clef/key-signature area at the left of the staff.<br>
-3. Search for physical oval noteheads across the staff in two dimensions.<br>
-4. Keep one strongest center for each oval, preventing duplicate detections.<br>
-5. Snap the measured center to the nearest line or space to calculate pitch and octave.
+<b>Recognition improvements</b><br>
+1. Detect the five staff lines.<br>
+2. Exclude the clef and key-signature area.<br>
+3. Find oval noteheads using their physical shape.<br>
+4. Group duplicate detections without merging nearby chord notes.<br>
+5. Calculate pitches from the nearest staff line or space.
 </div>
-
 </section>
 
 <section class="card">
@@ -170,7 +236,7 @@ Crop away large empty margins and avoid shadows.
 </div>
 
 <p id="status" role="status" aria-live="polite">
-Loading the music-recognition engine…
+Loading recognition engine...
 </p>
 
 <div id="notes" aria-live="polite"></div>
@@ -178,14 +244,13 @@ Loading the music-recognition engine…
 <canvas id="sheetCanvas" hidden></canvas>
 
 <div class="legend">
-<span><i class="dot" style="background:#ef4444"></i>Recognized notehead center</span>
-<span><i class="dot" style="background:#2563eb"></i>Detected staff lines</span>
+<span><i class="dot" style="background:#ef4444"></i>Detected noteheads</span>
+<span><i class="dot" style="background:#2563eb"></i>Staff lines</span>
 </div>
 
 <p class="small">
-This version identifies physical noteheads first, then maps their measured centers to staff positions. Whole, half and quarter durations are estimated; flags, beams, dots, rests, ties and local accidentals are not yet reliably recognized.
+Rhythm and note duration are estimated. Flags, beams, rests, ties, dots and local accidentals are not yet reliably recognized.
 </p>
-
 </section>
 
 </main>
@@ -193,13 +258,14 @@ This version identifies physical noteheads first, then maps their measured cente
 <script>
 'use strict';
 
-const $=id=>document.getElementById(id),
-video=$('video'),
-preview=$('preview'),
-canvas=$('sheetCanvas'),
-statusBox=$('status'),
-notesBox=$('notes'),
-cameraSelect=$('cameraSelect');
+const $=id=>document.getElementById(id);
+
+const video=$('video');
+const preview=$('preview');
+const canvas=$('sheetCanvas');
+const statusBox=$('status');
+const notesBox=$('notes');
+const cameraSelect=$('cameraSelect');
 
 let cvReady=false;
 let stream=null;
@@ -216,7 +282,9 @@ function status(message){
 statusBox.textContent=message;
 }
 
-/* OPEN CV */
+/* =========================
+   OPENCV INITIALIZATION
+========================= */
 
 function waitForOpenCV(){
 
@@ -229,14 +297,14 @@ if(window.cv&&window.cv.Mat&&window.cv.imread){
 clearInterval(timer);
 cvReady=true;
 
-status('Recognition engine ready. Upload a sheet or start the camera.');
+status('Recognition engine ready.');
 
 if(imageBlob)$('detectBtn').disabled=false;
 
 }else if(Date.now()-started>60000){
 
 clearInterval(timer);
-status('OpenCV did not load. Check your internet connection and reload.');
+status('OpenCV failed to load. Check your internet connection.');
 
 }
 
@@ -246,7 +314,9 @@ status('OpenCV did not load. Check your internet connection and reload.');
 
 waitForOpenCV();
 
-/* CAMERA */
+/* =========================
+   CAMERA
+========================= */
 
 function stopCamera(show=true){
 
@@ -273,13 +343,19 @@ const cams=(await navigator.mediaDevices.enumerateDevices())
 
 const old=cameraSelect.value;
 
-cameraSelect.replaceChildren(new Option('Default camera',''));
-
-cams.forEach((c,i)=>
-cameraSelect.add(new Option(c.label||`Camera ${i+1}`,c.deviceId))
+cameraSelect.replaceChildren(
+new Option('Default camera','')
 );
 
-if(cams.some(c=>c.deviceId===old))cameraSelect.value=old;
+cams.forEach((c,i)=>{
+cameraSelect.add(
+new Option(c.label||`Camera ${i+1}`,c.deviceId)
+);
+});
+
+if(cams.some(c=>c.deviceId===old)){
+cameraSelect.value=old;
+}
 
 }catch(e){
 console.warn(e);
@@ -290,7 +366,7 @@ console.warn(e);
 async function startCamera(deviceId=null,facing='environment'){
 
 if(!navigator.mediaDevices?.getUserMedia){
-status('Camera access needs HTTPS or localhost. Upload an image instead.');
+status('Camera requires HTTPS or localhost. Upload an image instead.');
 return;
 }
 
@@ -298,12 +374,20 @@ stopCamera(false);
 
 try{
 
-const v=deviceId
-?{deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1440}}
-:{facingMode:{ideal:facing},width:{ideal:2560},height:{ideal:1440}};
+const constraints=deviceId
+?{
+deviceId:{exact:deviceId},
+width:{ideal:2560},
+height:{ideal:1440}
+}
+:{
+facingMode:{ideal:facing},
+width:{ideal:2560},
+height:{ideal:1440}
+};
 
 stream=await navigator.mediaDevices.getUserMedia({
-video:v,
+video:constraints,
 audio:false
 });
 
@@ -317,7 +401,7 @@ await refreshCameras();
 
 if(deviceId)cameraSelect.value=deviceId;
 
-status('Camera ready. Capture the complete staff.');
+status('Camera ready. Capture your sheet music.');
 
 }catch(e){
 
@@ -327,6 +411,10 @@ status('Camera error: '+e.message);
 }
 
 }
+
+/* =========================
+   IMAGE HANDLING
+========================= */
 
 function stopMusic(){
 
@@ -365,6 +453,7 @@ detectedNotes=[];
 playbackEvents=[];
 
 notesBox.replaceChildren();
+
 canvas.hidden=true;
 
 $('detectBtn').disabled=!cvReady;
@@ -375,8 +464,8 @@ stopMusic();
 
 status(
 cvReady
-?'Image ready. Select the clef and key, then detect notes.'
-:'Image ready. Waiting for the recognition engine…'
+?'Image ready. Select your clef and key, then detect notes.'
+:'Image ready. Waiting for OpenCV...'
 );
 
 }
@@ -387,7 +476,9 @@ $('backBtn').onclick=()=>startCamera(null,'environment');
 $('stopBtn').onclick=()=>stopCamera();
 
 cameraSelect.onchange=()=>{
-if(cameraSelect.value)startCamera(cameraSelect.value);
+if(cameraSelect.value){
+startCamera(cameraSelect.value);
+}
 };
 
 $('captureBtn').onclick=()=>{
@@ -402,7 +493,9 @@ const c=document.createElement('canvas');
 c.width=video.videoWidth;
 c.height=video.videoHeight;
 
-c.getContext('2d').drawImage(video,0,0,c.width,c.height);
+c.getContext('2d').drawImage(
+video,0,0,c.width,c.height
+);
 
 c.toBlob(blob=>{
 if(blob)saveImage(blob);
@@ -414,16 +507,14 @@ $('fileInput').onchange=e=>{
 
 const f=e.target.files?.[0];
 
-if(f){
+if(!f)return;
 
 if(!f.type.startsWith('image/')){
-status('Please select an image.');
+status('Please upload an image file.');
 return;
 }
 
 saveImage(f);
-
-}
 
 };
 
@@ -441,7 +532,7 @@ resolve(im);
 
 im.onerror=()=>{
 URL.revokeObjectURL(url);
-reject(new Error('The image could not be opened.'));
+reject(new Error('Image could not be opened.'));
 };
 
 im.src=url;
@@ -450,27 +541,32 @@ im.src=url;
 
 }
 
-/* STAFF DETECTION */
+/* =========================
+   STAFF DETECTION
+========================= */
 
 function staffBounds(lineMask,lines,width,height){
 
-let left=width,right=0;
+let left=width;
+let right=0;
 
 for(const line of lines){
 
 const mid=Math.round(line);
 
-for(let y=Math.max(0,mid-2);y<=Math.min(height-1,mid+2);y++){
+for(
+let y=Math.max(0,mid-2);
+y<=Math.min(height-1,mid+2);
+y++
+){
 
 const row=lineMask.ucharPtr(y);
 
 for(let x=0;x<width;x++){
 
 if(row[x]>0){
-
-if(x<left)left=x;
-if(x>right)right=x;
-
+left=Math.min(left,x);
+right=Math.max(right,x);
 }
 
 }
@@ -484,7 +580,11 @@ left=0;
 right=width-1;
 }
 
-return{left,right,width:right-left};
+return{
+left,
+right,
+width:right-left
+};
 
 }
 
@@ -515,10 +615,8 @@ let sum=0,n=0;
 for(let d=-1;d<=1;d++){
 
 if(y+d>=0&&y+d<height){
-
 sum+=scores[y+d];
 n++;
-
 }
 
 }
@@ -530,19 +628,23 @@ smooth[y]=sum/n;
 let max=0;
 
 for(const v of smooth){
-if(v>max)max=v;
+max=Math.max(max,v);
 }
 
 const cutoff=Math.max(.075,max*.22);
 
 const peaks=[];
+
 let y=0;
 
 while(y<height){
 
 if(smooth[y]>=cutoff){
 
-let end=y,weighted=0,total=0,strength=0;
+let end=y;
+let weighted=0;
+let total=0;
+let strength=0;
 
 while(end<height&&smooth[end]>=cutoff){
 
@@ -610,13 +712,18 @@ Math.abs(a-b)<Math.min(s.gap,c.gap)*.55
 ).length>=3
 );
 
-if(!overlap){
+if(overlap)continue;
 
-const bounds=staffBounds(lineMask,c.lines,width,height);
+const bounds=staffBounds(
+lineMask,c.lines,width,height
+);
 
 if(bounds.width>width*.18){
-selected.push({...c,...bounds});
-}
+
+selected.push({
+...c,
+...bounds
+});
 
 }
 
@@ -630,44 +737,62 @@ function nearStaffRow(y,lines,gap){
 
 const tolerance=Math.max(1.5,gap*.14);
 
-for(const line of lines){
-if(Math.abs(y-line)<=tolerance)return true;
-}
-
-return false;
+return lines.some(line=>
+Math.abs(y-line)<=tolerance
+);
 
 }
 
-/* OVAL NOTEHEAD RECOGNITION */
+/* =========================
+   NOTEHEAD SHAPE DETECTION
+========================= */
 
 function makeHeadOffsets(gap){
 
-const rx=.66*gap,ry=.43*gap;
-const ix=.35*gap,iy=.23*gap;
+const rx=.66*gap;
+const ry=.43*gap;
+
+const ix=.35*gap;
+const iy=.23*gap;
 
 const angle=-20*Math.PI/180;
 
 const cos=Math.cos(angle);
 const sin=Math.sin(angle);
 
-const core=[],ring=[];
+const core=[];
+const ring=[];
 
-for(let dy=-Math.ceil(ry);dy<=Math.ceil(ry);dy++){
+for(
+let dy=-Math.ceil(ry);
+dy<=Math.ceil(ry);
+dy++
+){
 
-for(let dx=-Math.ceil(rx);dx<=Math.ceil(rx);dx++){
+for(
+let dx=-Math.ceil(rx);
+dx<=Math.ceil(rx);
+dx++
+){
 
 const xr=dx*cos+dy*sin;
 const yr=-dx*sin+dy*cos;
 
-const outer=xr*xr/(rx*rx)+yr*yr/(ry*ry);
-const inner=xr*xr/(ix*ix)+yr*yr/(iy*iy);
+const outer=
+xr*xr/(rx*rx)+yr*yr/(ry*ry);
+
+const inner=
+xr*xr/(ix*ix)+yr*yr/(iy*iy);
 
 if(outer<=1){
 
 const p={dx,dy,xr,yr};
 
-if(inner<=1)core.push(p);
-else ring.push(p);
+if(inner<=1){
+core.push(p);
+}else{
+ring.push(p);
+}
 
 }
 
@@ -681,8 +806,11 @@ return{core,ring};
 
 function headMetrics(binary,x,y,gap,lines,offsets){
 
-let coreDark=0,coreTotal=0;
-let ringDark=0,ringTotal=0;
+let coreDark=0;
+let coreTotal=0;
+
+let ringDark=0;
+let ringTotal=0;
 
 const quadrants=[
 {d:0,n:0},
@@ -704,7 +832,9 @@ nearStaffRow(yy,lines,gap)
 
 coreTotal++;
 
-if(binary.ucharPtr(yy)[xx]>0)coreDark++;
+if(binary.ucharPtr(yy)[xx]>0){
+coreDark++;
+}
 
 }
 
@@ -721,7 +851,8 @@ nearStaffRow(yy,lines,gap)
 
 ringTotal++;
 
-const q=(p.xr>=0?1:0)+(p.yr>=0?2:0);
+const q=
+(p.xr>=0?1:0)+(p.yr>=0?2:0);
 
 quadrants[q].n++;
 
@@ -741,8 +872,11 @@ const coverage=quadrants.filter(q=>
 q.n>0&&q.d/q.n>.20
 ).length;
 
-const filled=core>=.50&&ring>=.48&&coverage>=3;
-const hollow=core<=.34&&ring>=.25&&coverage>=3;
+const filled=
+core>=.50&&ring>=.48&&coverage>=3;
+
+const hollow=
+core<=.34&&ring>=.25&&coverage>=3;
 
 return{
 core,
@@ -757,7 +891,9 @@ confidence:filled
 
 }
 
-/* PITCH MAPPING */
+/* =========================
+   PITCH MAPPING
+========================= */
 
 const NATURAL={
 C:0,D:2,E:4,F:5,G:7,A:9,B:11
@@ -769,7 +905,6 @@ C:{},
 G:{F:1},
 D:{F:1,C:1},
 A:{F:1,C:1,G:1},
-
 E:{F:1,C:1,G:1,D:1},
 B:{F:1,C:1,G:1,D:1,A:1},
 
@@ -792,39 +927,66 @@ const base=clef==='bass'?18:30;
 
 const d=base+step;
 
-const oct=Math.floor(d/7);
+const octave=Math.floor(d/7);
 
-const letter=['C','D','E','F','G','A','B'][(d%7+7)%7];
+const letter=
+['C','D','E','F','G','A','B'][
+(d%7+7)%7
+];
 
 const alter=(KEY_ALTER[key]||{})[letter]||0;
 
-const midi=12*(oct+1)+NATURAL[letter]+alter;
+const midi=
+12*(octave+1)+NATURAL[letter]+alter;
 
-const acc=alter===1?'♯':alter===-1?'♭':'';
+const accidental=
+alter===1?'♯':
+alter===-1?'♭':'';
 
 return{
-name:letter+acc+oct,
+name:letter+accidental+octave,
 letter,
-octave:oct,
+octave,
 midi,
 step
 };
 
 }
 
-/* PHYSICAL NOTEHEAD DETECTION - IMPROVED */
+/* =========================
+   IMPROVED NOTE DETECTION
+========================= */
 
-function detectStaffNotes(binary,staff,staffIndex,clef,key){
+function detectStaffNotes(
+binary,
+staff,
+staffIndex,
+clef,
+key
+){
 
 const gap=staff.gap;
 const bottom=staff.lines[4];
 
 const offsets=makeHeadOffsets(gap);
 
-// Leave room for the first notes while still skipping the clef/time-signature area.
+/*
+IMPORTANT FIX 1:
+The clef and key-signature area is excluded.
+
+The earlier detector began too close to the clef,
+which caused its curved black shapes to be mistaken
+for several musical noteheads.
+*/
+
+const clefAndSignatureMargin=Math.max(
+gap*5.5,
+staff.width*.075
+);
+
 const minX=Math.max(
 0,
-Math.round(staff.left+gap*4.2)
+Math.round(staff.left+clefAndSignatureMargin)
 );
 
 const maxX=Math.min(
@@ -832,14 +994,17 @@ binary.cols-1,
 Math.round(staff.right-gap*.35)
 );
 
-// Include notes above the staff, but avoid scanning far outside the notation.
+/*
+IMPORTANT FIX 2:
+Limit vertical detection to the staff region.
+This reduces false detections from note labels.
+*/
+
 const minY=Math.max(
 0,
 Math.floor(staff.lines[0]-gap*1.5)
 );
 
-// A tighter lower bound helps prevent printed note-name labels
-// beneath the staff from being read as musical notes.
 const maxY=Math.min(
 binary.rows-1,
 Math.ceil(staff.lines[4]+gap*1.25)
@@ -851,6 +1016,8 @@ const yStep=Math.max(1,Math.round(gap/18));
 const candidates=[];
 
 if(maxX<=minX||maxY<=minY)return [];
+
+/* Search for notehead centers. */
 
 for(let y=minY;y<=maxY;y+=yStep){
 
@@ -887,27 +1054,35 @@ coverage:m.coverage
 
 }
 
-/* Prevent duplicate detections of one oval. */
+/*
+IMPORTANT FIX 3:
+Merge duplicate detections horizontally,
+but do not merge different notes in a chord.
+*/
 
-candidates.sort((a,b)=>b.confidence-a.confidence);
+candidates.sort((a,b)=>
+b.confidence-a.confidence
+);
 
 const peaks=[];
 
-const radiusX=gap*.52;
-const radiusY=gap*.52;
+const radiusX=gap*.85;
+const radiusY=gap*.32;
 
 for(const p of candidates){
 
 const duplicate=peaks.some(q=>
-Math.pow((p.x-q.x)/radiusX,2)+
-Math.pow((p.y-q.y)/radiusY,2)<1
+Math.abs(p.x-q.x)<radiusX&&
+Math.abs(p.y-q.y)<radiusY
 );
 
-if(!duplicate)peaks.push(p);
+if(!duplicate){
+peaks.push(p);
+}
 
 }
 
-/* Refine each center at single-pixel resolution. */
+/* Refine each detected center. */
 
 const refined=[];
 
@@ -930,17 +1105,24 @@ dx++
 const x=Math.round(peak.x+dx);
 const y=Math.round(peak.y+dy);
 
-if(x<minX||x>maxX||y<minY||y>maxY)continue;
+if(
+x<minX||x>maxX||
+y<minY||y>maxY
+)continue;
 
 const m=headMetrics(
 binary,x,y,gap,staff.lines,offsets
 );
 
 const validFilled=
-m.filled&&m.core>=.72&&m.ring>=.68;
+m.filled&&
+m.core>=.72&&
+m.ring>=.68;
 
 const validHollow=
-m.hollow&&m.ring>=.58&&m.coverage>=3;
+m.hollow&&
+m.ring>=.58&&
+m.coverage>=3;
 
 if(
 (validFilled||validHollow)&&
@@ -967,7 +1149,7 @@ refined.push(best);
 
 }
 
-/* Map measured centers to the nearest line or space. */
+/* Convert centers into musical pitches. */
 
 const notes=[];
 
@@ -979,8 +1161,9 @@ const step=Math.round(rawStep);
 
 const positionError=Math.abs(rawStep-step);
 
-// Reject uncertain note positions.
-if(positionError>.38||step < -2||step > 12)continue;
+if(positionError>.38||step < -2||step > 12){
+continue;
+}
 
 const pitch=pitchForStep(step,clef,key);
 
@@ -993,9 +1176,10 @@ y:p.y,
 
 staff:staffIndex,
 head:p.head,
-confidence:p.confidence,
 
+confidence:p.confidence,
 positionError,
+
 coreRatio:p.core,
 ringRatio:p.ring
 
@@ -1007,9 +1191,13 @@ return notes.sort((a,b)=>a.x-b.x);
 
 }
 
-/* BASIC RHYTHM ESTIMATION */
+/* =========================
+   RHYTHM ESTIMATION
+========================= */
 
-function stemScore(binary,x,cy,direction,gap,lines){
+function stemScore(
+binary,x,cy,direction,gap,lines
+){
 
 const start=direction==='up'
 ?Math.round(cy-gap*.35)
@@ -1022,11 +1210,17 @@ const end=direction==='up'
 const lo=Math.min(start,end);
 const hi=Math.max(start,end);
 
-let dark=0,total=0,run=0,bestRun=0,first=-1,last=-1;
+let dark=0;
+let total=0;
+let run=0;
+let bestRun=0;
 
 for(let y=lo;y<=hi;y++){
 
-if(y<0||y>=binary.rows||nearStaffRow(y,lines,gap))continue;
+if(
+y<0||y>=binary.rows||
+nearStaffRow(y,lines,gap)
+)continue;
 
 total++;
 
@@ -1036,10 +1230,6 @@ if(on){
 
 dark++;
 run++;
-
-if(first<0)first=y;
-
-last=y;
 
 bestRun=Math.max(bestRun,run);
 
@@ -1051,11 +1241,7 @@ run=0;
 
 return{
 ratio:dark/Math.max(1,total),
-dark,
-total,
 bestRun,
-first,
-last,
 x,
 direction
 };
@@ -1078,7 +1264,9 @@ if(x<0||x>=binary.cols)continue;
 for(const dir of ['up','down']){
 
 tries.push(
-stemScore(binary,x,note.y,dir,gap,staff.lines)
+stemScore(
+binary,x,note.y,dir,gap,staff.lines
+)
 );
 
 }
@@ -1091,122 +1279,36 @@ tries.sort((a,b)=>b.ratio-a.ratio);
 
 const best=tries[0];
 
-return best&&best.ratio>.48&&best.bestRun>gap*1.2
+return best&&
+best.ratio>.48&&
+best.bestRun>gap*1.2
 ?best:null;
-
-}
-
-function flagCount(binary,stem,staff){
-
-if(!stem)return 0;
-
-const gap=staff.gap;
-const up=stem.direction==='up';
-
-const end=up?stem.first:stem.last;
-
-const x0=up
-?stem.x+1
-:Math.max(0,Math.floor(stem.x-gap*1.2));
-
-const x1=up
-?Math.min(binary.cols-1,Math.ceil(stem.x+gap*1.2))
-:stem.x-1;
-
-const y0=up
-?Math.max(0,Math.floor(end-gap*.12))
-:Math.max(0,Math.floor(end-gap*1.1));
-
-const y1=up
-?Math.min(binary.rows-1,Math.ceil(end+gap*1.1))
-:Math.min(binary.rows-1,Math.ceil(end+gap*.12));
-
-const rowHits=[];
-
-for(let y=y0;y<=y1;y++){
-
-if(nearStaffRow(y,staff.lines,gap))continue;
-
-let count=0;
-
-for(let x=x0;x<=x1;x++){
-if(binary.ucharPtr(y)[x]>0)count++;
-}
-
-if(count>=gap*.14)rowHits.push(y);
-
-}
-
-if(rowHits.length<2)return 0;
-
-let bands=1;
-
-for(let i=1;i<rowHits.length;i++){
-
-if(rowHits[i]-rowHits[i-1]>2)bands++;
-
-}
-
-return Math.min(2,bands);
-
-}
-
-function dottedNote(binary,note,staff){
-
-const gap=staff.gap;
-
-let count=0;
-
-for(
-let y=Math.max(0,Math.floor(note.y-gap*.24));
-y<=Math.min(binary.rows-1,Math.ceil(note.y+gap*.24));
-y++
-){
-
-if(nearStaffRow(y,staff.lines,gap))continue;
-
-for(
-let x=Math.max(0,Math.floor(note.x+gap*.82));
-x<=Math.min(binary.cols-1,Math.ceil(note.x+gap*1.22));
-x++
-){
-
-if(binary.ucharPtr(y)[x]>0)count++;
-
-}
-
-}
-
-return count>=Math.max(3,gap*.18);
 
 }
 
 function estimateRhythm(binary,note,staff){
 
-/* Conservative mode: do not invent durations from uncertain marks. */
-
 const stem=findStem(binary,note,staff);
 
 const hollow=note.head==='hollow';
 
-const beats=hollow?(stem?2:4):1;
-
-const label=hollow
-?(stem?'Half note':'Whole note')
-:'Quarter note';
+const beats=hollow
+?(stem?2:4)
+:1;
 
 return{
 beats,
-label,
-stem:!!stem,
-flags:0,
-dotted:false,
-rhythmNeedsReview:true
+label:hollow
+?(stem?'Half note':'Whole note')
+:'Quarter note',
+stem:!!stem
 };
 
 }
 
-/* GROUP CHORDS AND EVENTS */
+/* =========================
+   CHORD GROUPING
+========================= */
 
 function groupEvents(notes,staffs){
 
@@ -1241,11 +1343,16 @@ local.push(event);
 
 event.notes.push(note);
 
-event.beats=Math.max(event.beats,note.beats);
+event.beats=Math.max(
+event.beats,
+note.beats
+);
 
 }
 
-events.push(...local.sort((a,b)=>a.x-b.x));
+events.push(
+...local.sort((a,b)=>a.x-b.x)
+);
 
 }
 
@@ -1253,7 +1360,9 @@ return events;
 
 }
 
-/* DRAW DETECTION RESULTS */
+/* =========================
+   DRAW OVERLAY
+========================= */
 
 function drawOverlay(ctx,staffs,notes){
 
@@ -1292,7 +1401,6 @@ ctx.fill();
 
 ctx.strokeStyle='white';
 ctx.lineWidth=1.5;
-
 ctx.stroke();
 
 });
@@ -1301,20 +1409,32 @@ ctx.restore();
 
 }
 
-/* MAIN SCANNING PROCESS */
+/* =========================
+   MAIN IMAGE PROCESSING
+========================= */
 
 async function detectSheet(blob){
 
 if(!cvReady){
-throw new Error('The recognition engine is still loading.');
+throw new Error('Recognition engine is still loading.');
 }
 
 const im=await loadImage(blob);
 
-const scale=Math.min(1,1800/im.naturalWidth);
+const scale=Math.min(
+1,
+1800/im.naturalWidth
+);
 
-const w=Math.max(1,Math.round(im.naturalWidth*scale));
-const h=Math.max(1,Math.round(im.naturalHeight*scale));
+const w=Math.max(
+1,
+Math.round(im.naturalWidth*scale)
+);
+
+const h=Math.max(
+1,
+Math.round(im.naturalHeight*scale)
+);
 
 canvas.width=w;
 canvas.height=h;
@@ -1333,7 +1453,11 @@ let lineKernel=null;
 
 try{
 
-cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+cv.cvtColor(
+src,
+gray,
+cv.COLOR_RGBA2GRAY
+);
 
 cv.GaussianBlur(
 gray,
@@ -1352,7 +1476,10 @@ cv.THRESH_BINARY_INV+cv.THRESH_OTSU
 
 lineKernel=cv.getStructuringElement(
 cv.MORPH_RECT,
-new cv.Size(Math.max(22,Math.round(w*.16)),1)
+new cv.Size(
+Math.max(22,Math.round(w*.16)),
+1
+)
 );
 
 cv.morphologyEx(
@@ -1362,12 +1489,14 @@ cv.MORPH_OPEN,
 lineKernel
 );
 
-const staffs=findStaffGroups(lineMask,w,h);
+const staffs=findStaffGroups(
+lineMask,w,h
+);
 
 if(!staffs.length){
 
 throw new Error(
-'I could not find five evenly spaced staff lines. Try a sharper, straighter image.'
+'Five staff lines could not be detected. Try a clearer, straighter image.'
 );
 
 }
@@ -1390,12 +1519,13 @@ key
 for(const n of found){
 
 const rhythm=estimateRhythm(
-binary,
-n,
-staffs[s]
+binary,n,staffs[s]
 );
 
-allNotes.push({...n,...rhythm});
+allNotes.push({
+...n,
+...rhythm
+});
 
 }
 
@@ -1404,16 +1534,22 @@ allNotes.push({...n,...rhythm});
 if(!allNotes.length){
 
 throw new Error(
-'Staff lines were found, but no oval noteheads passed the shape test. Crop closer to the staff and try again.'
+'Staff lines were found, but no noteheads were recognized. Try cropping closer to the music.'
 );
 
 }
 
-allNotes.sort((a,b)=>a.staff-b.staff||a.x-b.x);
+allNotes.sort((a,b)=>
+a.staff-b.staff||a.x-b.x
+);
 
 ctx.drawImage(im,0,0,w,h);
 
-drawOverlay(ctx,staffs,allNotes);
+drawOverlay(
+ctx,
+staffs,
+allNotes
+);
 
 return{
 notes:allNotes,
@@ -1429,25 +1565,30 @@ blur.delete();
 binary.delete();
 lineMask.delete();
 
-if(lineKernel)lineKernel.delete();
-
+if(lineKernel){
+lineKernel.delete();
 }
 
 }
 
-/* DISPLAY DETECTED NOTES */
+}
+
+/* =========================
+   DISPLAY NOTES
+========================= */
 
 function esc(s){
 
-return String(s).replace(/[&<>"']/g,c=>({
-
+return String(s).replace(
+/[&<>"']/g,
+c=>({
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
-
-}[c]));
+}[c])
+);
 
 }
 
@@ -1463,13 +1604,20 @@ el.className='note-chip';
 el.dataset.index=i;
 
 el.innerHTML=
-`${esc(n.name)}<small>${n.label} · ${n.beats} beat${n.beats===1?'':'s'} · ${n.head} head</small>`;
+`${esc(n.name)}
+<small>
+${n.label} · ${n.beats} beat${n.beats===1?'':'s'}
+</small>`;
 
 notesBox.appendChild(el);
 
 });
 
 }
+
+/* =========================
+   DETECT BUTTON
+========================= */
 
 async function runDetection(){
 
@@ -1484,7 +1632,7 @@ notesBox.replaceChildren();
 stopMusic();
 
 status(
-'Finding staff lines and locating each physical oval notehead…'
+'Scanning staff lines and identifying noteheads...'
 );
 
 try{
@@ -1504,7 +1652,7 @@ e.notes.map(n=>n.name).join('+')
 ).join(' | ');
 
 status(
-`Found ${result.staffs.length} staff system(s) and ${detectedNotes.length} notehead(s). Sequence left to right: ${sequence}. Check the red dots against the printed noteheads.`
+`Found ${result.staffs.length} staff system(s) and ${detectedNotes.length} notehead(s). Sequence: ${sequence}.`
 );
 
 }catch(e){
@@ -1512,7 +1660,7 @@ status(
 detectedNotes=[];
 playbackEvents=[];
 
-status('Detection: '+e.message);
+status('Detection error: '+e.message);
 
 console.error(e);
 
@@ -1528,29 +1676,42 @@ $('detectBtn').onclick=runDetection;
 $('redetectBtn').onclick=runDetection;
 
 $('clef').onchange=()=>{
-if(imageBlob)$('redetectBtn').disabled=false;
+if(imageBlob){
+$('redetectBtn').disabled=false;
+}
 };
 
 $('keySignature').onchange=()=>{
-if(imageBlob)$('redetectBtn').disabled=false;
+if(imageBlob){
+$('redetectBtn').disabled=false;
+}
 };
 
-/* AUDIO PLAYBACK */
+/* =========================
+   AUDIO PLAYBACK
+========================= */
 
 function midiFrequency(midi){
 
-return 440*Math.pow(2,(midi-69)/12);
+return 440*Math.pow(
+2,
+(midi-69)/12
+);
 
 }
 
-function playTone(midi,start,duration,mode){
+function playTone(
+midi,start,duration,mode
+){
 
 const f=midiFrequency(midi);
 
 const partials=
-mode==='organ'?[1,.5,.25]:
-mode==='soft'?[1]:
-[1,.32,.13,.055];
+mode==='organ'
+?[1,.5,.25]
+:mode==='soft'
+?[1]
+:[1,.32,.13,.055];
 
 const master=audioContext.createGain();
 
@@ -1572,6 +1733,7 @@ master.connect(audioContext.destination);
 partials.forEach((amp,i)=>{
 
 const osc=audioContext.createOscillator();
+
 const gain=audioContext.createGain();
 
 osc.type=mode==='organ'
@@ -1594,7 +1756,9 @@ activeOscillators.push(osc);
 
 }
 
-/* SYNCHRONIZED NOTE PLAYBACK */
+/* =========================
+   PLAY MUSIC
+========================= */
 
 $('playBtn').onclick=async()=>{
 
@@ -1606,7 +1770,9 @@ const token=playbackToken;
 
 try{
 
-const AC=window.AudioContext||window.webkitAudioContext;
+const AC=
+window.AudioContext||
+window.webkitAudioContext;
 
 if(!AC){
 throw new Error('Web Audio is not supported.');
@@ -1632,9 +1798,7 @@ let cursor=0;
 
 $('stopMusicBtn').disabled=false;
 
-status(
-`Playing at ${tempo} BPM. Notes at the same horizontal position play together.`
-);
+status(`Playing at ${tempo} BPM.`);
 
 playbackEvents.forEach(event=>{
 
@@ -1662,7 +1826,9 @@ const chip=notesBox.querySelector(
 `[data-index="${i}"]`
 );
 
-if(chip)chip.classList.add('active');
+if(chip){
+chip.classList.add('active');
+}
 
 },cursor*1000));
 
@@ -1683,9 +1849,7 @@ $('stopMusicBtn').disabled=true;
 document.querySelectorAll('.note-chip.active')
 .forEach(el=>el.classList.remove('active'));
 
-status(
-'Playback finished. Compare the sequence and rhythm with the sheet.'
-);
+status('Playback finished.');
 
 },(cursor+.3)*1000));
 
@@ -1707,7 +1871,9 @@ status('Playback stopped.');
 
 };
 
-/* INITIALIZATION */
+/* =========================
+   INITIALIZATION
+========================= */
 
 if(navigator.mediaDevices?.addEventListener){
 
