@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -534,149 +535,237 @@ function findStaffGroups(mask,width,height){
 /* =========================================
    NOTEHEAD DETECTION
 
-   Uses elliptical morphology to isolate
-   notehead-shaped blobs instead of treating
-   every vertical stroke as a note.
+   Scans the original binary image so that
+   staff lines do not cut noteheads apart.
 ========================================= */
 
 function detectNoteheads(clean,staff,originalBinary){
+
   const gap=staff.gap;
+  const width=originalBinary.cols;
+  const height=originalBinary.rows;
+  const imageRows=[];
 
-  // A printed notehead is a short, tilted oval. The larger horizontal
-  // opening kernel preserves that oval but removes thin vertical stems.
-  // The old smaller kernel allowed stem/staff intersections to survive as
-  // several fake noteheads stacked above one another.
-  const kernelWidth=Math.max(7,Math.round(gap*.92));
-  const kernelHeight=Math.max(5,Math.round(gap*.62));
-  const kernel=cv.getStructuringElement(
-    cv.MORPH_ELLIPSE,
-    new cv.Size(kernelWidth,kernelHeight)
-  );
+  for(let y=0;y<height;y++){
+    imageRows.push(originalBinary.ucharPtr(y));
+  }
 
-  const opened=new cv.Mat();
-  const contours=new cv.MatVector();
-  const hierarchy=new cv.Mat();
+  const lineYs=staff.lines.map(v=>Math.round(v));
+  const rx=Math.max(4,gap*.73);
+  const ry=Math.max(2,gap*.34);
+  const sampleCount=48;
   const candidates=[];
 
-  function centralStemCrosses(x,y){
-    // A stem may attach to either SIDE of a real notehead. It should not
-    // continue straight through the centre both above and below the oval.
-    const half=Math.max(1,Math.round(gap*.10));
-    const band=Math.max(2,Math.round(gap*.32));
-    let above=0,aboveTotal=0,below=0,belowTotal=0;
-    const xa=Math.max(0,Math.round(x)-half);
-    const xb=Math.min(originalBinary.cols-1,Math.round(x)+half);
-    const ranges=[
-      {a:Math.round(y-gap*.92),b:Math.round(y-gap*.58),side:'above'},
-      {a:Math.round(y+gap*.58),b:Math.round(y+gap*.92),side:'below'}
-    ];
-    for(const r of ranges){
-      for(let yy=Math.max(0,r.a);yy<=Math.min(originalBinary.rows-1,r.b);yy++){
-        for(let xx=xa;xx<=xb;xx++){
-          if(r.side==='above'){
-            aboveTotal++;
-            if(originalBinary.ucharPtr(yy)[xx]>0)above++;
-          }else{
-            belowTotal++;
-            if(originalBinary.ucharPtr(yy)[xx]>0)below++;
+  function isStaffInk(x,y){
+    for(const ly of lineYs){
+      if(Math.abs(y-ly)<=Math.max(1.4,gap*.105)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Scan staff positions and ledger-space positions.
+  // Treble E4 / bass G2 are the bottom staff lines.
+
+  const minStep=-4;
+  const maxStep=12;
+
+  for(let step=minStep;step<=maxStep;step++){
+
+    const cy=staff.bottom-step*(gap/2);
+
+    if(cy<staff.top-gap*1.2||cy>staff.bottom+gap*1.2){
+      continue;
+    }
+
+    const scores=[];
+
+    const xStart=Math.max(2,Math.ceil(staff.left+gap*2.5));
+    const xEnd=Math.min(width-2,Math.floor(staff.right-gap*.65));
+
+    for(let x=xStart;x<=xEnd;x+=2){
+
+      let dark=0;
+      let valid=0;
+
+      const sectors=new Array(8).fill(0);
+      const sectorTotals=new Array(8).fill(0);
+
+      // Inspect the oval outline.
+
+      for(let k=0;k<sampleCount;k++){
+
+        const a=2*Math.PI*k/sampleCount;
+
+        const px=x+Math.cos(a)*rx;
+        const py=cy+Math.sin(a)*ry;
+
+        const ix=Math.round(px);
+        const iy=Math.round(py);
+
+        if(
+          ix<0||ix>=width||
+          iy<0||iy>=height||
+          isStaffInk(ix,iy)
+        ){
+          continue;
+        }
+
+        valid++;
+
+        const sector=Math.floor(k/(sampleCount/8));
+
+        sectorTotals[sector]++;
+
+        if(imageRows[iy][ix]>0){
+          dark++;
+          sectors[sector]++;
+        }
+      }
+
+      const ringScore=dark/Math.max(1,valid);
+
+      let covered=0;
+
+      for(let q=0;q<8;q++){
+        if(
+          sectorTotals[q]&&
+          sectors[q]/sectorTotals[q]>.20
+        ){
+          covered++;
+        }
+      }
+
+      // Check the inner oval too.
+      // Filled notes and hollow notes are both supported.
+
+      let innerDark=0;
+      let innerValid=0;
+
+      for(let yy=-1;yy<=1;yy++){
+        for(let xx=-2;xx<=2;xx++){
+
+          const px=x+xx*gap*.10;
+          const py=cy+yy*gap*.09;
+
+          const ix=Math.round(px);
+          const iy=Math.round(py);
+
+          if(
+            ix<0||ix>=width||
+            iy<0||iy>=height||
+            isStaffInk(ix,iy)
+          ){
+            continue;
+          }
+
+          innerValid++;
+
+          if(imageRows[iy][ix]>0){
+            innerDark++;
           }
         }
       }
-    }
-    const ar=above/Math.max(1,aboveTotal);
-    const br=below/Math.max(1,belowTotal);
-    return ar>.34&&br>.34;
-  }
 
-  try{
-    cv.morphologyEx(clean,opened,cv.MORPH_OPEN,kernel);
-    cv.findContours(opened,contours,hierarchy,cv.RETR_EXTERNAL,cv.CHAIN_APPROX_SIMPLE);
+      const innerScore=innerDark/Math.max(1,innerValid);
 
-    for(let i=0;i<contours.size();i++){
-      const contour=contours.get(i);
-      const rect=cv.boundingRect(contour);
-      const cx=rect.x+rect.width/2;
-      const cy=rect.y+rect.height/2;
+      const score=
+        ringScore*.78+
+        Math.min(.22,covered*.0275);
 
-      if(cx<staff.left+gap*4||cx>staff.right-gap*.25)continue;
-      if(cy<staff.top-gap*1.1||cy>staff.bottom+gap*1.15)continue;
-
-      const aspect=rect.width/Math.max(1,rect.height);
-      const boxArea=rect.width*rect.height;
-      const contourArea=Math.abs(cv.contourArea(contour));
-      const fill=contourArea/Math.max(1,boxArea);
-
-      // Reject square/vertical fragments from stems and staff intersections.
-      // Genuine noteheads are horizontally elongated ovals.
-      if(rect.width<gap*.62||rect.width>gap*1.55)continue;
-      if(rect.height<gap*.34||rect.height>gap*.92)continue;
-      if(aspect<1.22||aspect>2.55)continue;
-      if(fill<.36||fill>.92)continue;
-      if(contourArea<gap*gap*.13)continue;
-
-      const moments=cv.moments(contour);
-      const x=moments.m00?moments.m10/moments.m00:cx;
-      const y=moments.m00?moments.m01/moments.m00:cy;
-
-      // Notes sit on a staff line or in a staff space. A tighter tolerance
-      // prevents the edges of stems and line intersections becoming notes.
-      const step=Math.round((staff.bottom-y)/(gap/2));
-      const expectedY=staff.bottom-step*(gap/2);
-      if(Math.abs(y-expectedY)>gap*.27)continue;
-
-      if(centralStemCrosses(x,y))continue;
-
-      candidates.push({
-        x,y,width:rect.width,height:rect.height,
-        area:contourArea,fill,aspect,
-        confidence:fill*(contourArea/(gap*gap)),step
+      scores.push({
+        x,
+        y:cy,
+        score,
+        ringScore,
+        covered,
+        innerScore,
+        step,
+        valid
       });
     }
 
-    // Non-maximum suppression: one centre per physical oval. The distance
-    // is measured in both axes, so a chord at the same x but a different
-    // pitch remains valid while multiple marks on one stem collapse.
-    candidates.sort((a,b)=>b.confidence-a.confidence);
-    const unique=[];
-    for(const point of candidates){
-      const duplicate=unique.find(other=>
-        Math.abs(point.x-other.x)<gap*.72&&
-        Math.abs(point.y-other.y)<gap*.48
-      );
-      if(!duplicate)unique.push(point);
-      else if(point.confidence>duplicate.confidence){
-        unique[unique.indexOf(duplicate)]=point;
-      }
-    }
+    // Keep local peaks only.
 
-    return unique.sort((a,b)=>a.x-b.x||a.y-b.y);
-  }finally{
-    kernel.delete();
-    opened.delete();
-    contours.delete();
-    hierarchy.delete();
+    for(let i=1;i<scores.length-1;i++){
+
+      const c=scores[i];
+
+      if(
+        c.score<scores[i-1].score||
+        c.score<scores[i+1].score
+      ){
+        continue;
+      }
+
+      if(
+        c.ringScore<.37||
+        c.covered<5||
+        c.valid<16
+      ){
+        continue;
+      }
+
+      if(c.innerScore<.015&&c.ringScore<.55){
+        continue;
+      }
+
+      candidates.push({
+        x:c.x,
+        y:c.y,
+        width:rx*2,
+        height:ry*2,
+        area:c.ringScore*gap*gap,
+        fill:c.ringScore,
+        aspect:rx/ry,
+        confidence:c.score+c.covered*.01,
+        step:c.step
+      });
+    }
   }
+
+  // Non-maximum suppression.
+  // Same notehead = one red dot.
+  // Different pitches in a chord remain separate.
+
+  candidates.sort((a,b)=>b.confidence-a.confidence);
+
+  const unique=[];
+
+  for(const point of candidates){
+
+    const duplicate=unique.find(other=>
+      Math.abs(point.x-other.x)<gap*.82&&
+      Math.abs(point.y-other.y)<gap*.42
+    );
+
+    if(!duplicate){
+      unique.push(point);
+    }
+  }
+
+  return unique.sort((a,b)=>a.x-b.x||a.y-b.y);
 }
 
 /* =========================================
    BARLINE DETECTION
 
-   IMPORTANT:
-   A true barline must:
-   1. Extend across nearly the whole staff.
-   2. Be vertically continuous.
-   3. Intersect all five staff lines.
-   4. Not be located directly beside a notehead.
-   5. Be separated from other detections.
-
-   Note stems are not accepted merely
-   because they are vertical.
+   A confirmed barline must:
+   - Span almost the entire staff.
+   - Be vertically continuous.
+   - Intersect all five staff lines.
+   - Not be attached to a notehead.
 ========================================= */
 
 function detectBarLines(binary,staff,noteheads){
+
   const gap=staff.gap;
 
-  const kernelHeight=Math.max(12,Math.round(gap*4.15));
+  const kernelHeight=Math.max(
+    14,
+    Math.round(gap*4.45)
+  );
 
   const kernel=cv.getStructuringElement(
     cv.MORPH_RECT,
@@ -686,10 +775,10 @@ function detectBarLines(binary,staff,noteheads){
   const vertical=new cv.Mat();
   const contours=new cv.MatVector();
   const hierarchy=new cv.Mat();
-
   const candidates=[];
 
   try{
+
     cv.morphologyEx(
       binary,
       vertical,
@@ -706,80 +795,93 @@ function detectBarLines(binary,staff,noteheads){
     );
 
     for(let i=0;i<contours.size();i++){
+
       const rect=cv.boundingRect(contours.get(i));
+      const x=Math.round(rect.x+rect.width/2);
 
-      const x=rect.x+rect.width/2;
-      const height=rect.height;
+      if(rect.width>gap*.24)continue;
 
-      if(rect.width>gap*.28)continue;
-      if(height<gap*3.9)continue;
+      if(
+        x<staff.left+gap*2||
+        x>staff.right-gap*.35
+      ){
+        continue;
+      }
 
-      if(rect.y>staff.top+gap*.18)continue;
-      if(rect.y+height<staff.bottom-gap*.18)continue;
+      // Must span essentially the entire staff.
+      // No overhang is required.
 
-      if(x<staff.left+gap*2||x>staff.right-gap*.4)continue;
+      if(rect.y>staff.top+gap*.14)continue;
 
-      /*
-        Reject candidates close to noteheads.
-        Note stems are usually attached to a
-        notehead, while barlines sit between
-        note groups.
-      */
+      if(
+        rect.y+rect.height<
+        staff.bottom-gap*.14
+      ){
+        continue;
+      }
 
-      const nearNote=noteheads.some(n=>
-        Math.abs(n.x-x)<gap*.72
+      if(rect.height<gap*3.85)continue;
+
+      // Check vertical continuity.
+
+      let hit=0;
+      let total=0;
+
+      const y0=Math.max(
+        0,
+        Math.floor(staff.top)
       );
 
-      if(nearNote)continue;
+      const y1=Math.min(
+        binary.rows-1,
+        Math.ceil(staff.bottom)
+      );
 
-      /*
-        Check vertical continuity on the
-        original binary image.
-      */
-
-      const centerX=Math.round(x);
-
-      let dark=0,total=0;
-
-      for(let y=Math.round(staff.top);y<=Math.round(staff.bottom);y++){
-        if(y<0||y>=binary.rows)continue;
+      for(let y=y0;y<=y1;y++){
 
         total++;
 
         let found=false;
 
         for(let dx=-1;dx<=1;dx++){
-          const xx=centerX+dx;
-          if(xx>=0&&xx<binary.cols&&binary.ucharPtr(y)[xx]>0){
+
+          const xx=x+dx;
+
+          if(
+            xx>=0&&
+            xx<binary.cols&&
+            binary.ucharPtr(y)[xx]>0
+          ){
             found=true;
             break;
           }
         }
 
-        if(found)dark++;
+        if(found)hit++;
       }
 
-      const continuity=dark/Math.max(1,total);
+      const continuity=hit/Math.max(1,total);
 
-      if(continuity<.55)continue;
+      if(continuity<.82)continue;
 
-      /*
-        Every one of the five staff lines
-        must intersect the candidate.
-      */
+      // All five staff lines must intersect the candidate.
 
       let intersections=0;
 
       for(const ly of staff.lines){
+
         const yy=Math.round(ly);
         let found=false;
 
         for(let dx=-2;dx<=2;dx++){
-          const xx=centerX+dx;
+
+          const xx=x+dx;
 
           if(
-            xx>=0&&xx<binary.cols&&
-            yy>=0&&yy<binary.rows&&
+            xx>=0&&
+            xx<binary.cols&&
+            yy>=0&&
+            yy<binary.rows&&
             binary.ucharPtr(yy)[xx]>0
           ){
             found=true;
@@ -790,7 +892,17 @@ function detectBarLines(binary,staff,noteheads){
         if(found)intersections++;
       }
 
-      if(intersections<5)continue;
+      if(intersections!==5)continue;
+
+      // Reject note stems attached to noteheads.
+
+      if(
+        noteheads.some(n=>
+          Math.abs(n.x-x)<gap*1.05
+        )
+      ){
+        continue;
+      }
 
       candidates.push({
         x,
@@ -804,9 +916,10 @@ function detectBarLines(binary,staff,noteheads){
     const unique=[];
 
     for(const p of candidates){
+
       const last=unique[unique.length-1];
 
-      if(!last||p.x-last.x>gap*.9){
+      if(!last||p.x-last.x>gap*.85){
         unique.push(p);
       }else if(p.continuity>last.continuity){
         unique[unique.length-1]=p;
@@ -816,6 +929,7 @@ function detectBarLines(binary,staff,noteheads){
     return unique.map(p=>p.x);
 
   }finally{
+
     kernel.delete();
     vertical.delete();
     contours.delete();
@@ -827,7 +941,9 @@ function detectBarLines(binary,staff,noteheads){
    PITCH MAPPING
 ========================================= */
 
-const NATURAL={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const NATURAL={
+  C:0,D:2,E:4,F:5,G:7,A:9,B:11
+};
 
 const KEY_ALTER={
   C:{},
@@ -848,20 +964,26 @@ const KEY_ALTER={
 };
 
 function pitchForStep(step,clef,key){
-  /*
-    Treble bottom line = E4.
-    Bass bottom line = G2.
-  */
+
   const base=clef==='bass'?18:30;
+
   const d=base+step;
   const octave=Math.floor(d/7);
 
-  const letter=['C','D','E','F','G','A','B'][(d%7+7)%7];
+  const letter=[
+    'C','D','E','F','G','A','B'
+  ][(d%7+7)%7];
+
   const alter=(KEY_ALTER[key]||{})[letter]||0;
 
-  const midi=12*(octave+1)+NATURAL[letter]+alter;
+  const midi=
+    12*(octave+1)+
+    NATURAL[letter]+
+    alter;
 
-  const accidental=alter===1?'♯':alter===-1?'♭':'';
+  const accidental=
+    alter===1?'♯':
+    alter===-1?'♭':'';
 
   return{
     name:letter+accidental+octave,
@@ -877,12 +999,7 @@ function pitchForStep(step,clef,key){
 ========================================= */
 
 function rhythmForNote(note,staff){
-  /*
-    This is an initial estimate.
-    Filled noteheads are treated as quarter
-    notes. Hollow noteheads need a separate
-    shape classification for reliable duration.
-  */
+
   return{
     beats:1,
     label:'Estimated note'
@@ -894,36 +1011,66 @@ function rhythmForNote(note,staff){
 ========================================= */
 
 function groupMeasures(notes,staffs){
+
   const events=[];
 
   for(let staffIndex=0;staffIndex<staffs.length;staffIndex++){
+
     const staff=staffs[staffIndex];
+
     const local=notes
       .filter(note=>note.staff===staffIndex)
       .sort((a,b)=>a.x-b.x||a.y-b.y);
+
     const grouped=[];
 
-    // Notes whose centres share nearly the same horizontal position are a
-    // chord. They must sound together, not as a rapid sequence of notes.
+    // Notes at almost the same horizontal position
+    // are played together as a chord.
+
     for(const note of local){
-      let event=grouped.find(item=>Math.abs(item.x-note.x)<staff.gap*.62);
+
+      let event=grouped.find(item=>
+        Math.abs(item.x-note.x)<staff.gap*.62
+      );
+
       if(!event){
-        event={x:note.x,staff:staffIndex,notes:[],beats:note.beats||1,barAfter:false};
+
+        event={
+          x:note.x,
+          staff:staffIndex,
+          notes:[],
+          beats:note.beats||1,
+          barAfter:false
+        };
+
         grouped.push(event);
       }
+
       event.notes.push(note);
-      event.beats=Math.max(event.beats,note.beats||1);
+
+      event.beats=Math.max(
+        event.beats,
+        note.beats||1
+      );
     }
 
-    // A measure boundary is a detected full-height barline between this
-    // event and the next event. A note stem alone is not a boundary.
+    // Pause only when a confirmed barline exists
+    // between the current note and the next note.
+
     for(let i=0;i<grouped.length;i++){
+
       const current=grouped[i];
       const next=grouped[i+1];
-      current.measure=staff.bars.filter(x=>x<current.x).length;
+
+      current.measure=staff.bars.filter(
+        x=>x<current.x
+      ).length;
+
       if(next){
+
         current.barAfter=staff.bars.some(x=>
-          x>current.x+staff.gap*.30&&x<next.x-staff.gap*.30
+          x>current.x+staff.gap*.45&&
+          x<next.x-staff.gap*.45
         );
       }
     }
@@ -931,7 +1078,9 @@ function groupMeasures(notes,staffs){
     events.push(...grouped);
   }
 
-  return events.sort((a,b)=>a.staff-b.staff||a.x-b.x);
+  return events.sort(
+    (a,b)=>a.staff-b.staff||a.x-b.x
+  );
 }
 
 /* =========================================
@@ -939,28 +1088,29 @@ function groupMeasures(notes,staffs){
 ========================================= */
 
 function drawResults(ctx,staffs,notes){
+
   ctx.save();
 
   ctx.strokeStyle='#2563eb';
   ctx.lineWidth=2;
 
   staffs.forEach(staff=>{
+
     staff.lines.forEach(y=>{
+
       ctx.beginPath();
       ctx.moveTo(staff.left,y);
       ctx.lineTo(staff.right,y);
       ctx.stroke();
     });
 
-    /*
-      Only confirmed barlines are drawn green.
-      No green markers are drawn on note stems.
-    */
+    // Green markers are only confirmed barlines.
 
     ctx.strokeStyle='#16a34a';
     ctx.lineWidth=2.5;
 
     staff.bars.forEach(x=>{
+
       ctx.beginPath();
       ctx.moveTo(x,staff.top-3);
       ctx.lineTo(x,staff.bottom+3);
@@ -971,12 +1121,18 @@ function drawResults(ctx,staffs,notes){
     ctx.lineWidth=2;
   });
 
+  // One red marker per detected notehead.
+
   notes.forEach(n=>{
+
     ctx.beginPath();
+
     ctx.arc(
-      n.x,n.y,
+      n.x,
+      n.y,
       Math.max(3.2,staffs[n.staff].gap*.16),
-      0,Math.PI*2
+      0,
+      Math.PI*2
     );
 
     ctx.fillStyle='#ef4444';
@@ -995,9 +1151,14 @@ function drawResults(ctx,staffs,notes){
 ========================================= */
 
 async function detectSheet(blob){
+
   const img=await loadImage(blob);
 
-  const scale=Math.min(1,1800/img.naturalWidth);
+  const scale=Math.min(
+    1,
+    1800/img.naturalWidth
+  );
+
   const w=Math.round(img.naturalWidth*scale);
   const h=Math.round(img.naturalHeight*scale);
 
@@ -1006,6 +1167,7 @@ async function detectSheet(blob){
   canvas.hidden=false;
 
   const ctx=canvas.getContext('2d');
+
   ctx.drawImage(img,0,0,w,h);
 
   let src=cv.imread(canvas);
@@ -1017,41 +1179,61 @@ async function detectSheet(blob){
 
   const horizontalKernel=cv.getStructuringElement(
     cv.MORPH_RECT,
-    new cv.Size(Math.max(22,Math.round(w*.16)),1)
+    new cv.Size(
+      Math.max(22,Math.round(w*.16)),
+      1
+    )
   );
 
   try{
-    cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+
+    cv.cvtColor(
+      src,
+      gray,
+      cv.COLOR_RGBA2GRAY
+    );
 
     cv.GaussianBlur(
-      gray,blur,new cv.Size(3,3),0
+      gray,
+      blur,
+      new cv.Size(3,3),
+      0
     );
 
     cv.threshold(
-      blur,binary,0,255,
+      blur,
+      binary,
+      0,
+      255,
       cv.THRESH_BINARY_INV+cv.THRESH_OTSU
     );
 
-    /*
-      Extract horizontal staff lines first.
-    */
+    // Extract horizontal staff lines.
 
     cv.morphologyEx(
-      binary,lineMask,cv.MORPH_OPEN,horizontalKernel
+      binary,
+      lineMask,
+      cv.MORPH_OPEN,
+      horizontalKernel
     );
 
-    const rawStaffs=findStaffGroups(lineMask,w,h);
+    const rawStaffs=findStaffGroups(
+      lineMask,
+      w,
+      h
+    );
 
     if(!rawStaffs.length){
-      throw new Error('Could not detect five staff lines. Try a clearer image.');
+      throw new Error(
+        'Could not detect five staff lines. Try a clearer image.'
+      );
     }
 
-    /*
-      Remove horizontal lines before notehead
-      extraction to reduce false detections.
-    */
-
-    cv.subtract(binary,lineMask,clean);
+    cv.subtract(
+      binary,
+      lineMask,
+      clean
+    );
 
     const clef=$('clef').value;
     const key=$('keySignature').value;
@@ -1060,31 +1242,38 @@ async function detectSheet(blob){
     const allNotes=[];
 
     for(let s=0;s<rawStaffs.length;s++){
+
       const staff=rawStaffs[s];
 
-      /*
-        First isolate actual notehead-shaped
-        components.
-      */
+      // Detect noteheads using original image pixels.
 
-      const heads=detectNoteheads(clean,staff,binary);
+      const heads=detectNoteheads(
+        clean,
+        staff,
+        binary
+      );
 
-      /*
-        Then search for barlines.
-        The notehead positions are used to
-        reject attached note stems.
-      */
+      // Detect barlines after notehead detection.
 
-      staff.bars=detectBarLines(binary,staff,heads);
+      staff.bars=detectBarLines(
+        binary,
+        staff,
+        heads
+      );
 
       resultStaffs.push(staff);
 
       for(const head of heads){
+
         const rawStep=Math.round(
           (staff.bottom-head.y)/(staff.gap/2)
         );
 
-        const pitch=pitchForStep(rawStep,clef,key);
+        const pitch=pitchForStep(
+          rawStep,
+          clef,
+          key
+        );
 
         const note={
           ...pitch,
@@ -1101,23 +1290,29 @@ async function detectSheet(blob){
     }
 
     if(!allNotes.length){
-      throw new Error('No noteheads found. Try a clearer or closer image.');
+      throw new Error(
+        'No noteheads found. Try a clearer or closer image.'
+      );
     }
 
     allNotes.sort((a,b)=>
       a.staff-b.staff||a.x-b.x
     );
 
-    const events=groupMeasures(allNotes,resultStaffs);
+    const events=groupMeasures(
+      allNotes,
+      resultStaffs
+    );
 
-    /*
-      Restore the original image before
-      drawing detection overlays.
-    */
+    // Restore original image before drawing overlays.
 
     ctx.drawImage(img,0,0,w,h);
 
-    drawResults(ctx,resultStaffs,allNotes);
+    drawResults(
+      ctx,
+      resultStaffs,
+      allNotes
+    );
 
     return{
       notes:allNotes,
@@ -1126,6 +1321,7 @@ async function detectSheet(blob){
     };
 
   }finally{
+
     src.delete();
     gray.delete();
     blur.delete();
@@ -1141,20 +1337,26 @@ async function detectSheet(blob){
 ========================================= */
 
 function renderNotes(){
+
   notesBox.replaceChildren();
 
   detectedNotes.forEach((note,i)=>{
+
     const chip=document.createElement('div');
+
     chip.className='note-chip';
     chip.dataset.index=i;
 
     const name=document.createElement('span');
+
     name.textContent=note.name;
 
     const small=document.createElement('small');
+
     small.textContent=note.label;
 
     chip.append(name,small);
+
     notesBox.appendChild(chip);
   });
 }
@@ -1164,6 +1366,7 @@ function renderNotes(){
 ========================================= */
 
 async function runDetection(){
+
   if(!imageBlob)return;
 
   $('detectBtn').disabled=true;
@@ -1172,9 +1375,12 @@ async function runDetection(){
 
   stopMusic();
 
-  status('Detecting staff lines, noteheads and measure boundaries...');
+  status(
+    'Detecting staff lines, noteheads and measure boundaries...'
+  );
 
   try{
+
     const result=await detectSheet(imageBlob);
 
     detectedNotes=result.notes;
@@ -1187,7 +1393,8 @@ async function runDetection(){
     $('redetectBtn').disabled=false;
 
     const barCount=staffs.reduce(
-      (sum,s)=>sum+s.bars.length,0
+      (sum,s)=>sum+s.bars.length,
+      0
     );
 
     status(
@@ -1197,11 +1404,16 @@ async function runDetection(){
     );
 
   }catch(e){
+
     detectedNotes=[];
     playbackEvents=[];
+
     status('Detection error: '+e.message);
+
     console.error(e);
+
   }finally{
+
     $('detectBtn').disabled=false;
   }
 }
@@ -1214,8 +1426,10 @@ $('redetectBtn').onclick=runDetection;
 ========================================= */
 
 $('barPause').oninput=()=>{
+
   $('pauseValue').textContent=
-    Number($('barPause').value).toFixed(2)+' beats';
+    Number($('barPause').value).toFixed(2)+
+    ' beats';
 };
 
 /* =========================================
@@ -1223,10 +1437,15 @@ $('barPause').oninput=()=>{
 ========================================= */
 
 function midiFrequency(midi){
-  return 440*Math.pow(2,(midi-69)/12);
+
+  return 440*Math.pow(
+    2,
+    (midi-69)/12
+  );
 }
 
 function playTone(midi,start,duration,mode){
+
   const frequency=midiFrequency(midi);
 
   const partials=mode==='organ'
@@ -1238,7 +1457,12 @@ function playTone(midi,start,duration,mode){
   const master=audioContext.createGain();
 
   master.gain.setValueAtTime(.0001,start);
-  master.gain.linearRampToValueAtTime(.13,start+.018);
+
+  master.gain.linearRampToValueAtTime(
+    .13,
+    start+.018
+  );
+
   master.gain.setTargetAtTime(
     .0001,
     start+Math.max(.06,duration*.72),
@@ -1248,11 +1472,19 @@ function playTone(midi,start,duration,mode){
   master.connect(audioContext.destination);
 
   partials.forEach((amp,i)=>{
+
     const osc=audioContext.createOscillator();
     const gain=audioContext.createGain();
 
-    osc.type=mode==='organ'?'sine':i===0?'triangle':'sine';
+    osc.type=
+      mode==='organ'
+        ?'sine'
+        :i===0
+          ?'triangle'
+          :'sine';
+
     osc.frequency.value=frequency*(i+1);
+
     gain.gain.value=amp;
 
     osc.connect(gain);
@@ -1270,6 +1502,7 @@ function playTone(midi,start,duration,mode){
 ========================================= */
 
 $('playBtn').onclick=async()=>{
+
   if(!playbackEvents.length)return;
 
   stopMusic();
@@ -1277,29 +1510,51 @@ $('playBtn').onclick=async()=>{
   const token=playbackToken;
 
   try{
-    const AC=window.AudioContext||window.webkitAudioContext;
 
-    if(!AC)throw new Error('Audio is not supported.');
+    const AC=
+      window.AudioContext||
+      window.webkitAudioContext;
 
-    if(!audioContext)audioContext=new AC();
+    if(!AC){
+      throw new Error('Audio is not supported.');
+    }
+
+    if(!audioContext){
+      audioContext=new AC();
+    }
 
     await audioContext.resume();
 
-    const tempo=Math.max(40,Math.min(220,Number($('tempo').value)||100));
+    const tempo=Math.max(
+      40,
+      Math.min(
+        220,
+        Number($('tempo').value)||100
+      )
+    );
+
     const beat=60/tempo;
     const mode=$('sound').value;
-    const pause=Number($('barPause').value)*beat;
+
+    const pause=
+      Number($('barPause').value)*beat;
 
     const start=audioContext.currentTime+.12;
+
     let cursor=0;
 
     $('stopMusicBtn').disabled=false;
+
     status(`Playing MeloTunes at ${tempo} BPM.`);
 
     playbackEvents.forEach(event=>{
+
       const eventStart=start+cursor;
 
+      // Notes in a chord play simultaneously.
+
       event.notes.forEach(note=>{
+
         playTone(
           note.midi,
           eventStart,
@@ -1310,6 +1565,7 @@ $('playBtn').onclick=async()=>{
         const index=detectedNotes.indexOf(note);
 
         timers.push(setTimeout(()=>{
+
           if(token!==playbackToken)return;
 
           document.querySelectorAll('.note-chip.active')
@@ -1319,17 +1575,16 @@ $('playBtn').onclick=async()=>{
             `[data-index="${index}"]`
           );
 
-          if(chip)chip.classList.add('active');
+          if(chip){
+            chip.classList.add('active');
+          }
 
         },cursor*1000));
       });
 
       cursor+=event.beats*beat;
 
-      /*
-        Pause only when a confirmed measure
-        boundary is reached.
-      */
+      // Pause only at confirmed measure boundaries.
 
       if(event.barAfter){
         cursor+=pause;
@@ -1337,9 +1592,11 @@ $('playBtn').onclick=async()=>{
     });
 
     timers.push(setTimeout(()=>{
+
       if(token!==playbackToken)return;
 
       activeOscillators=[];
+
       $('stopMusicBtn').disabled=true;
 
       document.querySelectorAll('.note-chip.active')
@@ -1350,13 +1607,17 @@ $('playBtn').onclick=async()=>{
     },(cursor+.35)*1000));
 
   }catch(e){
+
     stopMusic();
+
     status('Playback error: '+e.message);
   }
 };
 
 $('stopMusicBtn').onclick=()=>{
+
   stopMusic();
+
   status('Playback stopped.');
 };
 
@@ -1367,8 +1628,10 @@ $('stopMusicBtn').onclick=()=>{
 refreshCameras();
 
 if(navigator.mediaDevices?.addEventListener){
+
   navigator.mediaDevices.addEventListener(
-    'devicechange',refreshCameras
+    'devicechange',
+    refreshCameras
   );
 }
 
