@@ -1104,8 +1104,9 @@ return fallback;
 
 /*
 A barline is a thin vertical line that covers the whole height
-of the staff. Stems never cover the full height, so a column that
-is dark from the top line to the bottom line is a barline.
+of the staff. Tall stems can also span the staff, so every
+candidate is checked to make sure nothing (a notehead or beam)
+is attached to it.
 */
 
 function detectBarlines(binary,staff){
@@ -1155,13 +1156,19 @@ end++;
 
 const width=end-x+1;
 
-if(width<=gap*1.5){
-
-clusters.push({
+const candidate={
 start:x,
 end,
 center:(x+end)/2
-});
+};
+
+/* Tall stems also span the staff, so reject anything with a notehead attached. */
+if(
+width<=gap*1.5&&
+isPlainBarline(binary,staff,candidate)
+){
+
+clusters.push(candidate);
 
 }
 
@@ -1200,6 +1207,64 @@ merged.push({...c});
 }
 
 return merged.map(c=>c.center);
+
+}
+
+/*
+A real barline is thin along its whole length.
+A stem has a notehead (or beam) attached, which makes
+the dark run beside it much wider at some rows.
+*/
+
+function isPlainBarline(binary,staff,c){
+
+const gap=staff.gap;
+
+const cx=Math.round(c.center);
+const bw=c.end-c.start+1;
+
+const limit=bw+gap*.55;
+
+const y0=Math.max(0,Math.round(staff.lines[0]-gap*2));
+const y1=Math.min(binary.rows-1,Math.round(staff.lines[4]+gap*1.8));
+
+let wide=0;
+
+for(let y=y0;y<=y1;y++){
+
+if(nearStaffRow(y,staff.lines,gap))continue;
+
+const row=binary.ucharPtr(y);
+
+let x=-1;
+
+for(let d=0;d<=Math.ceil(bw/2)+1;d++){
+
+if(cx+d<binary.cols&&row[cx+d]>0){
+x=cx+d;
+break;
+}
+
+if(cx-d>=0&&row[cx-d]>0){
+x=cx-d;
+break;
+}
+
+}
+
+if(x<0)continue;
+
+let l=x;
+let r=x;
+
+while(l>0&&row[l-1]>0)l--;
+while(r<binary.cols-1&&row[r+1]>0)r++;
+
+if(r-l+1>limit)wide++;
+
+}
+
+return wide<Math.max(2,gap*.25);
 
 }
 
