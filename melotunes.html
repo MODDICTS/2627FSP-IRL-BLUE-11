@@ -4,7 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartScore | Scan & Play</title>
+<title>MeloTunes | Scan & Play</title>
+
 <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 <style>
@@ -16,22 +17,40 @@
 --muted:#64748b;
 --border:#dbe3ef;
 }
+
 *{box-sizing:border-box}
+
 body{
 margin:0;
 background:#f3f6fb;
 color:var(--ink);
 font-family:Arial,sans-serif;
 }
+
 header{
 background:linear-gradient(125deg,#111c43,#263f78);
 color:white;
 text-align:center;
 padding:26px 18px;
 }
-header h1{margin:0 0 7px;font-size:clamp(24px,4vw,34px)}
-header p{margin:0;color:#dbeafe}
-main{width:min(1050px,100%);margin:22px auto;padding:0 14px 36px}
+
+header h1{
+margin:0 0 7px;
+font-size:clamp(26px,4vw,36px);
+letter-spacing:2px;
+}
+
+header p{
+margin:0;
+color:#dbeafe;
+}
+
+main{
+width:min(1050px,100%);
+margin:22px auto;
+padding:0 14px 36px;
+}
+
 .card{
 background:white;
 border:1px solid #e5eaf2;
@@ -40,81 +59,185 @@ padding:20px;
 margin-bottom:17px;
 box-shadow:0 6px 22px #1e293b0b;
 }
-h2{margin:0 0 14px;color:var(--navy);font-size:19px}
-.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
-button,select,input{font:inherit}
-button{
-border:0;border-radius:9px;
-background:var(--blue);
-color:white;padding:11px 15px;
-font-weight:650;cursor:pointer;
+
+h2{
+margin:0 0 14px;
+color:var(--navy);
+font-size:19px;
 }
-button.secondary{background:#475569}
-button:disabled{opacity:.45;cursor:not-allowed}
+
+.row{
+display:flex;
+gap:9px;
+flex-wrap:wrap;
+align-items:center;
+margin-top:12px;
+}
+
+button,select,input{
+font:inherit;
+}
+
+button{
+border:0;
+border-radius:9px;
+background:var(--blue);
+color:white;
+padding:11px 15px;
+font-weight:650;
+cursor:pointer;
+transition:.2s;
+}
+
+button:hover{
+filter:brightness(1.1);
+transform:translateY(-1px);
+}
+
+button.secondary{
+background:#475569;
+}
+
+button:disabled{
+opacity:.45;
+cursor:not-allowed;
+transform:none;
+}
+
 select,input[type=number]{
 border:1px solid #cbd5e1;
 border-radius:9px;
-background:white;padding:10px;color:var(--ink);
+background:white;
+padding:10px;
+color:var(--ink);
 }
+
 label{
-font-size:13px;color:#475569;
-font-weight:650;display:flex;
-gap:8px;align-items:center;flex-wrap:wrap;
+font-size:13px;
+color:#475569;
+font-weight:650;
+display:flex;
+gap:8px;
+align-items:center;
+flex-wrap:wrap;
 }
+
 video,#preview{
-width:100%;max-height:460px;
-object-fit:contain;background:#111827;
-border-radius:11px;display:block;margin-top:12px;
+width:100%;
+max-height:460px;
+object-fit:contain;
+background:#111827;
+border-radius:11px;
+display:block;
+margin-top:12px;
 }
-#preview{background:#e2e8f0}
+
+#preview{
+background:#e2e8f0;
+}
+
 #sheetCanvas{
-width:100%;height:auto;
+width:100%;
+height:auto;
 border:1px solid var(--border);
-border-radius:9px;margin-top:12px;display:block;
+border-radius:9px;
+margin-top:12px;
+display:block;
 }
-.small{font-size:13px;line-height:1.6;color:var(--muted)}
+
+.small{
+font-size:13px;
+line-height:1.6;
+color:var(--muted);
+}
+
 #status{
-padding:12px 14px;border-radius:9px;
-background:var(--pale);line-height:1.55;
-margin:12px 0;overflow-wrap:anywhere;
+padding:12px 14px;
+border-radius:9px;
+background:var(--pale);
+line-height:1.55;
+margin:12px 0;
+overflow-wrap:anywhere;
 }
-#notes{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+#notes{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:12px;
+}
+
 .note-chip{
-background:#e8efff;border:1px solid #c8d8ff;
-border-radius:9px;padding:9px 11px;
-font-weight:700;min-width:92px;
+background:#e8efff;
+border:1px solid #c8d8ff;
+border-radius:9px;
+padding:9px 11px;
+font-weight:700;
+min-width:92px;
 }
+
 .note-chip small{
-display:block;color:#536781;
-font-size:11px;font-weight:500;margin-top:3px;
+display:block;
+color:#536781;
+font-size:11px;
+font-weight:500;
+margin-top:3px;
 }
+
 .note-chip.active{
-background:#1d4ed8;border-color:#1d4ed8;
-color:white;box-shadow:0 0 0 3px #bfdbfe;
+background:#1d4ed8;
+border-color:#1d4ed8;
+color:white;
+box-shadow:0 0 0 3px #bfdbfe;
 }
-.note-chip.active small{color:#dbeafe}
+
+.note-chip.active small{
+color:#dbeafe;
+}
+
 .settings{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
 gap:12px;
 }
-.settings label{display:block}
-.settings select,.settings input{
-display:block;width:100%;margin-top:6px;
+
+.settings label{
+display:block;
 }
+
+.settings select,
+.settings input{
+display:block;
+width:100%;
+margin-top:6px;
+}
+
 .legend{
-display:flex;gap:14px;flex-wrap:wrap;
-font-size:12px;color:var(--muted);margin-top:10px;
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+font-size:12px;
+color:var(--muted);
+margin-top:10px;
 }
+
 .dot{
-display:inline-block;width:9px;height:9px;
-border-radius:50%;margin-right:5px;
+display:inline-block;
+width:9px;
+height:9px;
+border-radius:50%;
+margin-right:5px;
 }
+
 .info{
-background:#f8fafc;border-radius:10px;
-padding:12px;font-size:13px;
-line-height:1.6;margin-top:12px;
+background:#f8fafc;
+border-radius:10px;
+padding:12px;
+font-size:13px;
+line-height:1.6;
+margin-top:12px;
 }
+
 @media(max-width:600px){
 .card{padding:15px}
 button{flex:1}
@@ -126,8 +249,8 @@ button{flex:1}
 <body>
 
 <header>
-<h1>🎼 SmartScore</h1>
-<p>Scan sheet music, identify notes, and hear them in sequence.</p>
+<h1>🎼 MeloTunes</h1>
+<p>Turn sheet music into melodies.</p>
 </header>
 
 <main>
@@ -135,7 +258,8 @@ button{flex:1}
 <section class="card">
 <h2>1. Choose a camera</h2>
 
-<label>Available camera
+<label>
+Available camera
 <select id="cameraSelect">
 <option value="">Default camera</option>
 </select>
@@ -156,7 +280,9 @@ button{flex:1}
 
 <div class="row">
 <button id="captureBtn" disabled>📷 Capture sheet</button>
-<label>Upload image
+
+<label>
+Upload image
 <input id="fileInput" type="file" accept="image/*">
 </label>
 </div>
@@ -174,14 +300,16 @@ Crop away large empty margins and avoid shadows.
 
 <div class="settings">
 
-<label>Clef
+<label>
+Clef
 <select id="clef">
 <option value="treble">Treble clef</option>
 <option value="bass">Bass clef</option>
 </select>
 </label>
 
-<label>Key signature
+<label>
+Key signature
 <select id="keySignature">
 <option value="C">C major / A minor</option>
 <option value="G">G major / E minor</option>
@@ -201,11 +329,13 @@ Crop away large empty margins and avoid shadows.
 </select>
 </label>
 
-<label>Tempo (BPM)
+<label>
+Tempo (BPM)
 <input id="tempo" type="number" min="40" max="220" value="100">
 </label>
 
-<label>Sound
+<label>
+Sound
 <select id="sound">
 <option value="piano">Piano-like</option>
 <option value="soft">Soft sine</option>
@@ -216,12 +346,12 @@ Crop away large empty margins and avoid shadows.
 </div>
 
 <div class="info">
-<b>Recognition improvements</b><br>
+<b>Recognition process</b><br>
 1. Detect the five staff lines.<br>
 2. Exclude the clef and key-signature area.<br>
-3. Find oval noteheads using their physical shape.<br>
-4. Group duplicate detections without merging nearby chord notes.<br>
-5. Calculate pitches from the nearest staff line or space.
+3. Identify individual noteheads.<br>
+4. Remove duplicate detections.<br>
+5. Calculate musical pitches.
 </div>
 </section>
 
@@ -249,7 +379,7 @@ Loading recognition engine...
 </div>
 
 <p class="small">
-Rhythm and note duration are estimated. Flags, beams, rests, ties, dots and local accidentals are not yet reliably recognized.
+Rhythm is estimated from notehead and stem appearance. Flags, beams, rests, ties, dots and local accidentals are not yet reliably recognized.
 </p>
 </section>
 
@@ -297,14 +427,19 @@ if(window.cv&&window.cv.Mat&&window.cv.imread){
 clearInterval(timer);
 cvReady=true;
 
-status('Recognition engine ready.');
+status('MeloTunes recognition engine ready.');
 
-if(imageBlob)$('detectBtn').disabled=false;
+if(imageBlob){
+$('detectBtn').disabled=false;
+}
 
 }else if(Date.now()-started>60000){
 
 clearInterval(timer);
-status('OpenCV failed to load. Check your internet connection.');
+
+status(
+'OpenCV failed to load. Check your internet connection.'
+);
 
 }
 
@@ -321,14 +456,18 @@ waitForOpenCV();
 function stopCamera(show=true){
 
 if(stream){
+
 stream.getTracks().forEach(t=>t.stop());
 stream=null;
+
 }
 
 video.srcObject=null;
 $('captureBtn').disabled=true;
 
-if(show)status('Camera stopped.');
+if(show){
+status('Camera stopped.');
+}
 
 }
 
@@ -348,9 +487,11 @@ new Option('Default camera','')
 );
 
 cams.forEach((c,i)=>{
+
 cameraSelect.add(
 new Option(c.label||`Camera ${i+1}`,c.deviceId)
 );
+
 });
 
 if(cams.some(c=>c.deviceId===old)){
@@ -366,8 +507,13 @@ console.warn(e);
 async function startCamera(deviceId=null,facing='environment'){
 
 if(!navigator.mediaDevices?.getUserMedia){
-status('Camera requires HTTPS or localhost. Upload an image instead.');
+
+status(
+'Camera requires HTTPS or localhost. Upload an image instead.'
+);
+
 return;
+
 }
 
 stopCamera(false);
@@ -399,13 +545,16 @@ $('captureBtn').disabled=false;
 
 await refreshCameras();
 
-if(deviceId)cameraSelect.value=deviceId;
+if(deviceId){
+cameraSelect.value=deviceId;
+}
 
 status('Camera ready. Capture your sheet music.');
 
 }catch(e){
 
 stopCamera(false);
+
 status('Camera error: '+e.message);
 
 }
@@ -424,7 +573,9 @@ playbackTimers.forEach(clearTimeout);
 playbackTimers=[];
 
 activeOscillators.forEach(o=>{
+
 try{o.stop();}catch(e){}
+
 });
 
 activeOscillators=[];
@@ -442,7 +593,9 @@ if(!blob)return;
 
 imageBlob=blob;
 
-if(imageURL)URL.revokeObjectURL(imageURL);
+if(imageURL){
+URL.revokeObjectURL(imageURL);
+}
 
 imageURL=URL.createObjectURL(blob);
 
@@ -471,21 +624,28 @@ cvReady
 }
 
 $('startBtn').onclick=()=>startCamera(cameraSelect.value||null);
+
 $('frontBtn').onclick=()=>startCamera(null,'user');
+
 $('backBtn').onclick=()=>startCamera(null,'environment');
+
 $('stopBtn').onclick=()=>stopCamera();
 
 cameraSelect.onchange=()=>{
+
 if(cameraSelect.value){
 startCamera(cameraSelect.value);
 }
+
 };
 
 $('captureBtn').onclick=()=>{
 
 if(!stream||!video.videoWidth){
+
 status('Start the camera first.');
 return;
+
 }
 
 const c=document.createElement('canvas');
@@ -498,7 +658,11 @@ video,0,0,c.width,c.height
 );
 
 c.toBlob(blob=>{
-if(blob)saveImage(blob);
+
+if(blob){
+saveImage(blob);
+}
+
 },'image/jpeg',.98);
 
 };
@@ -510,8 +674,10 @@ const f=e.target.files?.[0];
 if(!f)return;
 
 if(!f.type.startsWith('image/')){
+
 status('Please upload an image file.');
 return;
+
 }
 
 saveImage(f);
@@ -526,13 +692,17 @@ const im=new Image();
 const url=URL.createObjectURL(blob);
 
 im.onload=()=>{
+
 URL.revokeObjectURL(url);
 resolve(im);
+
 };
 
 im.onerror=()=>{
+
 URL.revokeObjectURL(url);
 reject(new Error('Image could not be opened.'));
+
 };
 
 im.src=url;
@@ -565,8 +735,10 @@ const row=lineMask.ucharPtr(y);
 for(let x=0;x<width;x++){
 
 if(row[x]>0){
+
 left=Math.min(left,x);
 right=Math.max(right,x);
+
 }
 
 }
@@ -576,8 +748,10 @@ right=Math.max(right,x);
 }
 
 if(right<=left){
+
 left=0;
 right=width-1;
+
 }
 
 return{
@@ -599,7 +773,11 @@ const row=lineMask.ucharPtr(y);
 let count=0;
 
 for(let x=0;x<width;x++){
-if(row[x]>0)count++;
+
+if(row[x]>0){
+count++;
+}
+
 }
 
 scores[y]=count/width;
@@ -610,13 +788,16 @@ const smooth=new Float32Array(height);
 
 for(let y=0;y<height;y++){
 
-let sum=0,n=0;
+let sum=0;
+let n=0;
 
 for(let d=-1;d<=1;d++){
 
 if(y+d>=0&&y+d<height){
+
 sum+=scores[y+d];
 n++;
+
 }
 
 }
@@ -665,7 +846,9 @@ strength
 y=end;
 
 }else{
+
 y++;
+
 }
 
 }
@@ -682,13 +865,18 @@ const diff=p.slice(1)
 
 const gap=diff[2];
 
-if(gap<3||gap>Math.min(120,height*.09))continue;
+if(
+gap<3||
+gap>Math.min(120,height*.09)
+)continue;
 
 const spread=Math.max(...diff)-Math.min(...diff);
 
 if(spread>gap*.30)continue;
 
-const strength=p.reduce((s,v)=>s+v.strength,0)/5;
+const strength=p.reduce(
+(s,v)=>s+v.strength,0
+)/5;
 
 candidates.push({
 lines:p.map(v=>v.y),
@@ -873,10 +1061,14 @@ q.n>0&&q.d/q.n>.20
 ).length;
 
 const filled=
-core>=.50&&ring>=.48&&coverage>=3;
+core>=.50&&
+ring>=.48&&
+coverage>=3;
 
 const hollow=
-core<=.34&&ring>=.25&&coverage>=3;
+core<=.34&&
+ring>=.25&&
+coverage>=3;
 
 return{
 core,
@@ -896,7 +1088,13 @@ confidence:filled
 ========================= */
 
 const NATURAL={
-C:0,D:2,E:4,F:5,G:7,A:9,B:11
+C:0,
+D:2,
+E:4,
+F:5,
+G:7,
+A:9,
+B:11
 };
 
 const KEY_ALTER={
@@ -929,10 +1127,9 @@ const d=base+step;
 
 const octave=Math.floor(d/7);
 
-const letter=
-['C','D','E','F','G','A','B'][
-(d%7+7)%7
-];
+const letter=[
+'C','D','E','F','G','A','B'
+][(d%7+7)%7];
 
 const alter=(KEY_ALTER[key]||{})[letter]||0;
 
@@ -954,7 +1151,7 @@ step
 }
 
 /* =========================
-   IMPROVED NOTE DETECTION
+   NOTE DETECTION
 ========================= */
 
 function detectStaffNotes(
@@ -971,12 +1168,7 @@ const bottom=staff.lines[4];
 const offsets=makeHeadOffsets(gap);
 
 /*
-IMPORTANT FIX 1:
-The clef and key-signature area is excluded.
-
-The earlier detector began too close to the clef,
-which caused its curved black shapes to be mistaken
-for several musical noteheads.
+Exclude clef and key signature.
 */
 
 const clefAndSignatureMargin=Math.max(
@@ -994,12 +1186,6 @@ binary.cols-1,
 Math.round(staff.right-gap*.35)
 );
 
-/*
-IMPORTANT FIX 2:
-Limit vertical detection to the staff region.
-This reduces false detections from note labels.
-*/
-
 const minY=Math.max(
 0,
 Math.floor(staff.lines[0]-gap*1.5)
@@ -1015,9 +1201,11 @@ const yStep=Math.max(1,Math.round(gap/18));
 
 const candidates=[];
 
-if(maxX<=minX||maxY<=minY)return [];
+if(maxX<=minX||maxY<=minY){
+return [];
+}
 
-/* Search for notehead centers. */
+/* Find potential noteheads. */
 
 for(let y=minY;y<=maxY;y+=yStep){
 
@@ -1041,13 +1229,18 @@ m.coverage>=3;
 if(!goodFilled&&!goodHollow)continue;
 
 candidates.push({
+
 x,
 y,
-head:goodHollow&&!goodFilled?'hollow':'filled',
+
+head:goodHollow&&!goodFilled
+?'hollow':'filled',
+
 confidence:m.confidence,
 core:m.core,
 ring:m.ring,
 coverage:m.coverage
+
 });
 
 }
@@ -1055,9 +1248,15 @@ coverage:m.coverage
 }
 
 /*
-IMPORTANT FIX 3:
-Merge duplicate detections horizontally,
-but do not merge different notes in a chord.
+FIX 1:
+Strong duplicate filtering.
+
+The previous method required both X and Y
+to be close. This allowed multiple detections
+on different parts of the same oval.
+
+For this monophonic melody, nearby X positions
+belong to the same notehead.
 */
 
 candidates.sort((a,b)=>
@@ -1066,23 +1265,49 @@ b.confidence-a.confidence
 
 const peaks=[];
 
-const radiusX=gap*.85;
-const radiusY=gap*.32;
+const radiusX=gap*1.25;
 
 for(const p of candidates){
 
-const duplicate=peaks.some(q=>
-Math.abs(p.x-q.x)<radiusX&&
-Math.abs(p.y-q.y)<radiusY
-);
+let duplicateIndex=-1;
 
-if(!duplicate){
+for(let i=0;i<peaks.length;i++){
+
+const q=peaks[i];
+
+if(Math.abs(p.x-q.x)<radiusX){
+
+duplicateIndex=i;
+break;
+
+}
+
+}
+
+if(duplicateIndex===-1){
+
 peaks.push(p);
+
+}else{
+
+const existing=peaks[duplicateIndex];
+
+if(p.confidence>existing.confidence){
+
+peaks[duplicateIndex]=p;
+
+}
+
 }
 
 }
 
-/* Refine each detected center. */
+peaks.sort((a,b)=>a.x-b.x);
+
+/*
+FIX 2:
+Refine the center of each notehead.
+*/
 
 const refined=[];
 
@@ -1132,7 +1357,8 @@ m.confidence>best.confidence
 best={
 x,
 y,
-head:validHollow&&!validFilled?'hollow':'filled',
+head:validHollow&&!validFilled
+?'hollow':'filled',
 confidence:m.confidence,
 core:m.core,
 ring:m.ring,
@@ -1149,7 +1375,10 @@ refined.push(best);
 
 }
 
-/* Convert centers into musical pitches. */
+/*
+FIX 3:
+Convert each center into a pitch.
+*/
 
 const notes=[];
 
@@ -1161,11 +1390,17 @@ const step=Math.round(rawStep);
 
 const positionError=Math.abs(rawStep-step);
 
-if(positionError>.38||step < -2||step > 12){
-continue;
-}
+if(
+positionError>.38||
+step < -2||
+step > 12
+)continue;
 
-const pitch=pitchForStep(step,clef,key);
+const pitch=pitchForStep(
+step,
+clef,
+key
+);
 
 notes.push({
 
@@ -1234,7 +1469,9 @@ run++;
 bestRun=Math.max(bestRun,run);
 
 }else{
+
 run=0;
+
 }
 
 }
@@ -1265,7 +1502,12 @@ for(const dir of ['up','down']){
 
 tries.push(
 stemScore(
-binary,x,note.y,dir,gap,staff.lines
+binary,
+x,
+note.y,
+dir,
+gap,
+staff.lines
 )
 );
 
@@ -1297,17 +1539,21 @@ const beats=hollow
 :1;
 
 return{
+
 beats,
+
 label:hollow
 ?(stem?'Half note':'Whole note')
 :'Quarter note',
+
 stem:!!stem
+
 };
 
 }
 
 /* =========================
-   CHORD GROUPING
+   CHORD / EVENT GROUPING
 ========================= */
 
 function groupEvents(notes,staffs){
@@ -1376,8 +1622,10 @@ staffs.forEach(s=>{
 s.lines.forEach(y=>{
 
 ctx.beginPath();
+
 ctx.moveTo(s.left,y);
 ctx.lineTo(s.right,y);
+
 ctx.stroke();
 
 });
@@ -1401,6 +1649,7 @@ ctx.fill();
 
 ctx.strokeStyle='white';
 ctx.lineWidth=1.5;
+
 ctx.stroke();
 
 });
@@ -1416,7 +1665,11 @@ ctx.restore();
 async function detectSheet(blob){
 
 if(!cvReady){
-throw new Error('Recognition engine is still loading.');
+
+throw new Error(
+'Recognition engine is still loading.'
+);
+
 }
 
 const im=await loadImage(blob);
@@ -1519,7 +1772,9 @@ key
 for(const n of found){
 
 const rhythm=estimateRhythm(
-binary,n,staffs[s]
+binary,
+n,
+staffs[s]
 );
 
 allNotes.push({
@@ -1552,9 +1807,16 @@ allNotes
 );
 
 return{
+
 notes:allNotes,
-events:groupEvents(allNotes,staffs),
+
+events:groupEvents(
+allNotes,
 staffs
+),
+
+staffs
+
 };
 
 }finally{
@@ -1582,12 +1844,15 @@ function esc(s){
 return String(s).replace(
 /[&<>"']/g,
 c=>({
+
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
+
 }[c])
+
 );
 
 }
@@ -1616,7 +1881,7 @@ notesBox.appendChild(el);
 }
 
 /* =========================
-   DETECT BUTTON
+   DETECTION BUTTON
 ========================= */
 
 async function runDetection(){
@@ -1673,18 +1938,23 @@ $('detectBtn').disabled=false;
 }
 
 $('detectBtn').onclick=runDetection;
+
 $('redetectBtn').onclick=runDetection;
 
 $('clef').onchange=()=>{
+
 if(imageBlob){
 $('redetectBtn').disabled=false;
 }
+
 };
 
 $('keySignature').onchange=()=>{
+
 if(imageBlob){
 $('redetectBtn').disabled=false;
 }
+
 };
 
 /* =========================
@@ -1701,7 +1971,10 @@ return 440*Math.pow(
 }
 
 function playTone(
-midi,start,duration,mode
+midi,
+start,
+duration,
+mode
 ){
 
 const f=midiFrequency(midi);
@@ -1775,7 +2048,11 @@ window.AudioContext||
 window.webkitAudioContext;
 
 if(!AC){
-throw new Error('Web Audio is not supported.');
+
+throw new Error(
+'Web Audio is not supported.'
+);
+
 }
 
 if(!audioContext){
@@ -1887,5 +2164,6 @@ refreshCameras
 refreshCameras();
 
 </script>
+
 </body>
 </html>
