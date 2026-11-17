@@ -368,10 +368,11 @@ Sound
 <b>Recognition process</b><br>
 1. Detect the five staff lines.<br>
 2. Find where the clef / key / time signature ends.<br>
-3. Detect barlines (measure lines).<br>
+3. Detect barlines (measure lines; the line closing a row is ignored).<br>
 4. Identify individual noteheads and stems.<br>
-5. Check each measure's rhythm against the time signature.<br>
-6. Calculate musical pitches.
+5. Recover any stem that has no notehead.<br>
+6. Check each measure's rhythm against the time signature.<br>
+7. Calculate musical pitches.
 </div>
 </section>
 
@@ -396,7 +397,8 @@ Loading recognition engine...
 <div class="legend">
 <span><i class="dot" style="background:#ef4444"></i>Detected noteheads</span>
 <span><i class="dot" style="background:#2563eb"></i>Staff lines</span>
-<span><i class="dot" style="background:#16a34a"></i>Barlines</span>
+<span><i class="dot" style="background:#16a34a"></i>Measure barlines</span>
+<span><i class="dot" style="background:#f59e0b"></i>Recovered notes</span>
 </div>
 
 <p class="small">
@@ -1206,7 +1208,17 @@ merged.push({...c});
 
 }
 
-return merged.map(c=>c.center);
+const all=merged.map(c=>c.center);
+
+/*
+Lines at the far right end of a row only close the row.
+They are not measure separators, so they are kept apart.
+*/
+const endLimit=staff.right-gap*1.8;
+
+staff.rowEnd=all.filter(b=>b>=endLimit);
+
+return all.filter(b=>b<endLimit);
 
 }
 
@@ -1440,7 +1452,7 @@ key
 
 const gap=staff.gap;
 const bottom=staff.lines[4];
-const barlines=staff.barlines||[];
+const barlines=[...(staff.barlines||[]),...(staff.rowEnd||[])];
 
 const offsets=makeHeadOffsets(gap);
 
@@ -1690,7 +1702,248 @@ ringRatio:p.ring
 
 }
 
-return notes.sort((a,b)=>a.x-b.x);
+/* Recover heads that have a stem but were missed above. */
+const recovered=recoverMissedNotes(
+binary,staff,staffIndex,clef,key,refined,offsets,barlines
+);
+
+return notes.concat(recovered).sort((a,b)=>a.x-b.x);
+
+}
+
+/* =========================
+   MISSED NOTE RECOVERY
+========================= */
+
+/*
+Every note except a whole note has a stem. Find tall thin
+vertical lines (stems) and return their position and ends.
+*/
+
+function findStemClusters(binary,staff,barlines){
+
+const gap=staff.gap;
+
+const y0=Math.max(0,Math.floor(staff.lines[0]-gap*3.5));
+const y1=Math.min(binary.rows-1,Math.ceil(staff.lines[4]+gap*3.5));
+
+const x0=Math.max(0,Math.round(staff.minX));
+const x1=Math.min(binary.cols-1,Math.round(staff.right-gap*.35));
+
+const minRun=Math.round(gap*2.4);
+
+const cols=[];
+
+for(let x=x0;x<=x1;x++){
+
+if(nearBarline(x,barlines,gap*1.3))continue;
+
+let run=0;
+let best=0;
+let end=0;
+
+for(let y=y0;y<=y1;y++){
+
+if(binary.ucharPtr(y)[x]>0){
+
+run++;
+
+if(run>best){
+best=run;
+end=y;
+}
+
+}else{
+
+run=0;
+
+}
+
+}
+
+if(best>=minRun){
+
+cols.push({
+x,
+top:end-best+1,
+bottom:end,
+len:best
+});
+
+}
+
+}
+
+const clusters=[];
+
+for(const c of cols){
+
+const last=clusters[clusters.length-1];
+
+if(last&&c.x-last.end<=1){
+
+last.end=c.x;
+last.items.push(c);
+
+}else{
+
+clusters.push({
+start:c.x,
+end:c.x,
+items:[c]
+});
+
+}
+
+}
+
+return clusters
+.filter(c=>c.end-c.start+1<=gap*.6)
+.map(c=>{
+
+const longest=c.items.reduce(
+(a,b)=>b.len>a.len?b:a
+);
+
+return{
+x:(c.start+c.end)/2,
+top:longest.top,
+bottom:longest.bottom
+};
+
+});
+
+}
+
+/*
+For every stem that has no detected notehead beside it,
+look for a notehead at either end of the stem using
+slightly more tolerant thresholds.
+*/
+
+function recoverMissedNotes(
+binary,
+staff,
+staffIndex,
+clef,
+key,
+existing,
+offsets,
+barlines
+){
+
+const gap=staff.gap;
+const bottom=staff.lines[4];
+
+const stems=findStemClusters(binary,staff,barlines);
+
+const added=[];
+
+for(const st of stems){
+
+if(existing.some(n=>Math.abs(n.x-st.x)<gap*1.0))continue;
+if(added.some(n=>Math.abs(n.x-st.x)<gap*1.0))continue;
+
+const options=[
+{cx:st.x-gap*.55,cy:st.bottom-gap*.1},
+{cx:st.x+gap*.55,cy:st.top+gap*.1}
+];
+
+let best=null;
+
+for(const o of options){
+
+for(
+let dy=-Math.round(gap*.5);
+dy<=Math.round(gap*.5);
+dy++
+){
+
+for(let dx=-3;dx<=3;dx++){
+
+const x=Math.round(o.cx+dx);
+const y=Math.round(o.cy+dy);
+
+if(
+x<0||y<0||
+x>=binary.cols||y>=binary.rows
+)continue;
+
+const m=headMetrics(
+binary,x,y,gap,staff.lines,offsets
+);
+
+const okFilled=
+m.core>=.55&&
+m.ring>=.50&&
+m.coverage>=3;
+
+const okHollow=
+m.core<=.40&&
+m.ring>=.40&&
+m.coverage>=3;
+
+if(!okFilled&&!okHollow)continue;
+
+const score=okFilled
+?Math.min(m.core,m.ring)
+:m.ring*.78;
+
+if(!best||score>best.score){
+
+best={
+...m,
+x,
+y,
+score,
+head:okFilled?'filled':'hollow'
+};
+
+}
+
+}
+
+}
+
+}
+
+if(!best)continue;
+
+const rawStep=(bottom-best.y)/(gap/2);
+
+const step=Math.round(rawStep);
+
+const positionError=Math.abs(rawStep-step);
+
+if(
+positionError>.45||
+step < -3||
+step > 12
+)continue;
+
+added.push({
+
+...pitchForStep(step,clef,key),
+
+x:best.x,
+y:best.y,
+
+staff:staffIndex,
+head:best.head,
+
+confidence:best.score,
+positionError,
+
+coreRatio:best.core,
+ringRatio:best.ring,
+
+recovered:true
+
+});
+
+}
+
+return added;
 
 }
 
@@ -2273,7 +2526,7 @@ Math.max(5,staffs[n.staff].gap*.24),
 Math.PI*2
 );
 
-ctx.fillStyle='#ef4444';
+ctx.fillStyle=n.recovered?'#f59e0b':'#ef4444';
 ctx.fill();
 
 ctx.strokeStyle='white';
@@ -2605,14 +2858,31 @@ const barCount=result.staffs.reduce(
 (sum,s)=>sum+s.barlines.length,0
 );
 
+const rows=result.staffs.map((s,i)=>{
+
+const n=detectedNotes.filter(x=>x.staff===i).length;
+
+return `row ${i+1}: ${n} notes, ${s.barlines.length+1} measures`;
+
+}).join('; ');
+
+const recoveredCount=detectedNotes.filter(n=>n.recovered).length;
+
 let message=
-`Found ${result.staffs.length} staff system(s), ${barCount} barline(s) and ${detectedNotes.length} notehead(s). `+
+`Found ${result.staffs.length} staff system(s), ${barCount} measure barline(s) and ${detectedNotes.length} notehead(s) (${rows}). `+
 `Measure length: ${result.info.target/2} beats. `;
+
+if(recoveredCount){
+
+message+=
+`${recoveredCount} missed note(s) recovered from stems (orange). `;
+
+}
 
 if(!barCount){
 
 message+=
-'No barlines were detected, so rhythm could not be checked against measures. ';
+'No measure barlines were detected, so rhythm could not be checked against measures. ';
 
 }else if(result.info.unresolved){
 
