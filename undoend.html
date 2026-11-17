@@ -135,7 +135,7 @@ const C=$("game"),ctx=C.getContext("2d"),W=960,H=640;
 const LC=document.createElement("canvas");LC.width=W;LC.height=H;const lx=LC.getContext("2d");
 const keys={};
 let S={state:"title",room:null,sel:null,modal:false,dlg:false,t:0,glow:0};
-let clues=new Set(),clueLog=[],flags={},amb=[],Z=[],shake=0,fails=0,lock=0,talked=new Set(),story=[];
+let clues=new Set(),clueLog=[],flags={},amb=[],Z=[],shake=0,fails=0,lock=0,talked=new Set(),story=[],death=null;
 let P={x:100,y:450,dir:1,sp:2.7,mv:false,w:0};
 let sr=7;const rn=()=>(sr=sr*16807%2147483647)/2147483647;
 
@@ -145,7 +145,7 @@ zhenya:{n:"ZHENYA",role:"ART KID",col:"#6a55b0",hair:"#17121f",sc:1,sp:2.6,aw:11
 yoru:{n:"YORU",role:"CASHIER",col:"#35506b",hair:"#101421",sc:1,sp:2.8,aw:80,route:"store",skill:"LISTEN",pass:"Quiet steps: the dead notice him from much closer. Can replay the radio pattern.",d:"A survivor who hears what others miss. The four-note tone has followed him since day one."},
 renee:{n:"RENÉE",role:"GENIUS LIL KID",col:"#3d807b",hair:"#6b3e69",sc:.85,sp:2.9,aw:115,route:"lab",skill:"HACK",pass:"Hacker: terminals never lock her out after failed codes.",d:"Engineering prodigy. Believes every pattern is code somebody forgot to hide."},
 rocco:{n:"ROCCO",role:"GANGSTER",col:"#9b3f53",hair:"#1a1118",sc:1,sp:3.1,aw:115,route:"garage",skill:"INSTINCT",pass:"Fastest on foot. Escapes the dead easily.",d:"Reflexes like a held breath. Reads rooms the way other people read faces."},
-lev:{n:"LEV",role:"ARCHITECT",col:"#7b3049",hair:"#cfc7d6",sc:1.05}
+lev:{n:"LEV",role:"ARCHITECT",col:"#22242e",hair:"#1a1118",sc:1.05}
 };
 const TH={
 gal:{w:"#241a2a",f:"#2c2330",f2:"#33283a",a:"#d56b79"},
@@ -159,16 +159,20 @@ core:{w:"#1c1530",f:"#2b2144",f2:"#33284e",a:"#d56b79"}
 const ROOMS={
 gal:{name:"GALLERY OF THE LAST DAY",th:"gal",stage:1,spawn:[80,450],obj:"Find a way into Bunker 9. Avoid the dead.",ids:["z1","z2","z3"],
  f:[[110,100,250,46,"paint","z1"],[430,205,110,70,"easel","z2"],[810,100,100,46,"safe","z3"],[150,330,130,40,"bench"],[620,340,160,60,"crate"],[330,430,100,30,"debris"],[720,200,50,70,"statue"]],
- z:[[[300,420],[700,430],[700,300],[300,300]],[[860,230],[860,440],[540,440]]]},
+ z:[[[300,420],[700,430],[700,300],[300,300]],[[860,230],[860,440],[540,440]],
+    [[200,240],[600,240]],[[800,470],[420,470],[420,360]],[[560,200],[560,300],[900,300]]]},
 store:{name:"MIDNIGHT MART",th:"store",stage:1,spawn:[80,450],obj:"Find a way into Bunker 9. Avoid the dead.",ids:["y1","y2","y3"],
  f:[[100,100,200,46,"shelf","y1"],[420,200,170,50,"counter","y2"],[810,100,100,46,"radio","y3"],[170,330,130,50,"shelf"],[620,330,130,50,"shelf"],[380,420,100,36,"debris"]],
- z:[[[330,440],[720,440],[720,300],[330,300]],[[880,260],[880,450]]]},
+ z:[[[330,440],[720,440],[720,300],[330,300]],[[880,260],[880,450]],
+    [[200,250],[540,250]],[[780,400],[450,330],[780,300]],[[560,200],[900,200]]]},
 lab:{name:"HELIX YOUTH ROBOTICS LAB",th:"lab",stage:1,spawn:[80,450],obj:"Find a way into Bunker 9. Avoid the dead.",ids:["r1","r2","r3"],
  f:[[110,100,230,46,"board","r1"],[430,200,100,70,"server","r2"],[790,200,110,70,"term","r3"],[150,330,140,40,"bench"],[580,340,150,50,"crate"],[360,430,90,30,"debris"]],
- z:[[[300,440],[700,440],[700,320],[300,320]],[[620,230],[620,460]]]},
+ z:[[[300,440],[700,440],[700,320],[300,320]],[[620,230],[620,460]],
+    [[200,260],[480,260],[480,400]],[[820,330],[820,470]],[[420,230],[880,230]]]},
 garage:{name:"CHOP-SHOP GARAGE",th:"garage",stage:1,spawn:[80,450],obj:"Find a way into Bunker 9. Avoid the dead.",ids:["c1","c2","c3"],
  f:[[110,100,200,46,"cal","c1"],[440,100,70,46,"clock","c2"],[790,200,110,80,"locker","c3"],[160,320,170,80,"car"],[560,340,150,60,"crate"],[350,440,90,30,"debris"]],
- z:[[[300,450],[700,450],[700,250],[480,250]],[[880,420],[600,420]]]},
+ z:[[[300,450],[700,450],[700,250],[480,250]],[[880,420],[600,420]],
+    [[200,240],[560,240]],[[760,300],[760,470],[400,470]],[[300,350],[600,350]]]},
 bunker:{name:"BUNKER 9",th:"bunker",stage:1,spawn:[90,450],obj:"Talk to your teammates, read the records, then undo the dead.",ids:["b1","b2","b3"],
  f:[[90,100,260,46,"arch","b1"],[620,100,250,46,"schem","b2"],[430,200,140,70,"console","b3"],[150,330,130,60,"bunk"],[700,330,130,60,"bunk"],[420,410,100,40,"crate"]],team:[[300,455],[520,470],[640,455]]},
 obs:{name:"SOLAR OBSERVATORY",th:"obs",stage:2,spawn:[90,450],obj:"The sun is carrying the debt. Trace the signal, then undo the sun.",ids:["o1","o2","o3"],
@@ -192,9 +196,9 @@ c3:{n:"The Locker",s:"@",t:"Inside: your courier ledger. Every delivery to Helix
 b1:{n:"Intake Log",s:"@",t:"SURVIVOR INTAKE: four names, all admitted in the same minute, all drawn by the same four-note tone. Beneath: WITNESSES. THEY REMEMBER WHAT THE ENGINE EDITED. Everyone was within one block of Helix Institute on the night of Test 0.",h:"The bunker knew you were coming, and why."},
 b2:{n:"Blueprint",s:"@",t:"Blueprint of the UNDO ENGINE, with Dr. Voss’s margin notes: “It moves debt, never erases it. The debt moves to wherever the world is thinnest. First came the biological, then the sky, last the worlds themselves. TEST 0 is the root.”",h:"Voss describes the order in which the disasters follow each other."},
 b3:{n:"The Debt Chain",s:"@",t:"The console accepts the chain. Voss’s last note unlocks: “Undo too many times and the seams between universes tear. Do not let him run it again.” Who is “him”? UNDO #1 is armed and waiting.",h:"Root first. Use the blueprint’s notes.",p:"bchain"},
-o1:{n:"Solar Spectrum",s:"@",t:"The sun isn’t dying. It’s carrying the debt from Undo #1, and someone is pumping it. The harmonics match the engine. Etched into the console: “A is Z. B is Y. C is X…”",h:"The etching is a substitution rule: the alphabet written backwards."},
-o2:{n:"Receiver Tape",s:"@",t:"The tape repeats one word, over and over: OLLP. OLLP. OLLP. Beneath it, four notes. The same four notes.",h:"Someone has been repeating a word at you."},
-o3:{n:"The Dish",s:"@",t:"ACCESS GRANTED. The dish locks onto its source: the machine room. Decoded, the word is LOOK. Someone has been begging you to look. At the machine, or at him.",h:"Decode OLLP with the etched rule.",p:"odish"},
+o1:{n:"Solar Spectrum",s:"@",t:"The sun isn’t dying. It’s carrying the debt from Undo #1, and someone is pumping it. The harmonics match the engine. A warning is etched into the console: “SIGNALS ARE NEVER LOST. ONLY SCRAMBLED. SAME LETTERS, NEW ORDER.”",h:"The etching says the signal isn’t encrypted, only shuffled. Rearrange the letters."},
+o2:{n:"Receiver Tape",s:"@",t:"The tape repeats one scrambled word, over and over: OLOP. OLOP. OLOP. Beneath it, four notes. The same four notes.",h:"Four letters, repeated again and again. Someone wants you to unscramble them."},
+o3:{n:"The Dish",s:"@",t:"ACCESS GRANTED. The dish locks onto its source: the machine room. The word is LOOP. Someone is telling you the loop never stopped, and that it can be ended.",h:"Rearrange the letters of OLOP into a real word. Think about what this whole nightmare is.",p:"odish"},
 k1:{n:"Lev’s Ledger",s:"@",t:"LEV’S LEDGER: “Loop one cost 3. The debt doubles with each loop.” In the margin: “She’s still alive in Test 0. Every time. Every time.”",h:"The ledger gives the first debt and the rule."},
 k2:{n:"The Anchor Seat",s:"@",t:"A chair wired into the machine, scorched. Plate: “Seams hold only when the debts are entered in the order they were incurred. No spaces.” Someone has sat here many, many times.",h:"Order and format of the stabilizer code."},
 k3:{n:"Seam Stabilizer",s:"@",t:"The seams steady. The two skylines flicker, then settle into one. Behind you, someone claps slowly.",h:"Three debts, in order. You watched the system print the first two after each undo.",p:"kmach"}
@@ -205,7 +209,7 @@ yradio:{type:"seq",title:"OLD RADIO",pr:"The dial lights. It plays whatever you 
 rterm:{type:"code",title:"TERMINAL",pr:"LOCKED. Encrypted passphrase: ZSITJSI",ans:"UNDOEND",ml:12,ph:"decrypted word"},
 rlocker:{type:"code",title:"LOCKER",pr:"Note: “Date first. Then the hour it stopped. No spaces.”",ans:"149",ml:3,ph:"code"},
 bchain:{type:"order",title:"DEBT CHAIN",pr:"Reconstruct the chain of debt, root first.",cards:["The worlds touch","Test 0","The dead rise","The sun swells"],ans:["Test 0","The dead rise","The sun swells","The worlds touch"]},
-odish:{type:"code",title:"DISH CONTROL",pr:"Transmission word: OLLP. Decode it using the rule etched in the console (A is Z, B is Y, C is X…).",ans:"LOOK",ml:8,ph:"decoded word"},
+odish:{type:"code",title:"DISH CONTROL",pr:"Transmission word: OLOP. The letters are scrambled. Rearrange them into the real word.",ans:"LOOP",ml:8,ph:"unscrambled word"},
 kmach:{type:"code",title:"SEAM STABILIZER",pr:"Enter the debts of Loop 1, Loop 2 and Loop 3. No spaces.",ans:"3612",ml:6,ph:"code"}
 };
 const INTRO={
@@ -218,9 +222,28 @@ const PREMISE=[["SYSTEM","THE SHORT VERSION. A man named Lev built a machine tha
 const BUN=[["SYSTEM","Four doors. Four keycards. One tone. All four arrive in the same minute."],["ROCCO","Hands where I can see them. All of you."],["RENÉE","Four strangers, one invitation. Statistically, this is a trap or a book club."],["YORU","Sorry! It’s the tone. Did you all follow the tone too?"],["ZHENYA","Four notes. I’ve been drawing them for three days."],["RENÉE","The door log: four cards, four doors, one timestamp. This place was built for us."],["ROCCO","So whoever built it knows who we are."],["YORU","I’d like to know who I am. I work a register."],["RENÉE","New rule. We share everything. No lies."],["ROCCO","I lie for a living."],["RENÉE","Then be bad at it."],["ZHENYA","You don’t have to like each other. You just have to stay alive."],["SYSTEM","Talk to your teammates (E near them), then inspect the ◆ clues. When everything is done, the exit arrow appears."]];
 const PRE1=[["RENÉE","Let me say it simply. Test 0 undid one night. The debt of that night became the virus. The engine can undo the virus. But undoing moves the debt again."],["ROCCO","Move it where?"],["RENÉE","Voss wrote: to wherever the world is thinnest."],["YORU","The dead are at the door. We don’t have time to find out."],["ZHENYA","Then we do it together. A picture, a tone, a code, a key."],["SYSTEM","UNDO #1 — THE DEAD ARE LAID TO REST.   DEBT MOVED: 3"]];
 const UNDO1=[["RENÉE","They’re lying down. They’re actually lying down."],["YORU","Then why is the sky so bright?"],["ROCCO","Because the debt moved. It’s in the sun now."],["ZHENYA","The tone is higher. It’s coming from the observatory."],["SYSTEM","ACT II · THE SUN. Follow the signal to the Solar Observatory."]];
-const PRE2=[["RENÉE","The sun isn’t dying. It’s carrying the debt from Undo #1, and a signal is pumping it."],["YORU","The dish says LOOK. Look where?"],["ZHENYA","At the machine room. Whoever sends this is there."],["ROCCO","If we settle the sun, the debt moves again."],["RENÉE","To the seams between universes. But it’s the only way to reach the man who aimed it."],["SYSTEM","UNDO #2 — THE SUN IS SETTLED.   DEBT MOVED: 6"]];
+const PRE2=[["RENÉE","The sun isn’t dying. It’s carrying the debt from Undo #1, and a signal is pumping it."],["YORU","The dish says LOOP. Like the loop never stopped."],["ZHENYA","It’s coming from the machine room. Whoever sends this is there."],["ROCCO","If we settle the sun, the debt moves again."],["RENÉE","To the seams between universes. But it’s the only way to reach the man who aimed it."],["SYSTEM","UNDO #2 — THE SUN IS SETTLED.   DEBT MOVED: 6"]];
 const UNDO2=[["YORU","It’s just a sun again."],["RENÉE","Look at the horizon."],["ROCCO","That’s two skylines."],["ZHENYA","Overlapping. Like a drawing traced onto the wrong page."],["SYSTEM","ACT III · THE SEAMS. The signal’s origin is the machine room."]];
 const COREIN=[["LEV","You took your time. I was starting to think the bunker had taught you caution."],["ZHENYA","Lev."],["LEV","Hello, Zhenya. You kept drawing me without remembering me. I find that flattering."],["SYSTEM","Look around the machine room first, then speak to him. Understand what you’re about to decide."]];
+const FAREWELL=[
+["SYSTEM","Zhenya lays her last drawing on the console: a man in a dark suit, one hand reaching toward a machine, the other holding a pencil out to a girl who isn’t drawn yet."],
+["ZHENYA","I drew you every day for three days and never knew your name. My hands knew it."],
+["LEV","I took it from you. The one thing that would have made you stop me."],
+["ZHENYA","It didn’t work. Look at them, Lev. You’re in every picture. I couldn’t draw the machine without drawing you standing next to it."],
+["LEV","I didn’t think anyone would keep me."],
+["ZHENYA","I kept you. Even when I didn’t know why my chest hurt every time I drew your hands."],
+["ZHENYA","I told Rocco I was afraid I’d loved someone I couldn’t remember. It was you. Wasn’t it."],
+["LEV","…You were loved, Zhenya. However it counts, whatever it was called. You were."],
+["LEV","Every night I watched her die, and told myself the next one would be different. I forgot how to do anything else. I forgot how to stop."],
+["ZHENYA","Anika would hate what you did in her name."],
+["LEV","Yes."],
+["ZHENYA","But she would want you to be able to put it down. So I’m going to hold your hand, and you’re going to let go."],
+["LEV","…Your hand is warm. I’d forgotten that. I’d forgotten what a warm hand felt like."],
+["ZHENYA","I’m not going anywhere. I’ll remember all of it. Every night. Every drawing."],
+["LEV","Then tell her… tell her I was there."],
+["ZHENYA","I’ll tell everyone. I’ll draw you, Lev. I promise. Somebody should."],
+["SYSTEM","He sits in the anchor seat. The hum of the engine softens, like a long breath let go. The light takes his hand last."]
+];
 
 /* ---------- BUNKER CONVERSATIONS ---------- */
 const CV={
@@ -264,15 +287,23 @@ function person(g,x,y,id,dir=1,sc=1,walk=0){
  if(id==="yoru"){R(-9,-17,3,9,"#e4b95f");R(6,-17,3,9,"#e4b95f");R(-8,-21,16,3,"#e4b95f");R(-9,-4,18,3,"#243a52");R(2,0,5,3,"#e4b95f")}
  if(id==="renee"){R(-8,-19,16,5,"#65b8b0");R(-3,-25,6,6,c.hair);R(-9,-15,3,8,c.hair);R(6,-15,3,8,c.hair)}
  if(id==="rocco"){R(-4,-13,2,8,"#a8454f");R(-9,-4,18,3,"#5a1f2b");R(-8,-20,16,3,c.hair)}
- if(id==="lev"){R(-9,-16,3,10,c.hair);R(6,-16,3,10,c.hair);R(2,-13,6,6,"#e4b95f");R(4,-11,2,2,"#111");R(-10,4,20,2,"#3a1020")}
+ if(id==="lev"){
+  /* dark swept hair, charcoal suit, white shirt, burgundy tie */
+  R(-9,-17,3,7,c.hair);R(6,-17,3,7,c.hair);R(-8,-21,16,3,c.hair);
+  R(-3,-4,6,12,"#e8e0d0");R(-1,-3,2,10,"#8a1f2e");R(-1,-3,2,2,"#5a1420");
+  R(-5,-4,2,14,"#15161c");R(3,-4,2,14,"#15161c");
+  R(-9,19,18,2,"#15161c");R(-12,-3,4,2,"#2e313c");R(8,-3,4,2,"#2e313c");
+  R(-12,9,4,3,"#e8e0d0");R(8,9,4,3,"#e8e0d0")
+ }
  g.restore();
 }
 function zomb(z){
- const g=ctx,b=Math.sin(S.t/7+z.x)*2;g.save();g.translate(z.x|0,z.y|0);g.scale(z.d||1,1);
+ const g=ctx,b=Math.sin(S.t/7+z.x)*(death?4:2);g.save();g.translate(z.x|0,z.y|0);g.scale(z.d||1,1);
  const R=(a,c,w,h,col)=>{g.fillStyle=col;g.fillRect(a,c,w,h)};
  R(-11,26,22,4,"rgba(0,0,0,.4)");R(-7,14,6,13+b,"#222");R(1,14,6,13-b,"#222");
  R(-9,-4,18,19,"#4a4f3a");R(-9,2,8,3,"#2a1a18");R(0,8,9,4,"#2a1a18");
  R(-7,-16,14,13,"#7e9a78");R(-7,-19,14,5,"#2a2a22");R(3,-12,3,3,"#ff3030");R(-3,-12,3,3,"#ff3030");R(-3,-6,8,2,"#4a1010");
+ if(death&&death.t>14)R(-3,-6,8,3+(death.t>>2)%2*3,"#8a0e10");
  R(8,-2,13,4,"#7e9a78");R(8,4,13,4,"#7e9a78");
  g.restore();
 }
@@ -323,7 +354,7 @@ function npcs(){const r=R();if(!r||!r.team)return[];const ids=["zhenya","yoru","
 function nearNpc(){return npcs().find(n=>Math.hypot(P.x-n.x,P.y-n.y)<70)}
 function blocked(x,y){const bx=x-9,by=y+8;for(const f of R().f){if(f[1]+f[3]<=150)continue;if(bx<f[0]+f[2]&&bx+18>f[0]&&by<f[1]+f[3]&&by+18>f[1])return true}return false}
 function startRoom(id){
- S.room=id;const r=R();P.x=r.spawn[0];P.y=r.spawn[1];
+ S.room=id;const r=R();P.x=r.spawn[0];P.y=r.spawn[1];death=null;
  Z=(r.z||[]).map(p=>({x:p[0][0],y:p[0][1],i:1,p,d:1}));
  if(!r.dec){r.dec=[];for(let i=0;i<24;i++)r.dec.push([20+rn()*900,160+rn()*330,10+rn()*40,4+rn()*14,rn()])}
  amb=[];for(let i=0;i<70;i++)amb.push({x:rn()*W,y:rn()*H,vx:(rn()-.5)*.4,vy:.2+rn()*.6,s:1+rn()*2});
@@ -365,7 +396,15 @@ function drawRoom(){
  }]));
  if(S.room==="core")D.push([458,()=>person(ctx,820,430,"lev",-1,1.05,0)]);
  Z.forEach(z=>D.push([z.y+28,()=>zomb(z)]));
- D.push([P.y+28,()=>person(ctx,P.x,P.y,S.sel,P.dir,CH[S.sel].sc,P.mv?P.w:0)]);
+ D.push([P.y+28+(death?1:0),()=>{
+  if(!death){person(ctx,P.x,P.y,S.sel,P.dir,CH[S.sel].sc,P.mv?P.w:0);return}
+  /* death: stagger, then topple backwards around the feet */
+  const f=Math.min(1,Math.max(0,(death.t-6)/34)),e=f*f*(3-2*f);
+  ctx.save();ctx.translate((P.x+(death.t<20?Math.sin(death.t*2)*2:0))|0,(P.y+28)|0);
+  ctx.rotate(-P.dir*e*1.5);ctx.globalAlpha=death.t>96?Math.max(0,1-(death.t-96)/22):1;
+  person(ctx,0,-28,S.sel,P.dir,CH[S.sel].sc,0);ctx.restore();
+  if(death.t>30){ctx.fillStyle="rgba(120,8,14,.75)";const bw=Math.min(60,(death.t-30)*1.2);ctx.beginPath();ctx.ellipse(P.x,P.y+26,bw,bw*.32,0,0,7);ctx.fill()}
+ }]);
  D.sort((a,b)=>a[0]-b[0]).forEach(d=>d[1]());
  if(S.room==="core"&&near([820,430,0,0],120))txt("[E] TALK",820,395,11,"#fff","center");
 }
@@ -386,10 +425,45 @@ function atmos(){
  const v=ctx.createRadialGradient(W/2,H/2,240,W/2,H/2,640);v.addColorStop(0,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(0,0,0,.6)");ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
  for(let i=0;i<90;i++)rect(Math.random()*W,Math.random()*H,1,1,`rgba(255,255,255,${Math.random()*.05})`);
 }
+
+/* ---------- DEATH ---------- */
+function deathOverlay(){
+ if(!death)return;const t=death.t;
+ /* red bite flashes and a creeping red tint */
+ const tint=Math.min(.5,t/90*.5);ctx.fillStyle=`rgba(150,8,14,${tint})`;ctx.fillRect(0,0,W,H);
+ if(t>=12&&t%16<3){ctx.fillStyle="rgba(255,40,40,.28)";ctx.fillRect(0,0,W,H)}
+ /* blood-vignette closing in */
+ const k=Math.min(1,t/100),vg=ctx.createRadialGradient(W/2,H/2,Math.max(10,360-k*300),W/2,H/2,640);
+ vg.addColorStop(0,"rgba(60,0,4,0)");vg.addColorStop(1,`rgba(60,0,4,${.35+k*.6})`);ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+ /* title card */
+ if(t>44){const a=Math.min(1,(t-44)/20),s=Math.sin(t*1.7)*(t<70?2:0);ctx.globalAlpha=a;txt("DEVOURED",W/2+s,H/2-6,46,"#c2352f","center");txt(myName()+" DID NOT REMEMBER TO RUN",W/2,H/2+24,13,"#e0c7b8","center");ctx.globalAlpha=1}
+ /* fade to black */
+ if(t>88){ctx.fillStyle=`rgba(0,0,0,${Math.min(1,(t-88)/28)})`;ctx.fillRect(0,0,W,H)}
+}
+function stepDeath(dt){
+ death.t+=dt;const t=death.t;
+ /* the pack closes in and crowds the body */
+ death.zs.forEach((q,i)=>{const z=q.z,tx=P.x+Math.cos(q.a)*(16+(i%2)*10),ty=P.y+10+Math.sin(q.a)*10;
+  const sp=t<40?.16:.28;z.x+=(tx-z.x)*sp*dt;z.y+=(ty-z.y)*sp*dt;z.d=P.x>=z.x?1:-1});
+ /* blood spray */
+ if(t>12&&t<85&&Math.floor(t)%2===0){for(let i=0;i<4;i++)amb.push({x:P.x+(Math.random()-.5)*20,y:P.y+(Math.random()-.5)*14,vx:(Math.random()-.5)*5,vy:-1-Math.random()*3.5,s:2+Math.random()*3,life:30,c:Math.random()<.5?"#8a0e10":"#c2352f"})}
+ const f=Math.floor(t);if(f!==death.lf){death.lf=f;if(f===10||f===28||f===46||f===64)tone(70+Math.random()*30,.3)}
+ if(t>=118)finishDeath();
+}
+function finishDeath(){
+ const r=R();death=null;P.x=r.spawn[0];P.y=r.spawn[1];P.mv=false;
+ Z.forEach(z=>{z.x=z.p[0][0];z.y=z.p[0][1];z.i=1});shake=0;
+ say("THE WORLD REWINDS","Teeth. Then nothing. Then the room again, three seconds earlier. You remember being eaten. Nobody else would.");
+}
+function caught(){
+ if(death)return;
+ death={t:0,lf:-1,zs:Z.map((z,i)=>({z,a:(i/Math.max(1,Z.length))*Math.PI*2+.5}))};shake=14;P.mv=false;
+}
 function update(dt){
  S.t++;if(S.glow>0)S.glow--;if(shake>0)shake--;
  amb.forEach(a=>{a.x+=a.vx*dt;a.y+=a.vy*dt;if(a.life&&--a.life<=0)a.s=0;if(a.y>H){a.y=0}if(a.x<0)a.x=W;if(a.x>W)a.x=0});
  amb=amb.filter(a=>a.s>0);
+ if(death){stepDeath(dt);if(death&&death.t<24&&death.t%6<dt)shake=6;return}
  if(S.dlg||S.modal)return;
  const dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
  P.mv=!!(dx||dy);
@@ -397,19 +471,16 @@ function update(dt){
   const nx=P.x+dx/l*sp;if(!blocked(nx,P.y))P.x=nx;const ny=P.y+dy/l*sp;if(!blocked(P.x,ny))P.y=ny;if(dx)P.dir=dx>0?1:-1}
  P.x=Math.max(25,Math.min(935,P.x));P.y=Math.max(160,Math.min(492,P.y));
  Z.forEach(z=>{
+  if(death)return;
   const d=Math.hypot(P.x-z.x,P.y-z.y);let tx,ty,sp;
   if(d<CH[S.sel].aw){tx=P.x;ty=P.y;sp=1.25}else{const q=z.p[z.i];tx=q[0];ty=q[1];sp=.7;if(Math.hypot(tx-z.x,ty-z.y)<6)z.i=(z.i+1)%z.p.length}
   const a=Math.atan2(ty-z.y,tx-z.x);z.x+=Math.cos(a)*sp*dt;z.y+=Math.sin(a)*sp*dt;z.d=Math.cos(a)>=0?1:-1;
   if(d<24&&!S.dlg)caught();
  });
 }
-function caught(){
- const r=R();P.x=r.spawn[0];P.y=r.spawn[1];Z.forEach(z=>{z.x=z.p[0][0];z.y=z.p[0][1];z.i=1});shake=20;
- say("THE WORLD REWINDS","Teeth. Then nothing. Then the room again, three seconds earlier. You remember the bite. Nobody else would.");
-}
 function render(){
  ctx.save();if(shake>0)ctx.translate((Math.random()-.5)*8,(Math.random()-.5)*8);
- ctx.clearRect(0,0,W,H);drawRoom();atmos();ctx.restore();
+ ctx.clearRect(0,0,W,H);drawRoom();atmos();deathOverlay();ctx.restore();
 }
 
 /* ---------- DIALOGUE ---------- */
@@ -438,7 +509,7 @@ function talkTo(n){
  }else say(c.n,ACTL[S.room][n.id]);
 }
 function interact(){
- if(S.state!=="play"||S.dlg||S.modal)return;
+ if(S.state!=="play"||S.dlg||S.modal||death)return;
  if(S.room==="core"&&near([820,430,0,0],120))return confront();
  const n=nearNpc();if(n)return talkTo(n);
  const f=nearHS();if(!f)return;
@@ -448,7 +519,7 @@ function interact(){
  addClue(id);say(h.s,h.t);
 }
 function look(){
- if(S.state!=="play"||S.dlg||S.modal)return;
+ if(S.state!=="play"||S.dlg||S.modal||death)return;
  let best=null,bd=1e9;R().f.forEach(f=>{if(f[5]&&!clues.has(f[5])){const d=Math.hypot(P.x-f[0]-f[2]/2,P.y-f[1]-f[3]/2);if(d<bd){bd=d;best=f}}});
  const pre={zhenya:"You trace the room with your eyes, the way you’d trace a sketch. ",yoru:"You go still and listen. ",renee:"You scan the room like a system. ",rocco:"You case the place like a job. "}[S.sel];
  if(S.sel==="zhenya")S.glow=360;
@@ -503,7 +574,7 @@ function openPuzzle(pid,hid){
 
 /* ---------- STORY FLOW ---------- */
 function nextRoom(){
- if(S.state!=="play"||S.dlg||S.modal||!ready())return;
+ if(S.state!=="play"||S.dlg||S.modal||death||!ready())return;
  const id=S.room;
  if(R().stage===1&&id!=="bunker"){startRoom("bunker");talk([["SYSTEM","The tone leads you down a service stairwell. A steel door opens before you touch it. BUNKER 9."]].concat(BUN))}
  else if(id==="bunker")talk(PRE1,()=>flash(()=>{addStory("<b>UNDO #1</b> (the dead lie down) → the debt moved into the <b>SUN</b>.");startRoom("obs");talk(UNDO1)}));
@@ -534,10 +605,12 @@ function decide(){
  ]);
 }
 function ending(type){
+ /* emotional Lev & Zhenya cutscene plays before the best ending */
+ if(type==="close"&&!flags.farewell){flags.farewell=1;return talk(FAREWELL,()=>flash(()=>ending("close")))}
  S.state="end";$("ending").style.display="flex";closeD();
  const N=myName();let title,body;
- if(type==="close"){title="ENDING · THE NIGHT SHE DIES, FACED";body=`Four witnesses. A picture, a tone, a code, a key.\n\nZhenya lays her last drawing on the console. Yoru hums four notes. Renée types the passphrase. Rocco turns the key.\n\nLev doesn’t stop them. He sits in the anchor seat and says one thing: “Tell her I was there.”\n\nThe engine closes the loop. No outbreak. No swollen sun. No second skyline. Voss’s fire burns the way it always did, and it takes her, and the world goes on.\n\nSomewhere, a cashier hears four notes from a register that has printed nothing, and looks up to see three strangers on the sidewalk who somehow already know his name.\n\nThey remember. Nobody else will.\nIt’s enough to start a friendship with.`}
- else if(type==="anchor"){title="ENDING · THE SEAT THAT HOLDS";body=`${N} takes the anchor seat.\n\nThe engine accepts a single anchor, if that person remembers everything and never looks away. The seams tighten around ${N}’s memory like stitches.\n\nThe others stay as long as the walls allow. Renée swears she can write a patch. Rocco swears he’ll find another way. Yoru stays by the door, humming four notes, so ${N} can find the way back to the tune.\n\nThe sky is one color again. Not everything is saved. But the world is no longer spent to pay for one night.\n\nLev watches from the doorway. For the first time he looks like someone who is waiting for a sentence.`}
+ if(type==="close"){title="ENDING · THE NIGHT SHE DIES, FACED";body=`Zhenya never lets go of his hand until the light takes it.\n\nYoru hums four notes, soft, so that Lev has something to hold onto. Renée types the passphrase with shaking hands. Rocco turns the key and doesn’t say a single joke.\n\nThe engine closes the loop. No outbreak. No swollen sun. No second skyline. Voss’s fire burns the way it always did, and it takes her, and the world goes on.\n\nA cashier hears four notes from a register that has printed nothing, and looks up to see three strangers who somehow already know his name.\n\nMonths later, in a small gallery, a girl hangs one painting by itself: a man in a dark suit, one hand held out, smiling like someone who has finally been allowed to rest. The plate beneath it reads only “L.”\n\nPeople stop and ask who he was. She tells them the truth.\n\n“He was there.”\n\nShe remembers. Nobody else will.\nIt’s enough to start a friendship with.`}
+ else if(type==="anchor"){title="ENDING · THE SEAT THAT HOLDS";body=`${N} takes the anchor seat.\n\nThe engine accepts a single anchor, if that person remembers everything and never looks away. The seams tighten around ${N}’s memory like stitches.\n\nThe others stay as long as the walls allow. Renée swears she can write a patch. Rocco swears he’ll find another way. Yoru stays by the door, humming four notes, so ${N} can find the way back to the tune.\n\nThe sky is one color again. Not everything is saved. But the world is no longer spent to pay for one night.\n\nLev watches from the doorway, dark suit crumpled, hands empty. For the first time he looks like someone who is waiting for a sentence.`}
  else{title="ENDING · LOOP FOUR";body=`Lev smiles with relief. The engine hums. The seams stitch themselves shut.\n\nFor one second you remember a bunker, a name, a friend.\n\nThen nothing.\n\nA cashier hears four notes from a register. A girl draws a machine she has never seen. A prodigy finds a log that was edited after the author died. A courier finds a crate he never delivered.\n\nSomewhere, a man writes in a ledger: “Loop four cost 12.”\n\nNext time, LOOK closer.`}
  $("ending").innerHTML=`<div style="margin:auto;max-width:700px;padding:30px 20px"><div style="color:#e4b95f;letter-spacing:2px">${title}</div><h1 class="glt" data-t="UNDOEND" style="font-size:44px;margin:12px auto;display:inline-block">UNDOEND</h1><p class="sub" style="white-space:pre-line;margin:10px auto 24px;text-align:left">${body}</p><p style="color:#8e7a80;font-size:12px">CLUES FOUND: ${clues.size}/12</p><button class="primary" onclick="location.reload()">↻ PLAY AGAIN</button></div>`;
 }
@@ -566,7 +639,7 @@ $("howBtn").onclick=()=>{const h=$("how");h.style.display=h.style.display==="blo
 $("menuBtn").onclick=()=>{if(S.state==="play"){S.modal=true;$("pausePanel").style.display="flex"}};
 $("resume").onclick=()=>{S.modal=false;$("pausePanel").style.display="none"};
 $("restart").onclick=()=>location.reload();
-$("jBtn").onclick=()=>{if(S.state==="play"&&!S.modal)openJournal()};
+$("jBtn").onclick=()=>{if(S.state==="play"&&!S.modal&&!death)openJournal()};
 $("jX").onclick=closeJournal;
 $("interactBtn").onclick=interact;$("lookBtn").onclick=look;
 $("nextArrow").addEventListener("click",nextRoom);
@@ -584,7 +657,7 @@ addEventListener("keydown",e=>{
  keys[k]=true;
  if(S.state!=="play")return;
  if(k==="e")interact();if(k===" ")look();
- if(k==="j"){if($("journal").style.display==="flex")closeJournal();else if(!S.modal)openJournal()}
+ if(k==="j"){if($("journal").style.display==="flex")closeJournal();else if(!S.modal&&!death)openJournal()}
  if(k==="enter")nextRoom();
 });
 addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=false});
