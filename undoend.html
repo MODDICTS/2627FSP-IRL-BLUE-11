@@ -39,7 +39,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .tag{max-width:640px;line-height:1.6;color:#e0c7b8;text-shadow:2px 2px #000;margin:0}
 .loops{font-size:12px;color:var(--gold);letter-spacing:2px;text-shadow:2px 2px #000}
 .loops b{color:var(--red);font-size:16px;margin:0 3px}
-#how{display:none;max-width:560px;background:#0d0a10ee;border:2px solid #6a5460;padding:12px;font-size:12px;line-height:1.55;text-align:left}
+#how{display:none;max-width:580px;background:#0d0a10ee;border:2px solid #6a5460;padding:12px;font-size:12px;line-height:1.55;text-align:left}
 .foot{font-size:10px;color:#8e7a80;letter-spacing:2px;text-shadow:2px 2px #000}
 #select{display:none;flex-direction:column;align-items:center;justify-content:center;padding:26px 16px;background:radial-gradient(circle at 50% 30%,#3a1218,#120a10 55%,#07050a)}
 .sub{max-width:700px;line-height:1.5;color:#c8b7bb}
@@ -72,6 +72,8 @@ button:disabled{opacity:.4;cursor:not-allowed}
 #pk{white-space:pre-line;color:var(--cy);text-align:left;min-height:20px}
 .jl{text-align:left;border-bottom:1px solid #3c2e44;padding:7px 0;font-size:13px;line-height:1.45}
 .jl b{color:var(--gold)}
+.story{text-align:left;background:#0e0a13;border:1px solid #5a4660;padding:8px 10px;margin-bottom:10px;font-size:13px;line-height:1.5;color:var(--cy)}
+.story b{color:var(--gold)}
 #flash{display:none;position:absolute;inset:0;z-index:50;background:#fff;opacity:0;transition:opacity .9s;pointer-events:none}
 @media(max-width:700px){
 #gameShell{width:100vw;height:100dvh;border:0}
@@ -105,17 +107,17 @@ button:disabled{opacity:.4;cursor:not-allowed}
   <div class="tcnt">
     <div class="tx">TRANSMISSION 0003 // SIGNAL DEGRADED // SOURCE: BUNKER 9</div>
     <h1 class="glt" data-t="UNDOEND">UNDOEND</h1>
-    <p class="tag">The world ended three times.<br>Four people remember the first.</p>
-    <div class="loops">LOOPS TO UNDO <b>■</b><b>■</b><b>■</b></div>
+    <p class="tag">Undo the dead. Undo the sun. Undo the worlds.<br>Every undo has a price.</p>
+    <div class="loops">UNDOS TO SURVIVE <b>■</b><b>■</b><b>■</b></div>
     <div><button class="primary" id="start">BEGIN THE LOOP</button> <button id="howBtn">HOW TO PLAY</button></div>
-    <div id="how">WASD / ARROWS or the D-pad: move<br>E: inspect &nbsp; SPACE: look (hints) &nbsp; J: journal<br>Every clue goes into your journal. Puzzles are solved by deduction, so read it.<br>Avoid the dead. Collect all 12 clues to earn the true ending.</div>
+    <div id="how">WASD / ARROWS or the D-pad: move<br>E: inspect clues (◆) or talk to people &nbsp; SPACE: look (hint) &nbsp; J: journal<br>Every clue goes into your journal. Puzzles are solved by deduction, so read it.<br>Avoid the dead. In the bunker, talk to your teammates. Collect all 12 clues for the best ending.</div>
     <div class="foot">MYSTERY · SURVIVAL · SCI-FI</div>
   </div>
 </div>
 
 <div id="select">
   <h2 style="margin:3px 0;color:#e4b95f;letter-spacing:3px">WHO REMEMBERS?</h2>
-  <p class="sub">Four witnesses. Four different roads to the same bunker. Each route holds different clues and different tools.</p>
+  <p class="sub">Four witnesses. Four different roads to the same bunker. Each route has different clues and different tools.</p>
   <div class="roster" id="roster"></div>
 </div>
 
@@ -133,7 +135,7 @@ const C=$("game"),ctx=C.getContext("2d"),W=960,H=640;
 const LC=document.createElement("canvas");LC.width=W;LC.height=H;const lx=LC.getContext("2d");
 const keys={};
 let S={state:"title",room:null,sel:null,modal:false,dlg:false,t:0,glow:0};
-let clues=new Set(),clueLog=[],flags={},amb=[],Z=[],shake=0,fails=0,lock=0;
+let clues=new Set(),clueLog=[],flags={},amb=[],Z=[],shake=0,fails=0,lock=0,talked=new Set(),story=[];
 let P={x:100,y:450,dir:1,sp:2.7,mv:false,w:0};
 let sr=7;const rn=()=>(sr=sr*16807%2147483647)/2147483647;
 
@@ -167,35 +169,35 @@ lab:{name:"HELIX YOUTH ROBOTICS LAB",th:"lab",stage:1,spawn:[80,450],obj:"Find a
 garage:{name:"CHOP-SHOP GARAGE",th:"garage",stage:1,spawn:[80,450],obj:"Find a way into Bunker 9. Avoid the dead.",ids:["c1","c2","c3"],
  f:[[110,100,200,46,"cal","c1"],[440,100,70,46,"clock","c2"],[790,200,110,80,"locker","c3"],[160,320,170,80,"car"],[560,340,150,60,"crate"],[350,440,90,30,"debris"]],
  z:[[[300,450],[700,450],[700,250],[480,250]],[[880,420],[600,420]]]},
-bunker:{name:"BUNKER 9",th:"bunker",stage:1,spawn:[90,450],obj:"Learn what the machine really does. Then undo the first end.",ids:["b1","b2","b3"],
+bunker:{name:"BUNKER 9",th:"bunker",stage:1,spawn:[90,450],obj:"Talk to your teammates, read the records, then undo the dead.",ids:["b1","b2","b3"],
  f:[[90,100,260,46,"arch","b1"],[620,100,250,46,"schem","b2"],[430,200,140,70,"console","b3"],[150,330,130,60,"bunk"],[700,330,130,60,"bunk"],[420,410,100,40,"crate"]],team:[[300,455],[520,470],[640,455]]},
-obs:{name:"SOLAR OBSERVATORY",th:"obs",stage:2,spawn:[90,450],obj:"The sun is being pumped. Trace the signal and undo the second end.",ids:["o1","o2","o3"],
+obs:{name:"SOLAR OBSERVATORY",th:"obs",stage:2,spawn:[90,450],obj:"The sun is carrying the debt. Trace the signal, then undo the sun.",ids:["o1","o2","o3"],
  f:[[100,100,240,46,"panel","o1"],[430,200,130,80,"receiver","o2"],[800,100,100,46,"dish","o3"],[150,340,130,50,"table"],[660,340,130,50,"table"]],team:[[300,455],[520,470],[640,455]]},
-core:{name:"THE MACHINE ROOM",th:"core",stage:3,spawn:[90,450],obj:"Two skylines. One machine. Face Lev.",ids:["k1","k2","k3"],
+core:{name:"THE MACHINE ROOM",th:"core",stage:3,spawn:[90,450],obj:"Two skylines. One machine. Study it, then face Lev.",ids:["k1","k2","k3"],
  f:[[100,100,250,46,"ledger","k1"],[420,205,130,60,"seat","k2"],[690,180,180,100,"machine","k3"],[150,340,120,50,"table"],[470,400,100,40,"crate"]],team:[[250,460],[400,480],[540,460]]}
 };
 const HS={
 z1:{n:"Three Canvases",s:"@",t:"Your last three paintings hang in a row. RED SUN: 4 flares. PALE CROWS: 7 crows. OPEN DOORS: 2 doors. A tiny L is scratched into every frame.",h:"Count what is painted inside each canvas. The order matters later."},
 z2:{n:"The Sketchbook",s:"@",t:"Your sketchbook lies open on the easel. Pages are numbered in the order you painted: 1 OPEN DOORS, 2 RED SUN, 3 PALE CROWS. On the last page, in handwriting that isn’t yours: “You drew it right the first time. — L”",h:"The sketchbook knows which painting came first."},
-z3:{n:"The Safe",s:"@",t:"The safe swings open. Inside: a keycard stamped BUNKER 9, and a letter. “Test 0 was one night, Zhenya. Only one night. I will fix the rest. — L” You have never met a man named L. You remember his hands.",h:"The plate says to paint it in order and count what is inside.",p:"zsafe"},
+z3:{n:"The Safe",s:"@",t:"The safe swings open. Inside: a keycard stamped BUNKER 9, and a letter. “Test 0 undid one night, Zhenya. Only one night. I will fix the rest. — L” You have never met a man named L. You remember his hands.",h:"The plate says to paint it in order and count what is inside.",p:"zsafe"},
 y1:{n:"The Receipt",s:"@",t:"A receipt in the jammed printer. ITEM CODES: 3 - 1 - 4 - 2. Timestamp 03:12, the minute the sky first went wrong. The register printed it by itself.",h:"Four numbers, printed at the exact moment the world broke."},
 y2:{n:"The Taped Note",s:"@",t:"A note under the counter lamp, in your own handwriting: “1 = C, 2 = E, 3 = G, 4 = B. The register plays what it prints.” You don’t remember writing it.",h:"A legend that turns numbers into notes."},
-y3:{n:"The Radio",s:"@",t:"The radio crackles. Four notes, then a voice: “Bunker 9. Four doors. One tone. Come before the sun learns your name.” The tone is the engine’s reset signal. You were standing across the street from the lab when it first rang.",h:"Play the receipt back, in the order it printed.",p:"yradio"},
-r1:{n:"Sticky Note",s:"@",t:"A sticky note on a dead monitor: “Shift every letter FORWARD by the number of fingers on one hand. — Dr. Voss”",h:"A cipher key, signed by your old mentor."},
-r2:{n:"Server Log",s:"@",t:"UNDOEND: chronal undo engine. “It does not erase a catastrophe, it moves the debt. Never run Test 0 again.” Author: Dr. Anika Voss. The final entry was edited after her death by someone else.",h:"The log tells you what the engine really does."},
+y3:{n:"The Radio",s:"@",t:"The radio crackles. Four notes, then a voice: “Bunker 9. Four doors. One tone. Come before the sun learns your name.” The tone is the engine’s reset signal. It rang at 03:12, the moment of Test 0.",h:"Play the receipt back, in the order it printed.",p:"yradio"},
+r1:{n:"Sticky Note",s:"@",t:"A sticky note on a dead monitor: “The passphrase was encrypted by shifting every letter FORWARD by the number of fingers on one hand. Go back to read it. — Dr. Voss”",h:"A cipher key signed by your old mentor. Count the fingers, then shift back."},
+r2:{n:"Server Log",s:"@",t:"UNDOEND: chronal undo engine. “It does not erase a catastrophe, it MOVES the debt. Never run Test 0 again.” Author: Dr. Anika Voss. The final entry was edited after her death by someone else.",h:"The log says what the engine really does."},
 r3:{n:"The Terminal",s:"@",t:"ACCESS GRANTED. A roster of the Helix Youth Program with four names flagged WITNESS: you, a courier, an artist, a cashier. The engine needs witnesses to remember what it edits.",h:"The passphrase on screen is shifted. The sticky note tells you by how much.",p:"rterm"},
 c1:{n:"Wall Calendar",s:"@",t:"A calendar from the day the sky first went wrong. One date is circled in red marker: 14.",h:"One number is circled."},
 c2:{n:"The Dead Clock",s:"@",t:"The wall clock stopped when the power died: exactly 9:00. Scratched under it: THE HOUR IT ALL STOPPED.",h:"A stopped clock gives an hour."},
 c3:{n:"The Locker",s:"@",t:"Inside: your courier ledger. Every delivery to Helix Institute, and one crate you never delivered: SOLAR CORE, signed L. ORLOV. Plus a keycard for Bunker 9.",h:"The note says date first, then the hour.",p:"rlocker"},
-b1:{n:"Intake Log",s:"@",t:"SURVIVOR INTAKE: four names smudged out, all admitted in the same minute, all drawn by the same four-note tone. Beneath: WITNESSES. THEY REMEMBER WHAT THE ENGINE EDITED.",h:"The bunker knew you were coming."},
-b2:{n:"Blueprint",s:"@",t:"Blueprint of the UNDO ENGINE, with Dr. Voss’s margin notes: “It moves debt, never erases it. First comes the biological, then the sky, last the worlds themselves. TEST 0 is the root.”",h:"Voss describes the order in which the disasters follow each other."},
+b1:{n:"Intake Log",s:"@",t:"SURVIVOR INTAKE: four names, all admitted in the same minute, all drawn by the same four-note tone. Beneath: WITNESSES. THEY REMEMBER WHAT THE ENGINE EDITED. Everyone was within one block of Helix Institute on the night of Test 0.",h:"The bunker knew you were coming, and why."},
+b2:{n:"Blueprint",s:"@",t:"Blueprint of the UNDO ENGINE, with Dr. Voss’s margin notes: “It moves debt, never erases it. The debt moves to wherever the world is thinnest. First came the biological, then the sky, last the worlds themselves. TEST 0 is the root.”",h:"Voss describes the order in which the disasters follow each other."},
 b3:{n:"The Debt Chain",s:"@",t:"The console accepts the chain. Voss’s last note unlocks: “Undo too many times and the seams between universes tear. Do not let him run it again.” Who is “him”? UNDO #1 is armed and waiting.",h:"Root first. Use the blueprint’s notes.",p:"bchain"},
-o1:{n:"Solar Spectrum",s:"@",t:"The sun isn’t dying. It’s being pumped. The harmonics match the engine. Etched into the console: “A is Z. B is Y.”",h:"The etching is a substitution rule."},
-o2:{n:"Receiver Tape",s:"@",t:"The tape repeats one word over and over: OLLK. OLLK. OLLK. Beneath it, four notes. The same four notes.",h:"Someone has been repeating a word at you."},
-o3:{n:"The Dish",s:"@",t:"The dish rotates. The origin is the machine room. The sender has been repeating one word for years: LOOP.",h:"Decode OLLK with the etched rule.",p:"odish"},
-k1:{n:"Lev’s Ledger",s:"@",t:"LEV’S LEDGER: “Debt doubles with each loop. Loop one cost 3.” Margin: “She’s still alive in Test 0. Every time. Every time.”",h:"The ledger gives the first debt and the rule."},
+o1:{n:"Solar Spectrum",s:"@",t:"The sun isn’t dying. It’s carrying the debt from Undo #1, and someone is pumping it. The harmonics match the engine. Etched into the console: “A is Z. B is Y. C is X…”",h:"The etching is a substitution rule: the alphabet written backwards."},
+o2:{n:"Receiver Tape",s:"@",t:"The tape repeats one word, over and over: OLLP. OLLP. OLLP. Beneath it, four notes. The same four notes.",h:"Someone has been repeating a word at you."},
+o3:{n:"The Dish",s:"@",t:"ACCESS GRANTED. The dish locks onto its source: the machine room. Decoded, the word is LOOK. Someone has been begging you to look. At the machine, or at him.",h:"Decode OLLP with the etched rule.",p:"odish"},
+k1:{n:"Lev’s Ledger",s:"@",t:"LEV’S LEDGER: “Loop one cost 3. The debt doubles with each loop.” In the margin: “She’s still alive in Test 0. Every time. Every time.”",h:"The ledger gives the first debt and the rule."},
 k2:{n:"The Anchor Seat",s:"@",t:"A chair wired into the machine, scorched. Plate: “Seams hold only when the debts are entered in the order they were incurred. No spaces.” Someone has sat here many, many times.",h:"Order and format of the stabilizer code."},
-k3:{n:"Seam Stabilizer",s:"@",t:"The seams steady. The two skylines flicker, then settle into one. Behind you, someone claps slowly.",h:"Three debts, in order. Each is double the one before.",p:"kmach"}
+k3:{n:"Seam Stabilizer",s:"@",t:"The seams steady. The two skylines flicker, then settle into one. Behind you, someone claps slowly.",h:"Three debts, in order. You watched the system print the first two after each undo.",p:"kmach"}
 };
 const PZ={
 zsafe:{type:"code",title:"WALL SAFE",pr:"Plate: “Paint it in the order you painted it. Count what is inside.”",ans:"247",ml:3,ph:"3 digits"},
@@ -203,7 +205,7 @@ yradio:{type:"seq",title:"OLD RADIO",pr:"The dial lights. It plays whatever you 
 rterm:{type:"code",title:"TERMINAL",pr:"LOCKED. Encrypted passphrase: ZSITJSI",ans:"UNDOEND",ml:12,ph:"decrypted word"},
 rlocker:{type:"code",title:"LOCKER",pr:"Note: “Date first. Then the hour it stopped. No spaces.”",ans:"149",ml:3,ph:"code"},
 bchain:{type:"order",title:"DEBT CHAIN",pr:"Reconstruct the chain of debt, root first.",cards:["The worlds touch","Test 0","The dead rise","The sun swells"],ans:["Test 0","The dead rise","The sun swells","The worlds touch"]},
-odish:{type:"code",title:"DISH CONTROL",pr:"Transmission word: OLLK. Decode it.",ans:"LOOP",ml:8,ph:"decoded word"},
+odish:{type:"code",title:"DISH CONTROL",pr:"Transmission word: OLLP. Decode it using the rule etched in the console (A is Z, B is Y, C is X…).",ans:"LOOK",ml:8,ph:"decoded word"},
 kmach:{type:"code",title:"SEAM STABILIZER",pr:"Enter the debts of Loop 1, Loop 2 and Loop 3. No spaces.",ans:"3612",ml:6,ph:"code"}
 };
 const INTRO={
@@ -212,10 +214,34 @@ yoru:[["@","Day three. I locked the store, then stopped locking it. The dead don
 renee:[["@","Day three. Everyone’s running. I’m counting. The outbreak spread in a pattern, and patterns are just code someone forgot to hide."],["@","My old robotics lab received a signal at 03:12 on day one. Four notes. I’m going back to read the logs and find out who sent them."]],
 rocco:[["@","Day three. Half my crew is dead. The other half is hungry. I’ve got a locker I’ve never opened and no gas."],["@","A dead courier had four notes scrawled on his hand like a ringtone, and BUNKER 9. Dead men don’t send invitations. Somebody is using them."]]
 };
-const BUN=[["ROCCO","Hands where I can see them. All four of you."],["RENÉE","There are three of you and one of me. Statistically, you should be nicer."],["YORU","Sorry. It’s the tone. Did everyone follow the tone?"],["ZHENYA","Four notes. I’ve been drawing them for three days."],["RENÉE","The door log shows four keycards, four different doors, one timestamp. We didn’t find this place. It invited us."],["ROCCO","Then whoever built it knows exactly who we are."],["YORU","I’d like to know who I am. I work a register."],["RENÉE","Rules. We share everything. No lies."],["ROCCO","I lie for a living."],["RENÉE","Then be bad at it."],["ZHENYA","You don’t have to like each other. You just have to stay alive."],["YORU","That’s the nicest thing anyone has said since the sky broke."]];
-const UNDO1=[["SYSTEM","UNDO #1 — THE DEAD ARE LAID TO REST.  DEBT TRANSFERRED: 3"],["RENÉE","They’re lying down. They’re actually lying down."],["YORU","Then why is the sky getting brighter?"],["ROCCO","Because the answer to ‘it’s over’ is never ‘it’s over’."],["ZHENYA","The tone changed. Listen. It’s higher."],["SYSTEM","ACT II · THE SUN. Follow the signal to the Solar Observatory."]];
-const UNDO2=[["SYSTEM","UNDO #2 — THE SUN IS SETTLED.  DEBT TRANSFERRED: 6"],["YORU","It’s just a sun again."],["RENÉE","Look at the horizon."],["ROCCO","That’s two skylines."],["ZHENYA","Overlapping. Like a drawing traced onto the wrong page."],["SYSTEM","ACT III · THE SEAMS. The signal’s origin: the machine room."]];
-const COREIN=[["LEV","You took your time. I was starting to think the bunker had taught you caution."],["ZHENYA","Lev."],["LEV","Hello, Zhenya. You kept drawing me without remembering me. I find that flattering."],["SYSTEM","Look around before you speak to him. Understand what you are about to decide."]];
+const PREMISE=[["SYSTEM","THE SHORT VERSION. A man named Lev built a machine that can UNDO a disaster. It never erases it, it MOVES the damage somewhere else. He used it once (Test 0) and that move became the zombie plague."],["SYSTEM","Your goal across three acts: (1) the dead, (2) the sun, (3) the collision of universes. Each undo moves the debt to the next disaster. The Journal keeps track."]];
+const BUN=[["SYSTEM","Four doors. Four keycards. One tone. All four arrive in the same minute."],["ROCCO","Hands where I can see them. All of you."],["RENÉE","Four strangers, one invitation. Statistically, this is a trap or a book club."],["YORU","Sorry! It’s the tone. Did you all follow the tone too?"],["ZHENYA","Four notes. I’ve been drawing them for three days."],["RENÉE","The door log: four cards, four doors, one timestamp. This place was built for us."],["ROCCO","So whoever built it knows who we are."],["YORU","I’d like to know who I am. I work a register."],["RENÉE","New rule. We share everything. No lies."],["ROCCO","I lie for a living."],["RENÉE","Then be bad at it."],["ZHENYA","You don’t have to like each other. You just have to stay alive."],["SYSTEM","Talk to your teammates (E near them), then inspect the ◆ clues. When everything is done, the exit arrow appears."]];
+const PRE1=[["RENÉE","Let me say it simply. Test 0 undid one night. The debt of that night became the virus. The engine can undo the virus. But undoing moves the debt again."],["ROCCO","Move it where?"],["RENÉE","Voss wrote: to wherever the world is thinnest."],["YORU","The dead are at the door. We don’t have time to find out."],["ZHENYA","Then we do it together. A picture, a tone, a code, a key."],["SYSTEM","UNDO #1 — THE DEAD ARE LAID TO REST.   DEBT MOVED: 3"]];
+const UNDO1=[["RENÉE","They’re lying down. They’re actually lying down."],["YORU","Then why is the sky so bright?"],["ROCCO","Because the debt moved. It’s in the sun now."],["ZHENYA","The tone is higher. It’s coming from the observatory."],["SYSTEM","ACT II · THE SUN. Follow the signal to the Solar Observatory."]];
+const PRE2=[["RENÉE","The sun isn’t dying. It’s carrying the debt from Undo #1, and a signal is pumping it."],["YORU","The dish says LOOK. Look where?"],["ZHENYA","At the machine room. Whoever sends this is there."],["ROCCO","If we settle the sun, the debt moves again."],["RENÉE","To the seams between universes. But it’s the only way to reach the man who aimed it."],["SYSTEM","UNDO #2 — THE SUN IS SETTLED.   DEBT MOVED: 6"]];
+const UNDO2=[["YORU","It’s just a sun again."],["RENÉE","Look at the horizon."],["ROCCO","That’s two skylines."],["ZHENYA","Overlapping. Like a drawing traced onto the wrong page."],["SYSTEM","ACT III · THE SEAMS. The signal’s origin is the machine room."]];
+const COREIN=[["LEV","You took your time. I was starting to think the bunker had taught you caution."],["ZHENYA","Lev."],["LEV","Hello, Zhenya. You kept drawing me without remembering me. I find that flattering."],["SYSTEM","Look around the machine room first, then speak to him. Understand what you’re about to decide."]];
+
+/* ---------- BUNKER CONVERSATIONS ---------- */
+const CV={
+"zhenya>yoru":["You’re the one who draws. Could you draw the sun? I keep forgetting what a normal one looks like.",["“Yellow circle. Done. Pay me in snacks.”","I can’t pay. I work a register. Worked. I can offer you a very good receipt."],["“It had warmth. You’d stand in it without thinking.”","I’d like that. Standing in something without thinking."]],
+"zhenya>renee":["You drew a machine you’ve never seen. Statistically, that’s genius or a brain tumor.",["“Can I pick neither?”","No. Pick one. I’ll respect the tumor."],["“I think someone put it in me.”","Then someone wrote to you without permission. I’ll find them. And fix their grammar."]],
+"zhenya>rocco":["You’re quiet. Artists usually talk when they’re nervous.",["“I’m sketching your jaw. It’s very punchable.”","Draw it kindly. I’m sensitive."],["“I’m afraid I loved someone I can’t remember.”","That’s worse than the dead outside. Stay close. I don’t forget faces."]],
+"yoru>zhenya":["The tone. You said it follows you. Since when?",["“Since the register. It’s my ringtone now.”","You’ve been on call for the end of the world. Do you get overtime?"],["“Since the night the sky broke. It sounds like someone asking for me.”","Then we answer together. I’ll hum it with you if it helps."]],
+"yoru>renee":["A cashier. What does a cashier even do in an apocalypse?",["“Smile at people who are about to bite me.”","Honestly impressive. Keep doing that."],["“Count. Make change. Notice who isn’t paying attention.”","Observation skills. Okay, you’re useful. Don’t let it go to your head."]],
+"yoru>rocco":["You hum when you’re scared. It’s annoying. Don’t stop.",["“I’m not scared. I’m tuning.”","Sure. Tune quieter."],["“I’m always scared. Humming helps.”","Same. I just break things. Hum louder."]],
+"renee>zhenya":["How old are you, Renée? You talk like a professor and eat like a kid.",["“Old enough to bill you for this conversation.”","Fine. I’ll pay in sketches."],["“Fourteen. Dr. Voss gave me my first soldering iron.”","Then she mattered to you. Hold onto that."]],
+"renee>yoru":["You’re the smartest person here, aren’t you?",["“Obviously. Next question.”","Honestly, a relief."],["“No. Dr. Voss was. I just read her logs.”","Then we’ll find out what she wanted."]],
+"renee>rocco":["Kid. Stay behind me.",["“Statistically, I’m safer behind a server rack.”","Fair. I’ll stand in front of the rack."],["“I’m not a kid. But thanks.”","Never said you were. I’d just rather get bitten first."]],
+"rocco>zhenya":["You don’t seem afraid.",["“I’m very afraid. I just look expensive.”","You do. Stay expensive."],["“I’ve been afraid so long it’s just my shape.”","Then we’ll make a new shape. Together."]],
+"rocco>yoru":["Thank you for earlier. With the dead one.",["“Don’t mention it. Literally.”","Got it. I’ll mention it only once. Twice."],["“Stay close. I’m not letting anyone else die today.”","That’s the nicest thing a stranger has said to me."]],
+"rocco>renee":["You smell like gasoline and bad decisions.",["“Only one of those is a decision.”","Good answer. Teach me to pick a lock?"],["“Stay on my right. Every time.”","Done. And I’ll tell you when the machine lies."]]
+};
+const IDL={zhenya:"Go on. I’ll keep watch.",yoru:"Still humming. Sorry.",renee:"I’m reading logs. Don’t talk to me. Okay, talk to me.",rocco:"Quiet in here. I hate quiet."};
+const ACTL={
+obs:{zhenya:"The sun looks like one of my paintings. I hate that I know which one.",yoru:"The tone’s higher now. Like it’s pleading.",renee:"Voss said the engine moves debt. First the virus. Now this. It’s a chain, and we’re standing in it.",rocco:"Everything turns red when we win. I don’t trust winning."},
+core:{zhenya:"That man built this place around me. I can feel it.",yoru:"Whatever you choose, I’m still humming the tune.",renee:"Three debts, doubling each time. 3, 6, 12. We’re about to be the 12.",rocco:"If he moves, I’m in front of you."}
+};
 
 /* ---------- DRAWING HELPERS ---------- */
 const rect=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x|0,y|0,w,h)};
@@ -244,7 +270,7 @@ function person(g,x,y,id,dir=1,sc=1,walk=0){
 function zomb(z){
  const g=ctx,b=Math.sin(S.t/7+z.x)*2;g.save();g.translate(z.x|0,z.y|0);g.scale(z.d||1,1);
  const R=(a,c,w,h,col)=>{g.fillStyle=col;g.fillRect(a,c,w,h)};
- R(-11,26,22,4,"rgba(0,0,0,.4)");R(-7,14,6,13+b,"#222"),R(1,14,6,13-b,"#222");
+ R(-11,26,22,4,"rgba(0,0,0,.4)");R(-7,14,6,13+b,"#222");R(1,14,6,13-b,"#222");
  R(-9,-4,18,19,"#4a4f3a");R(-9,2,8,3,"#2a1a18");R(0,8,9,4,"#2a1a18");
  R(-7,-16,14,13,"#7e9a78");R(-7,-19,14,5,"#2a2a22");R(3,-12,3,3,"#ff3030");R(-3,-12,3,3,"#ff3030");R(-3,-6,8,2,"#4a1010");
  R(8,-2,13,4,"#7e9a78");R(8,4,13,4,"#7e9a78");
@@ -262,7 +288,7 @@ radio:(x,y,w,h)=>{sl(x,y,w,h,"#3a3128");for(let i=0;i<5;i++)rect(x+8,y+8+i*7,40,
 board:(x,y,w,h)=>{sl(x,y,w,h,"#cfc8b8");for(let i=0;i<4;i++)rect(x+10,y+8+i*9,w-90,2,"#7a7466");rect(x+w-60,y+8,36,28,"#e4b95f");rect(x+w-54,y+15,24,2,"#7a5a10")},
 server:(x,y,w,h)=>{sl(x,y,w,h,"#232a33");for(let i=0;i<4;i++){rect(x+8,y+10+i*14,w-16,9,"#10151b");rect(x+w-20,y+12+i*14,5,5,((S.t/14+i)|0)%2?"#65b8b0":"#d56b79")}},
 term:(x,y,w,h)=>{sl(x,y+34,w,h-34,"#2a313a");sl(x+14,y,w-28,40,"#0f1a1a");rect(x+20,y+6,w-40,28,"#2a8a80");for(let i=0;i<3;i++)rect(x+26,y+11+i*8,w-56,2,"#bff")},
-cal:(x,y,w,h)=>{sl(x+50,y+2,100,h-4,"#e8dcc0");for(let i=0;i<4;i++)rect(x+56,y+12+i*8,88,1,"#8a7a68");rect(x+108,y+22,16,10,"#c2352f"),rect(x+50,y+2,100,6,"#a84a3a")},
+cal:(x,y,w,h)=>{sl(x+50,y+2,100,h-4,"#e8dcc0");for(let i=0;i<4;i++)rect(x+56,y+12+i*8,88,1,"#8a7a68");rect(x+108,y+22,16,10,"#c2352f");rect(x+50,y+2,100,6,"#a84a3a")},
 clock:(x,y,w,h)=>{disc(x+w/2,y+h/2,22,"#d8cdb0");ring(x+w/2,y+h/2,22,"#2a2a2a",3);rect(x+w/2-15,y+h/2-1,15,3,"#111");rect(x+w/2-1,y+h/2-14,3,14,"#111")},
 locker:(x,y,w,h)=>{sl(x,y,w,h,"#3a4a55");rect(x+w/2,y+4,2,h-8,"#0008");rect(x+w-26,y+30,18,24,"#111");for(let i=0;i<6;i++)rect(x+w-24+(i%3)*6,y+33+((i/3)|0)*10,4,6,"#e4b95f")},
 car:(x,y,w,h)=>{sl(x,y+16,w,h-16,"#2b2a35");sl(x+30,y,w-60,30,"#3a4a60");rect(x+8,y+h-6,22,10,"#080808");rect(x+w-30,y+h-6,22,10,"#080808");rect(x+w-8,y+30,8,8,"#c2352f")},
@@ -293,6 +319,8 @@ function furn(f){
 /* ---------- WORLD ---------- */
 const R=()=>ROOMS[S.room],myName=()=>CH[S.sel].n;
 const near=(f,e=55)=>P.x>f[0]-e&&P.x<f[0]+f[2]+e&&P.y+10>f[1]-e&&P.y+10<f[1]+f[3]+e;
+function npcs(){const r=R();if(!r||!r.team)return[];const ids=["zhenya","yoru","renee","rocco"].filter(x=>x!==S.sel);return r.team.map((p,i)=>({id:ids[i],x:p[0],y:p[1]}))}
+function nearNpc(){return npcs().find(n=>Math.hypot(P.x-n.x,P.y-n.y)<70)}
 function blocked(x,y){const bx=x-9,by=y+8;for(const f of R().f){if(f[1]+f[3]<=150)continue;if(bx<f[0]+f[2]&&bx+18>f[0]&&by<f[1]+f[3]&&by+18>f[1])return true}return false}
 function startRoom(id){
  S.room=id;const r=R();P.x=r.spawn[0];P.y=r.spawn[1];
@@ -301,17 +329,19 @@ function startRoom(id){
  amb=[];for(let i=0;i<70;i++)amb.push({x:rn()*W,y:rn()*H,vx:(rn()-.5)*.4,vy:.2+rn()*.6,s:1+rn()*2});
  updateUI();
 }
+const ready=()=>{const r=R();return !!r&&S.room!=="core"&&r.ids.every(i=>clues.has(i))&&(S.room!=="bunker"||talked.size>=3)};
 function updateUI(){
  const r=R();if(!r)return;
  $("chapter").textContent=`ACT ${["","I","II","III"][r.stage]} · ${r.name}`;
  $("clues").textContent=`CLUES ${clues.size}/12`;
- $("objective").textContent=r.obj;
+ let o=r.obj;
+ if(S.room==="bunker"){const left=3-talked.size,cl=r.ids.filter(i=>!clues.has(i)).length;o=(left?`Talk to your teammates (${left} left). `:"")+(cl?`Inspect the clues (${cl} left).`:"")||"Everything done. Take the exit arrow and undo the dead."}
+ $("objective").textContent=o;
  const rd=ready();$("nextArrow").style.display=rd?"block":"none";$("nextArrowLabel").style.display=rd?"block":"none";
 }
-const ready=()=>{const r=R();return !!r&&S.room!=="core"&&r.ids.every(i=>clues.has(i))};
 function addClue(id){
  if(clues.has(id))return;clues.add(id);clueLog.push(id);
- const r=R();for(let i=0;i<20;i++)amb.push({x:P.x,y:P.y,vx:(Math.random()-.5)*4,vy:-Math.random()*3,s:3,life:40,c:"#e4b95f"});
+ for(let i=0;i<20;i++)amb.push({x:P.x,y:P.y,vx:(Math.random()-.5)*4,vy:-Math.random()*3,s:3,life:40,c:"#e4b95f"});
  updateUI();
 }
 function drawRoom(){
@@ -327,7 +357,12 @@ function drawRoom(){
  rect(0,500,W,140,"#07060a");rect(0,500,W,3,T.a+"44");
  const D=[];
  r.f.forEach(f=>D.push([f[1]+f[3],()=>furn(f)]));
- (r.team||[]).forEach((p,i)=>{const ids=["zhenya","yoru","renee","rocco"].filter(x=>x!==S.sel);const id=ids[i];D.push([p[1]+28,()=>person(ctx,p[0],p[1]+Math.sin(S.t/30+i)*1.5,id,p[0]<500?1:-1,CH[id].sc,0)])});
+ npcs().forEach((n,i)=>D.push([n.y+28,()=>{
+  person(ctx,n.x,n.y+Math.sin(S.t/30+i)*1.5,n.id,n.x<500?1:-1,CH[n.id].sc,0);
+  const b=Math.sin(S.t/10)*3;
+  if(S.room==="bunker"&&!talked.has(n.id))txt("…",n.x,n.y-38+b,18,"#e4b95f","center");
+  if(Math.hypot(P.x-n.x,P.y-n.y)<70)txt("[E] TALK",n.x,n.y-52,11,"#fff","center");
+ }]));
  if(S.room==="core")D.push([458,()=>person(ctx,820,430,"lev",-1,1.05,0)]);
  Z.forEach(z=>D.push([z.y+28,()=>zomb(z)]));
  D.push([P.y+28,()=>person(ctx,P.x,P.y,S.sel,P.dir,CH[S.sel].sc,P.mv?P.w:0)]);
@@ -341,6 +376,7 @@ function atmos(){
  lx.globalCompositeOperation="destination-out";
  light(P.x,P.y+5,st===1?190:270,1);
  R().f.forEach(f=>{if(f[5]&&!clues.has(f[5]))light(f[0]+f[2]/2,f[1]+f[3]/2,95,.75)});
+ npcs().forEach(n=>light(n.x,n.y,70,.6));
  if(S.room==="core")light(820,430,130,.7);
  lx.globalCompositeOperation="source-over";ctx.drawImage(LC,0,0);
  if(st===1){ctx.fillStyle=`rgba(150,15,25,${.05+.04*Math.sin(S.t/20)})`;ctx.fillRect(0,0,W,H)}
@@ -389,9 +425,22 @@ function flash(cb){const f=$("flash");f.style.display="block";requestAnimationFr
 
 /* ---------- INTERACTION ---------- */
 function nearHS(){for(const f of R().f)if(f[5]&&near(f))return f;return null}
+function markTalk(id){talked.add(id);updateUI()}
+function talkTo(n){
+ const c=CH[n.id];
+ if(S.room==="bunker"){
+  if(talked.has(n.id))return say(c.n,IDL[n.id]);
+  const cv=CV[S.sel+">"+n.id];
+  say(c.n,cv[0],[
+   {label:cv[1][0],action:()=>say(c.n,cv[1][1],null,()=>markTalk(n.id))},
+   {label:cv[2][0],action:()=>say(c.n,cv[2][1],null,()=>markTalk(n.id))}
+  ]);
+ }else say(c.n,ACTL[S.room][n.id]);
+}
 function interact(){
  if(S.state!=="play"||S.dlg||S.modal)return;
  if(S.room==="core"&&near([820,430,0,0],120))return confront();
+ const n=nearNpc();if(n)return talkTo(n);
  const f=nearHS();if(!f)return;
  const id=f[5],h=HS[id];
  if(clues.has(id))return say(h.s,h.t);
@@ -403,13 +452,18 @@ function look(){
  let best=null,bd=1e9;R().f.forEach(f=>{if(f[5]&&!clues.has(f[5])){const d=Math.hypot(P.x-f[0]-f[2]/2,P.y-f[1]-f[3]/2);if(d<bd){bd=d;best=f}}});
  const pre={zhenya:"You trace the room with your eyes, the way you’d trace a sketch. ",yoru:"You go still and listen. ",renee:"You scan the room like a system. ",rocco:"You case the place like a job. "}[S.sel];
  if(S.sel==="zhenya")S.glow=360;
- if(!best)return say("@",pre+"There is nothing left to find here."+(ready()?" Take the exit arrow.":""));
+ if(!best){
+  if(S.room==="bunker"&&talked.size<3)return say("@",pre+"All clues are found. Now talk to your teammates (the … above them).");
+  if(S.room==="core")return say("@",pre+"Nothing left to inspect. Talk to Lev when you’re ready.");
+  return say("@",pre+"There is nothing left to find here."+(ready()?" Take the exit arrow.":""));
+ }
  say("@",pre+HS[best[5]].h);
 }
-function useJournalText(id){return HS[id]}
+function addStory(t){story.push(t)}
 function openJournal(){
  S.modal=true;$("journal").style.display="flex";
- $("jBody").innerHTML=clueLog.length?clueLog.map(id=>`<div class="jl"><b>${HS[id].n}</b><br>${HS[id].t}</div>`).join(""):"<p>Nothing yet.</p>";
+ const st=story.length?`<div class="story"><b>THE STORY SO FAR</b><br>${story.join("<br>")}</div>`:"";
+ $("jBody").innerHTML=st+(clueLog.length?clueLog.map(id=>`<div class="jl"><b>${HS[id].n}</b><br>${HS[id].t}</div>`).join(""):"<p>No clues yet.</p>");
 }
 function closeJournal(){S.modal=false;$("journal").style.display="none"}
 
@@ -452,15 +506,16 @@ function nextRoom(){
  if(S.state!=="play"||S.dlg||S.modal||!ready())return;
  const id=S.room;
  if(R().stage===1&&id!=="bunker"){startRoom("bunker");talk([["SYSTEM","The tone leads you down a service stairwell. A steel door opens before you touch it. BUNKER 9."]].concat(BUN))}
- else if(id==="bunker")flash(()=>talk(UNDO1,()=>startRoom("obs")));
- else if(id==="obs")flash(()=>talk(UNDO2,()=>{startRoom("core");talk(COREIN)}));
+ else if(id==="bunker")talk(PRE1,()=>flash(()=>{addStory("<b>UNDO #1</b> (the dead lie down) → the debt moved into the <b>SUN</b>.");startRoom("obs");talk(UNDO1)}));
+ else if(id==="obs")talk(PRE2,()=>flash(()=>{addStory("<b>UNDO #2</b> (the sun settles) → the debt tore the <b>SEAMS</b> between universes: two skylines.");startRoom("core");talk(UNDO2.concat(COREIN))}));
 }
 function confront(){
  if(!R().ids.every(i=>clues.has(i)))return say("LEV","Not yet. You still don’t understand what you’re about to decide. Look around.");
  const T=[
-  {k:"t1",label:"Why did you do this?",txt:"Her name was Anika Voss. She taught me everything, and she died in a coolant fire I could have prevented. Test 0 undid one night. One. But the engine doesn’t erase debt, it moves it. Her fire became a virus. The virus became a sun. The sun became that.\n\n(He points at the double skyline.)"},
-  {k:"t2",label:"The Chosen One?",txt:"A story. Fear needs a hero to hope for. The truth is that closing the loop takes four witnesses: a picture, a tone, a code, a key. That’s you four. Every undo needs a witness to remember it, so I made sure you survived, and I made sure the bunker called you."},
-  {k:"t3",label:"Why didn’t you stop?",txt:"Closing the loop sends everything back to the night Anika dies. Every undo you gave me was another night with her. I’m not the villain of a story where I’m allowed to stop."}
+  {k:"t1",label:"What is the machine?",txt:"An undo button with a bill. It never deletes a disaster, it moves it. Test 0 undid one night: the night Anika Voss, my mentor, died in a lab fire. The fire’s debt became the virus. Your Undo #1 moved it into the sun. Undo #2 moved it into the seams. That’s the whole chain."},
+  {k:"t2",label:"Why us?",txt:"An undo only sticks if someone remembers it. Four witnesses: a picture (Zhenya), a tone (Yoru), a code (Renée), a key (Rocco). You were all within a block of the lab on the night of Test 0, so the engine tagged you. I called you here with the tone."},
+  {k:"t3",label:"Why doesn’t Zhenya remember you?",txt:"She would have stopped me. So I paid for my first edit with her memory. I asked the engine to take me out of her head. It left the drawings."},
+  {k:"t4",label:"Why not stop?",txt:"Every undo sends me back to the night she is alive. One more night. That’s all it ever was."}
  ];
  const menu=()=>{
   const all=T.every(t=>flags[t.k]);
@@ -472,7 +527,7 @@ function confront(){
 }
 function decide(){
  const n=clues.size;
- say("LEV","Four witnesses. One seat. One machine. What do you do?",[
+ say("LEV","Undo #3 is yours. Close the loop for good, hold it open yourself, or let me do it one more time.",[
   {label:"CLOSE THE LOOP"+(n<12?" (needs all 12 clues)":""),locked:n<12,action:()=>ending("close")},
   {label:"TAKE THE ANCHOR SEAT"+(n<8?" (needs 8 clues)":""),locked:n<8,action:()=>ending("anchor")},
   {label:"UNDO ONE MORE TIME",action:()=>ending("again")}
@@ -482,8 +537,8 @@ function ending(type){
  S.state="end";$("ending").style.display="flex";closeD();
  const N=myName();let title,body;
  if(type==="close"){title="ENDING · THE NIGHT SHE DIES, FACED";body=`Four witnesses. A picture, a tone, a code, a key.\n\nZhenya lays her last drawing on the console. Yoru hums four notes. Renée types the passphrase. Rocco turns the key.\n\nLev doesn’t stop them. He sits in the anchor seat and says one thing: “Tell her I was there.”\n\nThe engine closes the loop. No outbreak. No swollen sun. No second skyline. Voss’s fire burns the way it always did, and it takes her, and the world goes on.\n\nSomewhere, a cashier hears four notes from a register that has printed nothing, and looks up to see three strangers on the sidewalk who somehow already know his name.\n\nThey remember. Nobody else will.\nIt’s enough to start a friendship with.`}
- else if(type==="anchor"){title="ENDING · THE SEAT THAT HOLDS";body=`${N} takes the anchor seat.\n\nLev lied about needing four. He needs one person who remembers everything and will not look away. The seams tighten around ${N}’s memory like stitches.\n\nThe others stay as long as the walls allow. Renée swears she can write a patch. Rocco swears he’ll find another way. Yoru stays by the door, humming four notes, so ${N} can find the way back to the tune.\n\nThe sky is one color again. Not everything is saved. But the world is no longer spent to pay for one night.\n\nLev watches from the doorway. For the first time he looks like someone who is waiting for a sentence.`}
- else{title="ENDING · LOOP FOUR";body=`Lev smiles with relief. The engine hums. The seams stitch themselves shut.\n\nFor one second you remember a bunker, a name, a friend.\n\nThen nothing.\n\nA cashier hears four notes from a register. A girl draws a machine she has never seen. A prodigy finds a log that was edited after the author died. A courier finds a crate he never delivered.\n\nSomewhere, a man writes in a ledger: “Loop four cost 12.”\n\nNext time, look closer.`}
+ else if(type==="anchor"){title="ENDING · THE SEAT THAT HOLDS";body=`${N} takes the anchor seat.\n\nThe engine accepts a single anchor, if that person remembers everything and never looks away. The seams tighten around ${N}’s memory like stitches.\n\nThe others stay as long as the walls allow. Renée swears she can write a patch. Rocco swears he’ll find another way. Yoru stays by the door, humming four notes, so ${N} can find the way back to the tune.\n\nThe sky is one color again. Not everything is saved. But the world is no longer spent to pay for one night.\n\nLev watches from the doorway. For the first time he looks like someone who is waiting for a sentence.`}
+ else{title="ENDING · LOOP FOUR";body=`Lev smiles with relief. The engine hums. The seams stitch themselves shut.\n\nFor one second you remember a bunker, a name, a friend.\n\nThen nothing.\n\nA cashier hears four notes from a register. A girl draws a machine she has never seen. A prodigy finds a log that was edited after the author died. A courier finds a crate he never delivered.\n\nSomewhere, a man writes in a ledger: “Loop four cost 12.”\n\nNext time, LOOK closer.`}
  $("ending").innerHTML=`<div style="margin:auto;max-width:700px;padding:30px 20px"><div style="color:#e4b95f;letter-spacing:2px">${title}</div><h1 class="glt" data-t="UNDOEND" style="font-size:44px;margin:12px auto;display:inline-block">UNDOEND</h1><p class="sub" style="white-space:pre-line;margin:10px auto 24px;text-align:left">${body}</p><p style="color:#8e7a80;font-size:12px">CLUES FOUND: ${clues.size}/12</p><button class="primary" onclick="location.reload()">↻ PLAY AGAIN</button></div>`;
 }
 
@@ -503,7 +558,8 @@ function buildRoster(){
 }
 function choose(id){
  S.sel=id;$("select").style.display="none";S.state="play";startRoom(CH[id].route);
- talk(INTRO[id].concat([["SYSTEM","ACT I · THE DEAD. Find a way into Bunker 9. E inspects, SPACE looks, J opens your journal."]]));
+ addStory("<b>TEST 0</b>: Lev’s engine undid one night. The engine never erases a disaster, it <b>MOVES</b> it. → The debt became the <b>VIRUS</b> (the dead).");
+ talk(PREMISE.concat(INTRO[id],[["SYSTEM","ACT I · THE DEAD. Find a way into Bunker 9. E inspects ◆ clues, SPACE looks for hints, J opens your journal."]]));
 }
 $("start").onclick=()=>{$("title").style.display="none";$("select").style.display="flex";S.state="select";buildRoster()};
 $("howBtn").onclick=()=>{const h=$("how");h.style.display=h.style.display==="block"?"none":"block"};
@@ -556,8 +612,8 @@ function titleFrame(){
  g.fillStyle="#050206";g.fillRect(0,480,W,160);
  g.fillRect(0,468,W,14);for(let i=0;i<14;i++)g.fillRect(i*74+(i%3)*10,462-(i%4)*6,30+(i%3)*14,12);
  g.fillStyle="#000";
- const fig=(x,y,s,sw)=>{g.fillRect(x-5*s,y-30*s,10*s,18*s);g.fillRect(x-4*s,y-44*s,8*s,10*s);g.fillRect(x-4*s,y-12*s,3*s,12*s);g.fillRect(x+1*s,y-12*s,3*s,12*s);g.fillRect(x-9*s,y-34*s,5*s,14*s)};
- fig(330,520,2,0);fig(392,524,1.6,0);
+ const fig=(x,y,s)=>{g.fillRect(x-5*s,y-30*s,10*s,18*s);g.fillRect(x-4*s,y-44*s,8*s,10*s);g.fillRect(x-4*s,y-12*s,3*s,12*s);g.fillRect(x+1*s,y-12*s,3*s,12*s);g.fillRect(x-9*s,y-34*s,5*s,14*s)};
+ fig(330,520,2);fig(392,524,1.6);
  for(let i=0;i<5;i++){const zx=640+i*52+Math.sin(t/30+i)*6;g.fillRect(zx-5,452,10,18);g.fillRect(zx-4,440,8,10);g.fillRect(zx+4,448,12,3)}
  g.fillRect(790,250,4,230);g.fillRect(760,290,64,3);g.fillRect(770,330,44,3);
  if(Math.sin(t/20)>0){g.fillStyle="#ff3030";g.fillRect(790,244,6,6)}
