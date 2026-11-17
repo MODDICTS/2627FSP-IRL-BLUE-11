@@ -2,33 +2,31 @@
 <html lang="id" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fluida Dinamis — Laboratorium Interaktif</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--fluid:#1aa6bd;--bg:#f3f8f8;--card:#fff;--ink:#0d2b33;--mut:#4d6a72;--line:#d3e2e4;--soft:#e6f2f3;--panel:#e9f4f6;--acc:#0b8296;--amb:#f6a53b;--ok:#1f9d63;--bad:#d6483d}
-[data-theme=dark]{--bg:#06161c;--card:#0d2631;--ink:#e6f3f4;--mut:#9ab8bf;--line:#1b3f4c;--soft:#10303c;--panel:#08202a;--acc:#35c6d9}
+:root{--fluid:#0e7f93;--bg:#b9cfd3;--card:#dbe8ea;--ink:#041217;--mut:#34535b;--line:#8fadb4;--soft:#c5d9dc;--panel:#a9c6cc;--acc:#06596b;--amb:#d98a1c;--ok:#157a4b;--bad:#b3352c}
+[data-theme=dark]{--bg:#020a0e;--card:#071820;--ink:#dcecee;--mut:#8fb0b8;--line:#15353f;--soft:#0b2530;--panel:#04131a;--acc:#2fb5c8;--fluid:#1596ac}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:70px}
 body{font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
 .wrap{width:min(1080px,calc(100% - 32px));margin:0 auto}
 h1,h2,h3,.big{font-family:Fraunces,Georgia,serif}
 :focus-visible{outline:2px solid var(--amb);outline-offset:2px}
-
 .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:58px}
 .logo{display:flex;gap:8px;align-items:center;font:700 19px Fraunces,Georgia,serif;color:var(--ink);text-decoration:none;white-space:nowrap}
 .nav nav{display:flex;gap:2px;overflow-x:auto}
 .nav nav a{padding:6px 11px;border-radius:99px;color:var(--mut);text-decoration:none;font-size:13.5px;white-space:nowrap}
 .nav nav a:hover,.nav nav a.on{background:var(--soft);color:var(--ink)}
-
-.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(165deg,#052a35,#0a6176 70%,#0f8aa0)}
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(165deg,#021219,#053d4d 70%,#085a6c)}
 .hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:36px;align-items:center;padding:60px 0 100px}
 .eyebrow{font-size:13.5px;color:#7de7f2;font-weight:600}
 .hero h1{font:700 clamp(34px,5.4vw,56px)/1.08 Fraunces,Georgia,serif;margin:12px 0 16px}
 .lead{color:var(--mut);max-width:62ch}
-.hero .lead{color:#cbe9ee;max-width:52ch}
+.hero .lead{color:#bcdde3;max-width:52ch}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 18px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chips a{padding:5px 14px;border:1px solid rgba(255,255,255,.3);border-radius:99px;color:#e2f6f8;font-size:13px;text-decoration:none}
@@ -41,8 +39,7 @@ h1,h2,h3,.big{font-family:Fraunces,Georgia,serif}
 .btn.sm{padding:7px 12px;font-size:13px;width:100%}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .hero .btn{color:#fff;border-color:rgba(255,255,255,.6)}.hero .btn.pri{color:#1d1300;border-color:var(--amb)}
-
-.kust{background:var(--card);color:var(--ink);border-radius:18px;padding:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+.kust{background:var(--card);color:var(--ink);border-radius:18px;padding:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
 .kust h3{font-size:20px;display:flex;align-items:center;gap:10px;margin-bottom:4px}
 .kust small{color:var(--mut);display:block;margin-bottom:14px}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -51,10 +48,9 @@ h1,h2,h3,.big{font-family:Fraunces,Georgia,serif}
 #cpick{width:34px;height:28px;border:0;background:none;padding:0;cursor:pointer}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden}
 .seg button{border:0;background:none;padding:6px 14px;cursor:pointer;color:var(--ink);font:inherit;font-size:14px}
-.seg button.on{background:var(--acc);color:var(--bg)}
+.seg button.on{background:var(--acc);color:var(--card)}
 input[type=range]{width:100%;accent-color:var(--acc)}
 .fl{fill:var(--fluid)}
-
 .st{padding:56px 0 20px;border-top:1px solid var(--line)}
 #s1{border-top:0}
 .st h2{font-size:clamp(26px,4vw,36px);display:flex;gap:12px;align-items:baseline}
@@ -70,41 +66,39 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .stat b{font:700 21px Fraunces,serif}
 .msg{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:14.5px}
 .msg.good{border-color:var(--ok)}
-
-.pipe{fill:var(--fluid);fill-opacity:.28;stroke:var(--mut);stroke-width:3;stroke-linejoin:round}
+.pipe{fill:var(--fluid);fill-opacity:.35;stroke:var(--mut);stroke-width:3;stroke-linejoin:round}
 .pt{fill:var(--fluid);stroke:var(--card);stroke-width:1}
 .stem{stroke:var(--mut);stroke-width:3}.bl{fill:var(--acc)}.hub{fill:var(--ink)}
 .lamp{fill:var(--card);stroke:var(--mut);stroke-width:2;transition:fill .3s}
 .lamp.on{fill:#ffd34d;stroke:#e0a400;filter:drop-shadow(0 0 8px #ffd34d)}
 .lbl{font:12.5px Inter,sans-serif;fill:var(--mut)}.nolabel .lbl{display:none}
 .tube{fill:var(--card);stroke:var(--mut);stroke-width:2}
-.liq{fill:var(--fluid);fill-opacity:.7}
+.liq{fill:var(--fluid);fill-opacity:.75}
 .ref{stroke:var(--mut);stroke-dasharray:4 5;stroke-width:1}
 .ground{stroke:var(--mut);stroke-width:3}
 .tank{fill:none;stroke:var(--mut);stroke-width:3}
-.water{fill:var(--fluid);fill-opacity:.3}
+.water{fill:var(--fluid);fill-opacity:.35}
 .jet{fill:none;stroke:var(--fluid);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
 .jet2{fill:none;stroke:#fff;stroke-opacity:.7;stroke-width:2;stroke-dasharray:3 11;stroke-linecap:round}
 .ball{fill:var(--ink);stroke:var(--card);stroke-width:2}
 .tubes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .tcard{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
-
 .quiz{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
 .qh{display:flex;justify-content:space-between;color:var(--mut);font-size:14px}
 .qt{font-size:21px;margin:8px 0 6px}
+.qk{font-size:13px;font-weight:600;color:var(--acc);margin-bottom:2px}
 .q-opt{display:block;width:100%;text-align:left;padding:12px 14px;margin-top:8px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
 .q-opt:hover:not(:disabled){border-color:var(--acc)}
-.q-opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--card))}
-.q-opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,var(--card))}
+.q-opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card))}
+.q-opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,var(--card))}
 .why{margin:12px 0;font-size:14.5px;color:var(--mut)}
 .mt{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .col{display:flex;flex-direction:column;gap:10px}
 .col button{padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
-.col button.sel{border-color:var(--amb);box-shadow:0 0 0 3px rgba(246,165,59,.3)}
-.col button.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--card));cursor:default}
+.col button.sel{border-color:var(--amb);box-shadow:0 0 0 3px rgba(217,138,28,.35)}
+.col button.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card));cursor:default}
 .shake{animation:sh .4s}
 @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
 .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .res .stat{text-align:center;padding:16px 10px}.res .stat b{font-size:26px;color:var(--acc);display:block}
 .bar{height:12px;background:var(--soft);border-radius:99px;overflow:hidden;margin:18px 0 8px}
@@ -115,7 +109,6 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
 </style>
 </head>
 <body>
-
 <header class="top"><div class="wrap nav">
   <a class="logo" href="#atas"><svg width="22" height="22" viewBox="0 0 60 60"><path d="M30 6C30 6 12 28 12 38a18 18 0 0 0 36 0C48 28 30 6 30 6z" fill="none" stroke="var(--acc)" stroke-width="4"/></svg><span>Fluida Dinamis</span></a>
   <nav><a href="#s1">1 Kontinuitas</a><a href="#s2">2 Bernoulli</a><a href="#s3">3 Torricelli</a><a href="#s4">4 Viskositas</a><a href="#s5">5 Cocokkan</a><a href="#hasil">Hasil</a></nav>
@@ -126,7 +119,7 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     <div>
       <div class="eyebrow">Laboratorium fisika interaktif · 5 stasiun</div>
       <h1>Rasakan cara fluida bergerak, bukan cuma menghafal rumusnya.</h1>
-      <p class="lead">Lima permainan singkat menuntunmu memahami kontinuitas, hukum Bernoulli, teorema Torricelli, viskositas, hingga penerapannya di kehidupan sehari-hari. Semua lewat simulasi yang bisa kamu utak-atik langsung.</p>
+      <p class="lead">Lima stasiun singkat menuntunmu memahami kontinuitas, hukum Bernoulli, teorema Torricelli, viskositas, hingga penerapannya sehari-hari. Setiap stasiun punya simulasi untuk diutak-atik dan kuis untuk menguji pemahamanmu.</p>
       <div class="cta"><a class="btn pri" href="#s1">Mulai dari Stasiun 1</a><a class="btn" href="#hasil">Lihat papan skor</a></div>
       <div class="chips"><a href="#s1">Kontinuitas</a><a href="#s2">Bernoulli</a><a href="#s3">Torricelli</a><a href="#s4">Viskositas</a><a href="#s5">Cocokkan Konsep</a></div>
     </div>
@@ -134,8 +127,8 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
       <h3><svg width="30" height="30" viewBox="0 0 60 60"><path class="fl" d="M30 6C30 6 12 28 12 38a18 18 0 0 0 36 0C48 28 30 6 30 6z"/></svg>Kustomisasi gambar</h3>
       <small>Ubah tampilan semua simulasi sesuai seleramu.</small>
       <div class="row"><span>Warna cairan</span>
-        <button class="sw" data-c="#1aa6bd" aria-label="Tosca"></button><button class="sw" data-c="#3b82f6" aria-label="Biru"></button><button class="sw" data-c="#8b5cf6" aria-label="Ungu"></button><button class="sw" data-c="#ef6f91" aria-label="Merah muda"></button><button class="sw" data-c="#22b573" aria-label="Hijau"></button>
-        <input type="color" id="cpick" value="#1aa6bd" aria-label="Pilih warna sendiri"></div>
+        <button class="sw" data-c="#0e7f93" aria-label="Tosca"></button><button class="sw" data-c="#2563c9" aria-label="Biru"></button><button class="sw" data-c="#6d3fd0" aria-label="Ungu"></button><button class="sw" data-c="#c64a70" aria-label="Merah muda"></button><button class="sw" data-c="#188a58" aria-label="Hijau"></button>
+        <input type="color" id="cpick" value="#0e7f93" aria-label="Pilih warna sendiri"></div>
       <div class="row"><span>Kecepatan animasi: <b id="sspdv">1,0×</b></span><input type="range" id="sspd" min="0.2" max="2.5" step="0.1" value="1" aria-label="Kecepatan animasi" style="flex:1"></div>
       <div class="row"><span>Label gambar</span><label><input type="checkbox" id="slbl" checked> Tampilkan label</label></div>
       <div class="row"><span>Tema</span><div class="seg" id="theme"><button data-t="light" class="on">Terang</button><button data-t="dark">Gelap</button></div></div>
@@ -145,10 +138,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
 </section>
 
 <main>
-<!-- STASIUN 1 -->
 <section class="st" id="s1"><div class="wrap">
   <h2><span class="num">1</span>Kontinuitas</h2>
-  <p class="lead">Debit air yang masuk pipa harus sama dengan debit yang keluar: A₁v₁ = A₂v₂. Semakin sempit pipanya, semakin cepat airnya mengalir. Tantanganmu: atur lebar pipa sempit supaya kecepatan air tepat menyalakan turbin mini (sekitar 6 m/s).</p>
+  <p class="lead">Debit air yang masuk pipa harus sama dengan debit yang keluar: A₁v₁ = A₂v₂. Semakin sempit pipanya, semakin cepat airnya mengalir. Tantanganmu: atur lebar pipa sempit supaya kecepatan air tepat menyalakan turbin mini (sekitar 6 m/s). Setelah itu, kerjakan kuisnya.</p>
   <div class="lab">
     <div>
       <svg id="sv1" class="scene" viewBox="0 0 600 250" role="img" aria-label="Pipa dengan bagian menyempit dan turbin mini">
@@ -172,12 +164,12 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
       <div class="msg" id="m1">Geser penampangnya, lalu perhatikan bagaimana air dipercepat saat ruangnya menyempit.</div>
     </div>
   </div>
+  <div class="quiz" id="qz1"></div>
 </div></section>
 
-<!-- STASIUN 2 -->
 <section class="st" id="s2"><div class="wrap">
   <h2><span class="num">2</span>Bernoulli</h2>
-  <p class="lead">Hukum Bernoulli menghubungkan kecepatan aliran dengan tekanan: makin cepat fluida bergerak, makin rendah tekanannya. Ubah kecepatan air dan lebar leher pipa, lalu amati tinggi kolom air di ketiga tabung. Setelah itu, jawab enam soal untuk menguji pemahamanmu.</p>
+  <p class="lead">Hukum Bernoulli menghubungkan kecepatan aliran dengan tekanan: makin cepat fluida bergerak, makin rendah tekanannya. Ubah kecepatan air dan lebar leher pipa, lalu amati tinggi kolom air di ketiga tabung. Setelah itu, jawab lima soal untuk menguji pemahamanmu.</p>
   <div class="lab">
     <div>
       <svg id="sv2" class="scene" viewBox="0 0 600 290" role="img" aria-label="Pipa venturi dengan tiga tabung pengukur tekanan">
@@ -203,10 +195,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="quiz" id="qz"></div>
 </div></section>
 
-<!-- STASIUN 3 -->
 <section class="st" id="s3"><div class="wrap">
   <h2><span class="num">3</span>Torricelli</h2>
-  <p class="lead">Sebuah tangki air dibocorkan di satu titik (tangki dianggap terus terisi penuh). Semakin dalam lubangnya, semakin kencang semburannya, tetapi semakin sedikit waktu jatuhnya sebelum menyentuh tanah. Cari posisi lubang yang membuat air menyembur paling jauh.</p>
+  <p class="lead">Sebuah tangki air dibocorkan di satu titik (tangki dianggap terus terisi penuh). Semakin dalam lubangnya, semakin kencang semburannya, tetapi semakin sedikit waktu jatuhnya sebelum menyentuh tanah. Cari posisi lubang yang membuat air menyembur paling jauh, lalu kerjakan kuisnya.</p>
   <div class="lab">
     <div>
       <svg id="sv3" class="scene" viewBox="0 0 600 275" role="img" aria-label="Tangki air dengan lubang dan lintasan semburan">
@@ -234,12 +225,12 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
       <div><button class="btn" id="opt">Tampilkan posisi optimal</button></div>
     </div>
   </div>
+  <div class="quiz" id="qz3"></div>
 </div></section>
 
-<!-- STASIUN 4 -->
 <section class="st" id="s4"><div class="wrap">
   <h2><span class="num">4</span>Viskositas</h2>
-  <p class="lead">Sebuah kelereng kecil dijatuhkan ke tiga wadah berbeda: air, minyak goreng, dan madu. Viskositas (kekentalan) fluida menghambat gerak benda yang jatuh di dalamnya. Tebak dulu urutan tercepat ke terlambat, lalu jalankan balapannya.</p>
+  <p class="lead">Sebuah kelereng kecil dijatuhkan ke tiga wadah berbeda: air, minyak goreng, dan madu. Viskositas (kekentalan) fluida menghambat gerak benda yang jatuh di dalamnya. Tebak dulu urutan tercepat ke terlambat, jalankan balapannya, lalu kerjakan kuis.</p>
   <p class="lead" style="font-size:13px;font-style:italic">Catatan: kecepatan di sini divisualisasikan sebanding dengan viskositas tiap fluida untuk memperjelas konsepnya, bukan hasil hitungan presisi rumus Stokes.</p>
   <div class="lab" style="grid-template-columns:1fr">
     <div class="tubes" id="tubes"></div>
@@ -247,30 +238,31 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     <div class="row"><button class="btn" id="rst">Ulangi tebakan</button><button class="btn pri" id="go" disabled>Mulai Balapan</button></div>
     <div class="msg" id="m4">Klik tombol di bawah ketiga wadah sesuai urutan tebakanmu, dari yang menurutmu paling cepat sampai paling lambat.</div>
   </div>
+  <div class="quiz" id="qz4"></div>
 </div></section>
 
-<!-- STASIUN 5 -->
 <section class="st" id="s5"><div class="wrap">
   <h2><span class="num">5</span>Cocokkan Konsep</h2>
-  <p class="lead">Pilih satu fenomena di kolom kiri, lalu pilih penjelasan yang tepat di kolom kanan. Cocokkan semua pasangannya untuk menyelesaikan stasiun ini.</p>
+  <p class="lead">Pilih satu fenomena di kolom kiri, lalu pilih penjelasan yang tepat di kolom kanan. Cocokkan semua pasangannya, lalu tutup dengan kuis akhir.</p>
   <div class="quiz"><div class="mt"><div class="col" id="ml"></div><div class="col" id="mr"></div></div>
   <div class="msg" id="mmsg" style="margin-top:14px">0 dari 5 pasangan cocok.</div></div>
+  <div class="quiz" id="qz5"></div>
 </div></section>
 
-<!-- HASIL -->
 <section class="st" id="hasil"><div class="wrap">
   <h2><span class="num">★</span>Hasil</h2>
   <p class="lead">Ringkasan hasil dari kelima stasiun. Selesaikan semuanya untuk melihat predikatmu.</p>
   <div class="quiz">
     <div class="res">
       <div class="stat"><b id="rk">Belum</b><small>1. Kontinuitas</small></div>
-      <div class="stat"><b id="rb">0 / 6</b><small>2. Kuis Bernoulli</small></div>
+      <div class="stat"><b id="rb">0 / 5</b><small>2. Kuis Bernoulli</small></div>
       <div class="stat"><b id="rt">0%</b><small>3. Torricelli (jarak terbaik)</small></div>
       <div class="stat"><b id="rv">Belum</b><small>4. Tebakan viskositas</small></div>
       <div class="stat"><b id="rm">0 / 5</b><small>5. Pasangan konsep</small></div>
+      <div class="stat"><b id="rq">0 / 12</b><small>Kuis stasiun 1, 3, 4, 5</small></div>
     </div>
     <div class="bar"><i id="rbar"></i></div>
-    <p><b class="big" id="pts" style="font-size:22px">0 / 16 poin</b> · Predikat: <b id="pred">Belum mulai</b></p>
+    <p><b class="big" id="pts" style="font-size:22px">0 / 27 poin</b> · Predikat: <b id="pred">Belum mulai</b></p>
     <div style="margin-top:14px"><button class="btn" onclick="location.reload()">Ulangi semua</button></div>
   </div>
 </div></section>
@@ -285,10 +277,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   var NS = 'http://www.w3.org/2000/svg', G = 9.8, W = 600;
   function el(n, a, p) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
   function f(n, d) { return n.toFixed(d).replace('.', ','); }
-  var S = { speed: 1, k: false, b: 0, tr: 0, v: null, m: 0 };
+  var S = { speed: 1, k: false, b: 0, tr: 0, v: null, m: 0, q: { 1: 0, 3: 0, 4: 0, 5: 0 } };
   if (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) S.speed = 0.3;
 
-  /* ===== KUSTOMISASI ===== */
   function setColor(c) { document.documentElement.style.setProperty('--fluid', c); $('#cpick').value = c; }
   $$('.sw').forEach(function (b) { b.style.background = b.dataset.c; b.onclick = function () { setColor(b.dataset.c); }; });
   $('#cpick').oninput = function () { setColor(this.value); };
@@ -303,7 +294,6 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     };
   });
 
-  /* ===== PIPA & PARTIKEL ===== */
   function lh(x, H, h) {
     if (x <= 180 || x >= 420) return H;
     if (x < 220) return H + (h - H) * (x - 180) / 40;
@@ -329,7 +319,7 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     });
   }
 
-  /* ===== STASIUN 1: KONTINUITAS ===== */
+  /* STASIUN 1 */
   var p1 = mkP($('#pt1'), 22), s1 = { f: 1, ang: 0 }, r1 = $('#r1');
   function u1() {
     s1.f = r1.value / 100;
@@ -349,12 +339,12 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   }
   r1.oninput = u1; u1();
 
-  /* ===== STASIUN 2: BERNOULLI ===== */
+  /* STASIUN 2 */
   var p2 = mkP($('#pt2'), 22), s2 = { v: 1.5, r: 0.5 }, r2 = $('#r2'), r3 = $('#r3');
   function u2() {
     s2.v = r2.value / 10; s2.r = r3.value / 100;
     var h = 100 * s2.r, v2 = s2.v / s2.r;
-    var dp = 0.5 * 1000 * (v2 * v2 - s2.v * s2.v) / 1000;          // kPa
+    var dp = 0.5 * 1000 * (v2 * v2 - s2.v * s2.v) / 1000;
     var ttop = 215 - h / 2, level = Math.min(70 + dp / G * 60, ttop - 8);
     $('#p2').setAttribute('d', pipePath(215, 100, h));
     $('#tb1').setAttribute('height', ttop - 30);
@@ -364,12 +354,12 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   }
   r2.oninput = u2; r3.oninput = u2; u2();
 
-  /* ===== KUIS (dipakai Bernoulli) ===== */
-  function quiz(box, qs, onScore) {
+  /* KUIS GENERIK */
+  function quiz(box, qs, onScore, title) {
     var i = 0, score = 0;
     function show() {
       var q = qs[i];
-      box.innerHTML = '<div class="qh"><span>Soal ' + (i + 1) + ' / ' + qs.length + '</span><span>Skor: ' + score + ' / ' + qs.length + '</span></div><h3 class="qt"></h3><div class="opts"></div><div class="qf"></div>';
+      box.innerHTML = '<div class="qk">' + (title || 'Kuis') + '</div><div class="qh"><span>Soal ' + (i + 1) + ' / ' + qs.length + '</span><span>Skor: ' + score + ' / ' + qs.length + '</span></div><h3 class="qt"></h3><div class="opts"></div><div class="qf"></div>';
       box.querySelector('.qt').textContent = q.q;
       var o = box.querySelector('.opts'), idx = q.o.map(function (_, k) { return k; }).sort(function () { return Math.random() - 0.5; }), btns = [], right = null;
       idx.forEach(function (orig) {
@@ -390,23 +380,30 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
       });
     }
     function end() {
-      var t = score === qs.length ? 'Sempurna! Kamu menguasai Bernoulli.' : (score >= 4 ? 'Bagus! Pemahamanmu sudah kuat.' : 'Coba lagi, perhatikan hubungan kecepatan dan tekanan.');
-      box.innerHTML = '<h3 class="qt">Skor akhir: ' + score + ' / ' + qs.length + '</h3><p class="why">' + t + '</p><button class="btn" id="qre">Ulangi kuis</button>';
-      $('#qre').onclick = function () { i = 0; score = 0; show(); };
+      var t = score === qs.length ? 'Sempurna! Kamu menguasai materi ini.' : (score >= qs.length - 1 ? 'Bagus! Pemahamanmu sudah kuat.' : 'Coba lagi, baca ulang penjelasan dan utak-atik simulasinya.');
+      box.innerHTML = '<div class="qk">' + (title || 'Kuis') + '</div><h3 class="qt">Skor akhir: ' + score + ' / ' + qs.length + '</h3><p class="why">' + t + '</p><button class="btn">Ulangi kuis</button>';
+      box.querySelector('button').onclick = function () { i = 0; score = 0; show(); };
     }
     show();
   }
+  function setQ(k) { return function (sc) { S.q[k] = Math.max(S.q[k], sc); res(); }; }
+
+  quiz($('#qz1'), [
+    { q: 'Persamaan kontinuitas untuk fluida tak termampatkan dituliskan…', o: ['A₁v₁ = A₂v₂', 'A₁ + v₁ = A₂ + v₂', 'A₁/v₁ = A₂v₂', 'P₁v₁ = P₂v₂'], a: 0, e: 'Debit (A × v) bernilai sama di setiap penampang pipa.' },
+    { q: 'Pipa berpenampang 4 cm² dialiri air 2 m/s, lalu menyempit menjadi 1 cm². Kecepatan di bagian sempit adalah…', o: ['8 m/s', '0,5 m/s', '2 m/s', '4 m/s'], a: 0, e: 'v₂ = A₁v₁ / A₂ = (4 × 2) / 1 = 8 m/s.' },
+    { q: 'Ujung selang dipencet sehingga lubangnya mengecil. Akibatnya, air…', o: ['Memancar lebih cepat', 'Memancar lebih lambat', 'Berhenti mengalir', 'Kecepatannya tetap'], a: 0, e: 'Penampang mengecil, maka kecepatan aliran naik agar debitnya tetap.' }
+  ], setQ(1), 'Kuis Stasiun 1 · Kontinuitas');
+
   quiz($('#qz'), [
     { q: 'Mengapa pesawat terbang dapat terangkat?', o: ['Udara di atas sayap bergerak lebih cepat sehingga tekanannya lebih rendah', 'Udara di bawah sayap bergerak lebih cepat sehingga tekanannya lebih rendah', 'Sayap pesawat lebih ringan daripada udara', 'Mesin pesawat menarik badan pesawat ke atas'], a: 0, e: 'Kecepatan tinggi berarti tekanan rendah. Tekanan di bawah sayap lebih besar sehingga mendorong pesawat ke atas.' },
     { q: 'Atap rumah dapat terangkat saat badai kencang karena…', o: ['Tekanan udara di atas atap lebih rendah daripada tekanan di bawahnya', 'Angin menarik paku atap satu per satu', 'Tekanan udara di atas atap lebih tinggi', 'Udara di dalam rumah memuai karena panas'], a: 0, e: 'Angin kencang di atas atap menurunkan tekanan di sana, sedangkan tekanan di bawah atap lebih besar.' },
     { q: 'Pada alat penyemprot nyamuk, cairan naik ke ujung pipa karena…', o: ['Udara yang melaju cepat di ujung pipa menurunkan tekanan di sana', 'Cairan lebih ringan daripada udara', 'Udara menekan cairan dari atas', 'Pipa bersifat magnetis'], a: 0, e: 'Tekanan rendah di ujung pipa membuat cairan terdorong naik oleh tekanan udara di wadah.' },
     { q: 'Dua kapal berlayar sejajar dan berdekatan cenderung saling mendekat. Penyebabnya…', o: ['Air di antara kedua kapal mengalir lebih cepat sehingga tekanannya lebih rendah', 'Air di antara kapal lebih diam sehingga menekan keluar', 'Gaya gravitasi antarkapal', 'Gesekan dengan udara'], a: 0, e: 'Tekanan di sisi luar lebih besar, sehingga kedua kapal terdorong saling mendekat.' },
-    { q: 'Di bagian pipa yang menyempit (leher venturi), apa yang terjadi?', o: ['Kecepatan naik dan tekanan turun', 'Kecepatan turun dan tekanan naik', 'Kecepatan dan tekanan sama-sama naik', 'Kecepatan dan tekanan tidak berubah'], a: 0, e: 'Kontinuitas membuat air lebih cepat di leher, lalu Bernoulli membuat tekanannya turun. Kamu sudah melihatnya di tabung tengah.' },
-    { q: 'Persamaan Bernoulli menyatakan bahwa sepanjang garis arus, jumlah … bernilai tetap.', o: ['tekanan + ½ρv² + ρgh', 'massa + volume + suhu', 'tekanan × volume', 'kecepatan + percepatan'], a: 0, e: 'Itulah kekekalan energi per satuan volume pada fluida ideal.' }
-  ], function (sc) { S.b = Math.max(S.b, sc); res(); });
+    { q: 'Di bagian pipa yang menyempit (leher venturi), apa yang terjadi?', o: ['Kecepatan naik dan tekanan turun', 'Kecepatan turun dan tekanan naik', 'Kecepatan dan tekanan sama-sama naik', 'Kecepatan dan tekanan tidak berubah'], a: 0, e: 'Kontinuitas membuat air lebih cepat di leher, lalu Bernoulli membuat tekanannya turun.' }
+  ], function (sc) { S.b = Math.max(S.b, sc); res(); }, 'Kuis Stasiun 2 · Bernoulli');
 
-  /* ===== STASIUN 3: TORRICELLI ===== */
-  var s3 = { H: 1, off: 0 }, r4 = $('#r4');
+  /* STASIUN 3 */
+  var s3 = { H: 1 }, r4 = $('#r4');
   function u3() {
     var H = s3.H, y = H * r4.value / 100, h = H - y, v = Math.sqrt(2 * G * h), T = Math.sqrt(2 * y / G), x = v * T, k = 200 / H, yh = 240 - y * k;
     var d = 'M150,' + yh;
@@ -438,12 +435,18 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   $('#opt').onclick = function () { r4.value = 50; u3(); };
   ruler(); u3();
 
-  /* ===== STASIUN 4: VISKOSITAS ===== */
-  var FL = [{ n: 'Air', T: 1.2, k: 0.01, c: null }, { n: 'Minyak Goreng', T: 3, k: 0.02, c: '#e3b21b' }, { n: 'Madu', T: 7.5, k: 0.03, c: '#c97d10' }];
+  quiz($('#qz3'), [
+    { q: 'Kecepatan semburan air dari lubang pada tangki yang kedalamannya h dirumuskan…', o: ['v = √(2gh)', 'v = 2gh', 'v = gh²', 'v = h/g'], a: 0, e: 'Itulah teorema Torricelli: v = √(2gh).' },
+    { q: 'Kedalaman lubang dijadikan 4 kali semula. Kecepatan semburan menjadi…', o: ['2 kali', '4 kali', '16 kali', '½ kali'], a: 0, e: 'Karena v sebanding dengan √h, kedalaman 4× membuat kecepatan √4 = 2×.' },
+    { q: 'Agar semburan jatuh paling jauh, lubang sebaiknya dibuat…', o: ['Di tengah-tengah tinggi air', 'Sedekat mungkin dengan dasar', 'Sedekat mungkin dengan permukaan air', 'Tepat di dasar tangki'], a: 0, e: 'Jarak x = 2√(h·y) maksimum saat h = y, yaitu di tengah. Lubang terlalu rendah atau tinggi mengurangi jangkauan.' }
+  ], setQ(3), 'Kuis Stasiun 3 · Torricelli');
+
+  /* STASIUN 4 */
+  var FL = [{ n: 'Air', T: 1.2, k: 0.01, c: null }, { n: 'Minyak Goreng', T: 3, k: 0.02, c: '#c99a10' }, { n: 'Madu', T: 7.5, k: 0.03, c: '#a8650a' }];
   var s4 = { rank: [], run: false, done: false, t: 0, tt: [], balls: [], btns: [] };
   FL.forEach(function (fl, i) {
     var d = document.createElement('div'); d.className = 'tcard';
-    d.innerHTML = '<svg viewBox="0 0 160 290" class="scene" role="img" aria-label="Wadah berisi ' + fl.n + '"><rect x="30" y="16" width="100" height="258" rx="16" class="tube"/><rect x="33" y="19" width="94" height="252" rx="13" fill-opacity=".55" ' + (fl.c ? 'style="fill:' + fl.c + '"' : 'class="fl"') + '/><circle cx="80" cy="46" r="12" class="ball"/></svg><b>' + fl.n + '</b><button class="btn sm">Pilih urutan</button>';
+    d.innerHTML = '<svg viewBox="0 0 160 290" class="scene" role="img" aria-label="Wadah berisi ' + fl.n + '"><rect x="30" y="16" width="100" height="258" rx="16" class="tube"/><rect x="33" y="19" width="94" height="252" rx="13" fill-opacity=".6" ' + (fl.c ? 'style="fill:' + fl.c + '"' : 'class="fl"') + '/><circle cx="80" cy="46" r="12" class="ball"/></svg><b>' + fl.n + '</b><button class="btn sm">Pilih urutan</button>';
     $('#tubes').appendChild(d);
     var ball = d.querySelector('.ball'), btn = d.querySelector('button');
     s4.balls.push(ball); s4.btns.push(btn);
@@ -475,8 +478,13 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     $('#m4').textContent = 'Urutan sebenarnya: ' + actual.map(function (i) { return FL[i].n; }).join(' → ') + '. Tebakanmu benar ' + c + ' dari 3. Makin kental fluidanya, makin besar hambatannya.';
     res();
   }
+  quiz($('#qz4'), [
+    { q: 'Viskositas adalah ukuran…', o: ['Kekentalan fluida, yaitu hambatannya terhadap aliran', 'Massa jenis fluida', 'Tekanan fluida pada dasar wadah', 'Kecepatan maksimum fluida'], a: 0, e: 'Viskositas menyatakan seberapa besar fluida menahan gerak atau aliran.' },
+    { q: 'Ketika suhu cairan seperti minyak atau madu dinaikkan, viskositasnya umumnya…', o: ['Menurun, sehingga cairan lebih encer', 'Meningkat, sehingga cairan lebih kental', 'Tidak berubah', 'Menjadi nol'], a: 0, e: 'Cairan yang dipanaskan menjadi lebih encer. Kamu bisa mengujinya dengan slider suhu.' },
+    { q: 'Kelereng yang sama dijatuhkan ke air, minyak goreng, dan madu. Yang jatuh paling lambat adalah di…', o: ['Madu', 'Air', 'Minyak goreng', 'Sama saja'], a: 0, e: 'Madu paling kental, sehingga hambatannya terhadap kelereng paling besar.' }
+  ], setQ(4), 'Kuis Stasiun 4 · Viskositas');
 
-  /* ===== STASIUN 5: COCOKKAN ===== */
+  /* STASIUN 5 */
   var PR = [
     ['Pesawat dapat terangkat di udara', 'Udara di atas sayap mengalir lebih cepat sehingga tekanannya lebih rendah (Bernoulli).'],
     ['Air selang memancar lebih jauh saat ujungnya dipencet', 'Penampang mengecil sehingga kecepatan aliran meningkat (kontinuitas).'],
@@ -505,22 +513,28 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
       ms.textContent = 'Belum cocok, coba pilih lagi. ' + S.m + ' dari 5 pasangan cocok.';
     }
   };
+  quiz($('#qz5'), [
+    { q: 'Prinsip fisika yang menjelaskan cairan terhisap naik pada penyemprot parfum adalah…', o: ['Hukum Bernoulli', 'Hukum Newton III', 'Hukum Ohm', 'Hukum Boyle'], a: 0, e: 'Udara cepat menurunkan tekanan di ujung pipa, dan itulah inti hukum Bernoulli.' },
+    { q: 'Besaran yang bernilai sama di setiap penampang pipa pada aliran tunak adalah…', o: ['Debit (A × v)', 'Kecepatan', 'Tekanan', 'Luas penampang'], a: 0, e: 'Kontinuitas: debit bernilai tetap, sedangkan kecepatan dan tekanan bisa berubah.' },
+    { q: 'Kaleng bocor di dua tempat: lubang A dekat permukaan dan lubang B dekat dasar. Semburan paling kencang berasal dari…', o: ['Lubang B, karena kedalamannya lebih besar', 'Lubang A, karena lebih dekat udara', 'Keduanya sama kencang', 'Tergantung warna kaleng'], a: 0, e: 'Torricelli: v = √(2gh), jadi makin dalam lubangnya, makin besar v.' }
+  ], setQ(5), 'Kuis Stasiun 5 · Konsep Gabungan');
 
-  /* ===== HASIL ===== */
+  /* HASIL */
   function res() {
-    var pts = (S.k ? 1 : 0) + S.b + (S.tr >= 0.97 ? 1 : 0) + (S.v || 0) + S.m;
+    var q = S.q[1] + S.q[3] + S.q[4] + S.q[5];
+    var pts = (S.k ? 1 : 0) + S.b + (S.tr >= 0.97 ? 1 : 0) + (S.v || 0) + S.m + q;
     $('#rk').textContent = S.k ? 'Selesai' : 'Belum';
-    $('#rb').textContent = S.b + ' / 6';
+    $('#rb').textContent = S.b + ' / 5';
     $('#rt').textContent = Math.round(S.tr * 100) + '%';
     $('#rv').textContent = S.v === null ? 'Belum' : S.v + ' / 3';
     $('#rm').textContent = S.m + ' / 5';
-    $('#pts').textContent = pts + ' / 16 poin';
-    $('#rbar').style.width = (pts / 16 * 100) + '%';
-    $('#pred').textContent = pts >= 14 ? 'Master Fluida' : pts >= 10 ? 'Insinyur Muda' : pts >= 5 ? 'Penjelajah Air' : pts > 0 ? 'Pemula' : 'Belum mulai';
+    $('#rq').textContent = q + ' / 12';
+    $('#pts').textContent = pts + ' / 27 poin';
+    $('#rbar').style.width = (pts / 27 * 100) + '%';
+    $('#pred').textContent = pts >= 23 ? 'Master Fluida' : pts >= 16 ? 'Insinyur Muda' : pts >= 8 ? 'Penjelajah Air' : pts > 0 ? 'Pemula' : 'Belum mulai';
   }
   res();
 
-  /* ===== NAV AKTIF ===== */
   var secs = ['s1', 's2', 's3', 's4', 's5', 'hasil'].map(function (i) { return document.getElementById(i); }), nl = $$('.nav nav a');
   function onS() {
     var y = -1;
@@ -529,7 +543,6 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   }
   addEventListener('scroll', onS, { passive: true }); onS();
 
-  /* ===== ANIMASI ===== */
   var last = performance.now(), off = 0;
   function loop(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
