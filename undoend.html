@@ -7,10 +7,11 @@
 <style>
 :root{--paper:#f0e2c4;--gold:#e4b95f;--red:#c2352f;--cy:#65b8b0;--mut:#a8979e}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;background:#030206;color:var(--paper);font-family:"Courier New",monospace;overflow:hidden}
+html,body{margin:0;width:100%;height:100%;background:#030206;color:var(--paper);font-family:"Courier New",monospace;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
+input{-webkit-user-select:text;user-select:text}
 body{display:flex;align-items:center;justify-content:center}
 #gameShell{position:relative;width:min(1100px,100vw);height:min(720px,100vh);background:#08070c;border:3px solid #2c2230;box-shadow:0 0 0 4px #100c14,0 20px 70px #000;overflow:hidden}
-#game,#tc{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;touch-action:none}
+#game,#tc{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;touch-action:none}
 .scan{position:absolute;inset:0;pointer-events:none;z-index:40;opacity:.25;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 4px)}
 #topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;justify-content:space-between;z-index:3;pointer-events:none}
 .badge{background:#100d17e8;border:2px solid #554660;padding:7px 9px;font-size:12px;color:var(--paper);text-shadow:2px 2px #000;font-family:inherit}
@@ -21,17 +22,17 @@ body{display:flex;align-items:center;justify-content:center}
 #speaker{font-weight:bold;color:var(--gold);letter-spacing:1px;margin-bottom:6px}
 #text{line-height:1.45;white-space:pre-wrap;font-size:14px}
 #choices{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-button{font:inherit;color:var(--paper);background:#292038;border:2px solid #867395;padding:9px 11px;cursor:pointer;box-shadow:3px 3px #000}
+button{font:inherit;color:var(--paper);background:#292038;border:2px solid #867395;padding:9px 11px;cursor:pointer;box-shadow:3px 3px #000;touch-action:manipulation}
 button:active{transform:translate(1px,1px);box-shadow:1px 1px #000}
 button:disabled{opacity:.4;cursor:not-allowed}
 .primary{border-color:var(--gold);background:#4a2e2e}
-#title,#select,#ending{position:absolute;inset:0;z-index:20;background:#07050a;text-align:center;overflow-y:auto;overflow-x:hidden}
+#title,#select,#ending{position:absolute;inset:0;z-index:20;background:#07050a;text-align:center;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #title{overflow:hidden}
 .tcnt{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 20px;gap:12px}
 .tx{font-size:11px;letter-spacing:3px;color:#c9847c;animation:bl 2.4s infinite}
 @keyframes bl{50%{opacity:.35}}
 .glt{position:relative;margin:0;font-size:clamp(46px,10vw,112px);letter-spacing:.12em;color:#f0e2c4;text-shadow:0 0 34px #c2352f99,5px 5px #3a0c12}
-.glt::before,.glt::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%}
+.glt::before,.glt::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;pointer-events:none}
 .glt::before{color:#ff3b3b;mix-blend-mode:screen;animation:g1 3.2s infinite}
 .glt::after{color:#37e0d0;mix-blend-mode:screen;animation:g2 2.7s infinite}
 @keyframes g1{0%,90%,100%{transform:translate(0);clip-path:inset(0 0 0 0)}92%{transform:translate(-6px,2px);clip-path:inset(18% 0 55% 0)}96%{transform:translate(4px,-1px);clip-path:inset(62% 0 8% 0)}}
@@ -41,29 +42,32 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .loops b{color:var(--red);font-size:16px;margin:0 3px}
 #how{display:none;max-width:580px;background:#0d0a10ee;border:2px solid #6a5460;padding:12px;font-size:12px;line-height:1.55;text-align:left}
 .foot{font-size:10px;color:#8e7a80;letter-spacing:2px;text-shadow:2px 2px #000}
-#select{display:none;flex-direction:column;align-items:center;justify-content:center;padding:26px 16px;background:radial-gradient(circle at 50% 30%,#3a1218,#120a10 55%,#07050a)}
+#select{display:none;flex-direction:column;align-items:center;padding:26px 16px;background:radial-gradient(circle at 50% 30%,#3a1218,#120a10 55%,#07050a)}
+#select>*{flex-shrink:0}
+#select h2{margin-top:auto!important}
+#select .roster{margin-bottom:auto}
 .sub{max-width:700px;line-height:1.5;color:#c8b7bb}
 .roster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:min(900px,96vw);margin:14px auto}
 .char{min-height:250px;background:#16101a;border:2px solid #4e3c4a;padding:9px;text-align:center;box-shadow:4px 4px #000}
 .char:hover{border-color:var(--gold)}
-.char canvas{width:90px;height:92px;image-rendering:pixelated}
+.char canvas{width:90px;height:92px;image-rendering:pixelated;pointer-events:none}
 .char h3{margin:5px 0;font-size:15px}
 .char small{color:var(--mut);line-height:1.3;display:block}
 .char .tag2{color:var(--gold);font-size:10px;margin-top:5px}
-#mobileControls{display:none;position:absolute;left:12px;right:12px;bottom:12px;z-index:4;pointer-events:none}
+#mobileControls{display:none;position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:4;pointer-events:none}
 .dpad{display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:3px;float:left}
-.ctrl{pointer-events:auto;width:44px;height:44px;padding:0;background:#17131fdd;border:2px solid #76657f;font-size:18px}
+.ctrl{pointer-events:auto;width:44px;height:44px;padding:0;background:#17131fdd;border:2px solid #76657f;font-size:18px;touch-action:none}
 #actionButtons{float:right;display:flex;gap:7px;align-items:end}
 .action{width:52px;height:52px;border-radius:50%;font-size:11px;padding:0}
 #nextArrow{display:none;position:absolute;z-index:12;right:18px;top:50%;transform:translateY(-50%);width:58px;height:58px;border-radius:50%;background:#19131fe8;border:3px solid var(--gold);color:var(--gold);font-size:25px;animation:pulse 1.1s infinite}
 #nextArrowLabel{position:absolute;right:17px;top:calc(50% + 35px);z-index:12;pointer-events:none;color:var(--gold);font-size:10px;display:none;text-shadow:2px 2px #000}
 @keyframes pulse{50%{transform:translateY(-50%) scale(1.08)}}
 .ov{display:none;position:absolute;inset:0;z-index:35;background:#0a0710ee;align-items:center;justify-content:center;padding:14px}
-.panel{background:#17101c;border:3px solid #806c89;padding:18px;width:min(560px,94vw);max-height:92%;overflow:auto;text-align:center;box-shadow:7px 7px #000}
+.panel{background:#17101c;border:3px solid #806c89;padding:18px;width:min(560px,94vw);max-height:92%;overflow:auto;text-align:center;box-shadow:7px 7px #000;-webkit-overflow-scrolling:touch}
 .panel h3{margin:0 0 6px;color:var(--gold)}
 .panel p{line-height:1.5;color:#d8c9cc}
 #pzA{margin:12px 0;display:flex;flex-direction:column;align-items:center;gap:10px}
-#pzA input{font:inherit;font-size:20px;text-align:center;letter-spacing:4px;background:#0d0a12;color:var(--paper);border:2px solid #867395;padding:8px;width:260px;text-transform:uppercase}
+#pzA input{font:inherit;font-size:20px;text-align:center;letter-spacing:4px;background:#0d0a12;color:var(--paper);border:2px solid #867395;padding:8px;width:260px;max-width:100%;text-transform:uppercase}
 #pzM{min-height:20px;color:#ff8d84}
 #pads{display:flex;gap:10px}
 .pad{width:64px;height:64px;color:#111;font-weight:bold;font-size:20px}
@@ -75,14 +79,26 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .story{text-align:left;background:#0e0a13;border:1px solid #5a4660;padding:8px 10px;margin-bottom:10px;font-size:13px;line-height:1.5;color:var(--cy)}
 .story b{color:var(--gold)}
 #flash{display:none;position:absolute;inset:0;z-index:50;background:#fff;opacity:0;transition:opacity .9s;pointer-events:none}
-@media(max-width:700px){
-#gameShell{width:100vw;height:100dvh;border:0}
-#objective{top:52px;font-size:10px;max-width:82%}
+/* touch devices (phones, tablets, landscape): on-screen controls + full-screen shell */
+@media(pointer:coarse),(max-width:700px){
+#gameShell{width:100vw;height:100vh;height:100dvh;border:0;box-shadow:none}
 #mobileControls{display:block}
-#dialogue{bottom:96px}
+#dialogue{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+#topbar{top:calc(8px + env(safe-area-inset-top,0px))}
+#objective{top:calc(54px + env(safe-area-inset-top,0px))}
+}
+@media(max-width:700px){
+#objective{font-size:10px;max-width:82%}
 #text{font-size:12px}
 .roster{grid-template-columns:repeat(2,1fr)}
 .char{min-height:230px}
+}
+@media(max-height:480px){
+#dialogue{max-height:52%;padding:8px}
+#text{font-size:11px}
+#objective{display:none}
+.tcnt{padding:36px 20px;gap:6px}
+.glt{font-size:clamp(36px,9vh,70px)}
 }
 </style>
 </head>
@@ -110,7 +126,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <p class="tag">Undo the dead. Undo the sun. Undo the worlds.<br>Every undo has a price.</p>
     <div class="loops">UNDOS TO SURVIVE <b>■</b><b>■</b><b>■</b></div>
     <div><button class="primary" id="start">BEGIN THE LOOP</button> <button id="howBtn">HOW TO PLAY</button></div>
-    <div id="how">WASD / ARROWS or the D-pad: move<br>E: inspect clues (◆) or talk to people &nbsp; SPACE: look (hint) &nbsp; J: journal<br>Every clue goes into your journal. Puzzles are solved by deduction, so read it.<br>Avoid the dead. In the bunker, talk to your teammates. Collect all 12 clues for the best ending.</div>
+    <div id="how">WASD / ARROWS or the D-pad: move<br>E: inspect clues (◆) or talk to people &nbsp; SPACE / LOOK: hint &nbsp; J: journal<br>Every clue goes into your journal. Puzzles are solved by deduction, so read it.<br>Avoid the dead. In the bunker, talk to your teammates. Collect all 12 clues for the best ending.</div>
     <div class="foot">MYSTERY · SURVIVAL · SCI-FI</div>
   </div>
 </div>
@@ -288,7 +304,6 @@ function person(g,x,y,id,dir=1,sc=1,walk=0){
  if(id==="renee"){R(-8,-19,16,5,"#65b8b0");R(-3,-25,6,6,c.hair);R(-9,-15,3,8,c.hair);R(6,-15,3,8,c.hair)}
  if(id==="rocco"){R(-4,-13,2,8,"#a8454f");R(-9,-4,18,3,"#5a1f2b");R(-8,-20,16,3,c.hair)}
  if(id==="lev"){
-  /* dark swept hair, charcoal suit, white shirt, burgundy tie */
   R(-9,-17,3,7,c.hair);R(6,-17,3,7,c.hair);R(-8,-21,16,3,c.hair);
   R(-3,-4,6,12,"#e8e0d0");R(-1,-3,2,10,"#8a1f2e");R(-1,-3,2,2,"#5a1420");
   R(-5,-4,2,14,"#15161c");R(3,-4,2,14,"#15161c");
@@ -366,9 +381,14 @@ function updateUI(){
  $("chapter").textContent=`ACT ${["","I","II","III"][r.stage]} · ${r.name}`;
  $("clues").textContent=`CLUES ${clues.size}/12`;
  let o=r.obj;
- if(S.room==="bunker"){const left=3-talked.size,cl=r.ids.filter(i=>!clues.has(i)).length;o=(left?`Talk to your teammates (${left} left). `:"")+(cl?`Inspect the clues (${cl} left).`:"")||"Everything done. Take the exit arrow and undo the dead."}
+ if(S.room==="bunker"){
+  const left=3-talked.size,cl=r.ids.filter(i=>!clues.has(i)).length;
+  o=((left?`Talk to your teammates (${left} left). `:"")+(cl?`Inspect the clues (${cl} left).`:"")).trim()||"Everything done. Take the exit arrow and undo the dead.";
+ }
  $("objective").textContent=o;
- const rd=ready();$("nextArrow").style.display=rd?"block":"none";$("nextArrowLabel").style.display=rd?"block":"none";
+ const rd=ready();
+ $("nextArrow").style.display=rd?"block":"none";
+ $("nextArrowLabel").style.display=rd?"block":"none";
 }
 function addClue(id){
  if(clues.has(id))return;clues.add(id);clueLog.push(id);
@@ -398,7 +418,6 @@ function drawRoom(){
  Z.forEach(z=>D.push([z.y+28,()=>zomb(z)]));
  D.push([P.y+28+(death?1:0),()=>{
   if(!death){person(ctx,P.x,P.y,S.sel,P.dir,CH[S.sel].sc,P.mv?P.w:0);return}
-  /* death: stagger, then topple backwards around the feet */
   const f=Math.min(1,Math.max(0,(death.t-6)/34)),e=f*f*(3-2*f);
   ctx.save();ctx.translate((P.x+(death.t<20?Math.sin(death.t*2)*2:0))|0,(P.y+28)|0);
   ctx.rotate(-P.dir*e*1.5);ctx.globalAlpha=death.t>96?Math.max(0,1-(death.t-96)/22):1;
@@ -429,23 +448,17 @@ function atmos(){
 /* ---------- DEATH ---------- */
 function deathOverlay(){
  if(!death)return;const t=death.t;
- /* red bite flashes and a creeping red tint */
  const tint=Math.min(.5,t/90*.5);ctx.fillStyle=`rgba(150,8,14,${tint})`;ctx.fillRect(0,0,W,H);
  if(t>=12&&t%16<3){ctx.fillStyle="rgba(255,40,40,.28)";ctx.fillRect(0,0,W,H)}
- /* blood-vignette closing in */
  const k=Math.min(1,t/100),vg=ctx.createRadialGradient(W/2,H/2,Math.max(10,360-k*300),W/2,H/2,640);
  vg.addColorStop(0,"rgba(60,0,4,0)");vg.addColorStop(1,`rgba(60,0,4,${.35+k*.6})`);ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
- /* title card */
  if(t>44){const a=Math.min(1,(t-44)/20),s=Math.sin(t*1.7)*(t<70?2:0);ctx.globalAlpha=a;txt("DEVOURED",W/2+s,H/2-6,46,"#c2352f","center");txt(myName()+" DID NOT REMEMBER TO RUN",W/2,H/2+24,13,"#e0c7b8","center");ctx.globalAlpha=1}
- /* fade to black */
  if(t>88){ctx.fillStyle=`rgba(0,0,0,${Math.min(1,(t-88)/28)})`;ctx.fillRect(0,0,W,H)}
 }
 function stepDeath(dt){
  death.t+=dt;const t=death.t;
- /* the pack closes in and crowds the body */
  death.zs.forEach((q,i)=>{const z=q.z,tx=P.x+Math.cos(q.a)*(16+(i%2)*10),ty=P.y+10+Math.sin(q.a)*10;
   const sp=t<40?.16:.28;z.x+=(tx-z.x)*sp*dt;z.y+=(ty-z.y)*sp*dt;z.d=P.x>=z.x?1:-1});
- /* blood spray */
  if(t>12&&t<85&&Math.floor(t)%2===0){for(let i=0;i<4;i++)amb.push({x:P.x+(Math.random()-.5)*20,y:P.y+(Math.random()-.5)*14,vx:(Math.random()-.5)*5,vy:-1-Math.random()*3.5,s:2+Math.random()*3,life:30,c:Math.random()<.5?"#8a0e10":"#c2352f"})}
  const f=Math.floor(t);if(f!==death.lf){death.lf=f;if(f===10||f===28||f===46||f===64)tone(70+Math.random()*30,.3)}
  if(t>=118)finishDeath();
@@ -539,7 +552,9 @@ function openJournal(){
 function closeJournal(){S.modal=false;$("journal").style.display="none"}
 
 /* ---------- AUDIO + PUZZLES ---------- */
-let AC;function tone(f,d=.35){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.18,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+let AC;
+function getAC(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();}catch(e){}return AC}
+function tone(f,d=.35){try{const a=getAC();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.18,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d)}catch(e){}}
 function closePuzzle(){S.modal=false;$("puzzle").style.display="none"}
 function openPuzzle(pid,hid){
  const p=PZ[pid];S.modal=true;$("puzzle").style.display="flex";
@@ -548,7 +563,7 @@ function openPuzzle(pid,hid){
  const win=()=>{closePuzzle();addClue(hid);say(HS[hid].s,HS[hid].t)};
  $("pzX").onclick=closePuzzle;
  if(p.type==="code"){
-  A.innerHTML=`<input id="pin" maxlength="${p.ml}" autocomplete="off" placeholder="${p.ph||""}"><button id="pgo" class="primary">ENTER</button>`;
+  A.innerHTML=`<input id="pin" maxlength="${p.ml}" autocomplete="off" autocapitalize="characters" placeholder="${p.ph||""}"><button id="pgo" class="primary">ENTER</button>`;
   const go=()=>{if(lock>Date.now())return msg("LOCKED OUT. Wait a few seconds.");
    const v=$("pin").value.toUpperCase().replace(/\s/g,"");
    if(v===p.ans)win();else{fails++;msg("ACCESS DENIED.");if(fails%3===0&&S.sel!=="renee"){lock=Date.now()+5000;msg("TOO MANY ATTEMPTS. LOCKED FOR 5s.")}}};
@@ -605,7 +620,6 @@ function decide(){
  ]);
 }
 function ending(type){
- /* emotional Lev & Zhenya cutscene plays before the best ending */
  if(type==="close"&&!flags.farewell){flags.farewell=1;return talk(FAREWELL,()=>flash(()=>ending("close")))}
  S.state="end";$("ending").style.display="flex";closeD();
  const N=myName();let title,body;
@@ -630,11 +644,12 @@ function buildRoster(){
  });
 }
 function choose(id){
+ getAC();
  S.sel=id;$("select").style.display="none";S.state="play";startRoom(CH[id].route);
  addStory("<b>TEST 0</b>: Lev’s engine undid one night. The engine never erases a disaster, it <b>MOVES</b> it. → The debt became the <b>VIRUS</b> (the dead).");
  talk(PREMISE.concat(INTRO[id],[["SYSTEM","ACT I · THE DEAD. Find a way into Bunker 9. E inspects ◆ clues, SPACE looks for hints, J opens your journal."]]));
 }
-$("start").onclick=()=>{$("title").style.display="none";$("select").style.display="flex";S.state="select";buildRoster()};
+$("start").onclick=()=>{getAC();$("title").style.display="none";$("select").style.display="flex";S.state="select";buildRoster()};
 $("howBtn").onclick=()=>{const h=$("how");h.style.display=h.style.display==="block"?"none":"block"};
 $("menuBtn").onclick=()=>{if(S.state==="play"){S.modal=true;$("pausePanel").style.display="flex"}};
 $("resume").onclick=()=>{S.modal=false;$("pausePanel").style.display="none"};
@@ -643,11 +658,22 @@ $("jBtn").onclick=()=>{if(S.state==="play"&&!S.modal&&!death)openJournal()};
 $("jX").onclick=closeJournal;
 $("interactBtn").onclick=interact;$("lookBtn").onclick=look;
 $("nextArrow").addEventListener("click",nextRoom);
+
+/* D-pad: pointer events (touch + mouse + pen, multi-touch safe) */
 document.querySelectorAll("[data-key]").forEach(b=>{
- const k=b.dataset.key,dn=e=>{e.preventDefault();keys[k]=true},up=e=>{e.preventDefault();keys[k]=false};
- b.addEventListener("touchstart",dn,{passive:false});b.addEventListener("touchend",up,{passive:false});b.addEventListener("touchcancel",up,{passive:false});
- b.addEventListener("mousedown",dn);b.addEventListener("mouseup",up);b.addEventListener("mouseleave",up);
+ const k=b.dataset.key;
+ const dn=e=>{e.preventDefault();keys[k]=true;try{b.setPointerCapture(e.pointerId)}catch(_){}};
+ const up=e=>{e.preventDefault();keys[k]=false};
+ b.addEventListener("pointerdown",dn);
+ b.addEventListener("pointerup",up);
+ b.addEventListener("pointercancel",up);
+ b.addEventListener("lostpointercapture",up);
+ b.addEventListener("contextmenu",e=>e.preventDefault());
 });
+addEventListener("blur",()=>{for(const k in keys)keys[k]=false});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)for(const k in keys)keys[k]=false});
+addEventListener("pointerdown",()=>getAC(),{once:true});
+
 addEventListener("keydown",e=>{
  if(e.target.tagName==="INPUT")return;
  const k=e.key.toLowerCase();
