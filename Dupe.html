@@ -1,1142 +1,1995 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumora — A garden that glows after dark</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7d5df">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>MeloTunes | Scan & Play</title>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500;1,9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
-    <!-- Iconify CDN -->
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<style>
+:root{
+--cream:#fff8ee;--paper:#fffdf9;--ink:#4b3a55;--muted:#8b7b94;
+--rose:#f2b8c6;--berry:#c2578a;--berry2:#a3407a;--lav:#e3d6f7;--lav2:#cbb9ee;
+--sage:#cfe6d6;--butter:#fde6a8;--sky:#cfe6f7;
+--display:'Fraunces',Georgia,serif;--body:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--hand:'Caveat','Segoe Script','Bradley Hand',cursive;
+--k:1; /* hanging-strand length multiplier */
+--sat:env(safe-area-inset-top,0px);
+--sar:env(safe-area-inset-right,0px);
+--sab:env(safe-area-inset-bottom,0px);
+--sal:env(safe-area-inset-left,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+margin:0;color:var(--ink);font-family:var(--body);
+min-height:100vh;min-height:100dvh;
+overflow-x:hidden;
+-webkit-font-smoothing:antialiased;
+padding-left:var(--sal);padding-right:var(--sar);padding-bottom:var(--sab);
+background:
+radial-gradient(circle at 8% 12%,#fbd9e3 0,transparent 32%),
+radial-gradient(circle at 92% 30%,#e0d4f8 0,transparent 34%),
+radial-gradient(circle at 20% 90%,#d8ecdd 0,transparent 30%),
+url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='160'%3E%3Cg stroke='%23d9c8e6' stroke-opacity='.55' stroke-width='1'%3E%3Cpath d='M0 50h140M0 58h140M0 66h140M0 74h140M0 82h140'/%3E%3C/g%3E%3C/svg%3E"),
+var(--cream);
+background-attachment:scroll;
+}
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+/* ---------- floating trinkets ---------- */
+.sky{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.fl{position:absolute;width:var(--s,26px);height:var(--s,26px);opacity:.55;animation:drift 9s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-16px) rotate(8deg)}}
+.ico{width:1em;height:1em;vertical-align:-.14em;fill:currentColor;stroke:currentColor}
+.ico.line{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.line{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-        :root { --bg: #000000; --fg: #ffffff; }
+/* ---------- hanging lights & stars on the edges ---------- */
+.hangs{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.hang{
+position:absolute;top:0;width:0;height:0;transform-origin:50% 0;
+-webkit-animation:swing 5.5s ease-in-out infinite;animation:swing 5.5s ease-in-out infinite;
+-webkit-animation-delay:var(--d,0s);animation-delay:var(--d,0s);
+}
+.hang::before{
+content:"";position:absolute;left:-1px;top:0;width:2px;height:calc(var(--h) * 1px * var(--k));
+background:linear-gradient(#d9c8e6,#c9a8dc);border-radius:2px;opacity:.9;
+}
+.hang svg{
+position:absolute;left:calc(var(--s) / -2);top:calc(var(--h) * 1px * var(--k) - 3px);
+width:var(--s);height:var(--s);fill:currentColor;stroke:none;
+-webkit-filter:drop-shadow(0 0 7px currentColor);filter:drop-shadow(0 0 7px currentColor);
+-webkit-animation:glow 3s ease-in-out infinite;animation:glow 3s ease-in-out infinite;
+-webkit-animation-delay:var(--d,0s);animation-delay:var(--d,0s);
+}
+@keyframes swing{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes glow{0%,100%{opacity:.95}50%{opacity:.55}}
 
-        .font-serif-instrument { font-family: 'Instrument Serif', serif; }
+/* ---------- header ---------- */
+header{
+position:relative;z-index:1;text-align:center;
+padding:58px 18px 56px;
+padding:calc(58px + var(--sat)) 18px 56px;
+margin-bottom:34px;
+background:linear-gradient(180deg,#f7d5df,var(--lav));
+}
+header::after{
+content:"";position:absolute;left:0;right:0;bottom:-13px;height:28px;
+background:radial-gradient(circle at 14px 0,var(--lav) 14px,transparent 15px) 0 0/28px 28px repeat-x;
+}
 
-        #cosmic-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+/* decorative layer inside header */
+.deco{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;pointer-events:none}
+.deco .ring{
+position:absolute;border-radius:50%;border:2px dashed #ffffffaa;
+}
+.deco .ring.r1{width:300px;height:300px;left:-120px;top:-130px;border-color:#ffffffbb}
+.deco .ring.r2{width:200px;height:200px;left:-70px;top:-80px;border-style:solid;border-color:#ffffff88}
+.deco .ring.r3{width:130px;height:130px;left:-35px;top:-45px;border-color:#c2578a44}
+.deco .ring.r4{width:300px;height:300px;right:-120px;bottom:-150px;border-color:#ffffffbb}
+.deco .ring.r5{width:200px;height:200px;right:-70px;bottom:-100px;border-style:solid;border-color:#ffffff88}
+.deco .ring.r6{width:130px;height:130px;right:-35px;bottom:-65px;border-color:#c2578a44}
+.deco svg{position:absolute;fill:currentColor;stroke:none;animation:drift 8s ease-in-out infinite;animation-delay:var(--d,0s)}
+.deco svg.stroke{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;animation:none}
 
-        /* soft pool of shade behind the headline so it stays readable over the galaxy */
-        .headline-halo::before {
-            content: '';
-            position: absolute;
-            left: 50%; top: 50%;
-            width: 130%; height: 170%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(closest-side, rgba(14, 2, 14, 0.66), rgba(14, 2, 14, 0) 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
+/* string of lights across the top of the header */
+.lights{
+position:absolute;top:0;left:0;right:0;height:0;display:flex;justify-content:space-between;
+padding:0 2.5%;pointer-events:none;z-index:2;
+}
+.lights::before{
+content:"";position:absolute;top:0;left:0;right:0;height:3px;
+background:linear-gradient(90deg,transparent,#c9a8dc 15%,#e79bb8 50%,#c9a8dc 85%,transparent);opacity:.8;
+}
+.lights i{
+position:relative;display:block;width:13px;height:16px;margin-top:var(--t,16px);
+border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:var(--c,#f0cf7e);
+box-shadow:0 0 14px 4px var(--c,#f0cf7e);
+-webkit-animation:twinkle 2.6s ease-in-out infinite;animation:twinkle 2.6s ease-in-out infinite;
+-webkit-animation-delay:var(--d,0s);animation-delay:var(--d,0s);
+}
+.lights i::before{
+content:"";position:absolute;left:50%;bottom:100%;width:2px;height:var(--t,16px);margin-left:-1px;background:#b99bd0;
+}
+.lights i:nth-child(odd){--t:18px}
+.lights i:nth-child(even){--t:44px}
+@keyframes twinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.88)}}
 
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
-            to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
-        }
-        .rise   { animation: rise 1.4s cubic-bezier(.2,.7,.2,1) both; }
-        .rise-2 { animation-delay: .25s; }
-        .rise-3 { animation-delay: .5s; }
-        .rise-4 { animation-delay: .75s; }
+.logo{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:clamp(6px,1.6vw,18px);position:relative;z-index:1}
+.logo .clef{width:clamp(34px,7.5vw,84px);height:clamp(44px,9.6vw,108px);color:var(--berry);flex:none;fill:currentColor;stroke:currentColor}
+header h1{
+margin:0;font:italic 700 clamp(46px,12.5vw,118px)/1 var(--display);letter-spacing:.5px;color:var(--ink);
+text-shadow:0 3px 0 #fff8,0 8px 24px #c2578a2e;
+}
+header h1 b{color:var(--berry);font-style:normal}
+header p{margin:10px 0 0;font:700 clamp(21px,3.6vw,34px)/1.1 var(--hand);color:#7a5c8c;position:relative;z-index:1}
 
-        @keyframes hintpulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
-        #music-hint { animation: hintpulse 2.6s ease-in-out infinite; transition: opacity .8s; }
-        @keyframes eq { 0%,100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
-        .eq-bar { transform-origin: bottom; animation: eq 1.6s ease-in-out infinite; }
+/* diamond flourish under tagline */
+.orn{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px auto 0;width:min(340px,70%);color:var(--berry);position:relative;z-index:1}
+.orn::before,.orn::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,currentColor)}
+.orn::after{background:linear-gradient(270deg,transparent,currentColor)}
+.orn .ico{font-size:18px;flex:none}
 
-        /* LIQUID GLASS CSS */
-        .liquid-glass {
-            background: rgba(0, 0, 0, 0.10);
-            background-blend-mode: luminosity;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: none;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .liquid-glass::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1.4px;
-            background: linear-gradient(180deg,
-                rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
-                rgba(255,255,255,0) 40%,  rgba(255,255,255,0) 60%,
-                rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-        .liquid-glass-circle {
-            background-blend-mode: luminosity;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: none;
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .liquid-glass-circle::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1.4px;
-            background: linear-gradient(180deg,
-                rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.22) 30%,
-                rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.22) 70%,
-                rgba(255,255,255,0.45) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-    </style>
+.garland{display:flex;justify-content:center;gap:14px;margin-top:14px;color:var(--berry);position:relative;z-index:1}
+.garland .ico{font-size:17px;opacity:.85}
+.garland .ico:nth-child(2n){color:#e0a93a}
+.garland .ico:nth-child(3n){color:#7fb69a}
+
+/* ---------- layout / cards ---------- */
+main{position:relative;z-index:1;width:min(1020px,100%);margin:0 auto;padding:6px 16px 40px}
+.card{
+position:relative;background:var(--paper);border:2px solid #fff;border-radius:26px;
+padding:30px 26px 24px;margin:0 0 30px;
+outline:2px dashed var(--rose);outline-offset:-10px;
+box-shadow:0 10px 30px #8b5fa026,0 2px 0 #fff inset;
+}
+.card::before{
+content:"";position:absolute;top:-12px;left:34px;width:96px;height:26px;border-radius:3px;
+background:repeating-linear-gradient(45deg,#f2b8c6cc 0 9px,#ffffffaa 9px 18px);
+transform:rotate(-3deg);box-shadow:0 1px 3px #0002;
+}
+.card:nth-of-type(2n)::before{left:auto;right:34px;transform:rotate(3deg);background:repeating-linear-gradient(45deg,#cbb9eecc 0 9px,#ffffffaa 9px 18px)}
+.card:nth-of-type(3n)::before{background:repeating-linear-gradient(45deg,#cfe6d6cc 0 9px,#ffffffaa 9px 18px)}
+.card>*{position:relative}
+
+h2{
+display:flex;align-items:center;gap:13px;margin:0 0 16px;
+font:700 24px/1.1 var(--display);color:var(--ink);
+}
+.seal{
+flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;
+background:linear-gradient(145deg,#d66a9c,var(--berry2));color:#fff;
+font:italic 700 20px var(--display);box-shadow:0 0 0 3px #fff,0 0 0 5px var(--rose),0 4px 10px #c2578a55;
+}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+button,select,input{font:inherit}
+
+/* ---------- buttons ---------- */
+button{
+display:inline-flex;align-items:center;justify-content:center;gap:8px;
+-webkit-appearance:none;appearance:none;
+min-height:44px;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;
+background:linear-gradient(180deg,#d9679b,var(--berry2));color:#fff;font-weight:800;letter-spacing:.2px;
+box-shadow:0 4px 0 #84305f,0 8px 14px #a3407a38;transition:transform .15s,box-shadow .15s,filter .15s;
+touch-action:manipulation;-webkit-user-select:none;user-select:none;
+}
+button .ico{font-size:18px}
+@media (hover:hover){
+button:hover:not(:disabled){transform:translateY(-2px) rotate(-.6deg);filter:brightness(1.06)}
+}
+button:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #84305f}
+button.secondary{background:linear-gradient(180deg,#fff,#f3ecfb);color:#6b4d86;box-shadow:0 4px 0 var(--lav2),0 8px 14px #8b5fa01f;border:2px solid var(--lav2)}
+button.secondary:active:not(:disabled){box-shadow:0 1px 0 var(--lav2)}
+#playBtn{padding:14px 26px;font-size:17px}
+button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none;filter:grayscale(.3)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+
+/* ---------- inputs ---------- */
+label{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.9px;text-transform:uppercase;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select,input[type=number]{
+min-height:44px;
+border:2px solid #eadff3;border-radius:14px;background:#fff;padding:10px 12px;color:var(--ink);font-weight:700;
+font-size:16px; /* stops iOS Safari zooming on focus */
+text-transform:none;letter-spacing:0;transition:border-color .2s,box-shadow .2s;
+}
+select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:34px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23c2578a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;max-width:100%}
+input[type=number]{-moz-appearance:textfield}
+select:focus,input:focus{outline:0;border-color:var(--berry);box-shadow:0 0 0 4px #f2b8c64d}
+input[type=file]{font-size:13px;font-weight:700;text-transform:none;letter-spacing:0;color:var(--muted);max-width:100%}
+input[type=file]::-webkit-file-upload-button{
+-webkit-appearance:none;border:2px dashed var(--lav2);background:#faf6ff;color:#6b4d86;border-radius:999px;padding:10px 16px;margin-right:10px;font:800 13px var(--body);cursor:pointer;
+}
+input[type=file]::file-selector-button{
+border:2px dashed var(--lav2);background:#faf6ff;color:#6b4d86;border-radius:999px;padding:10px 16px;margin-right:10px;font:800 13px var(--body);cursor:pointer;
+}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.settings label{display:block}
+.settings select,.settings input{display:block;width:100%;margin-top:7px}
+
+/* ---------- photo frames ---------- */
+video,#preview,#sheetCanvas{
+display:block;width:100%;margin-top:18px;border:10px solid #fff;border-bottom-width:30px;border-radius:6px;
+box-shadow:0 10px 24px #6b4d8630,0 0 0 1px #eadff3;
+}
+video{max-height:460px;object-fit:contain;background:#2b2233;transform:rotate(-.5deg)}
+#preview{max-height:460px;object-fit:contain;background:#efe6f5;transform:rotate(.5deg)}
+#sheetCanvas{height:auto;cursor:crosshair;background:#fff;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+
+.small{font-size:13.5px;line-height:1.65;color:var(--muted)}
+.hint{font-family:var(--hand);font-size:21px;line-height:1.25;color:#7a5c8c;margin:16px 0 0}
+
+/* ---------- Melo + status bubble ---------- */
+.melo-row{display:flex;gap:14px;align-items:flex-end;margin:16px 0 6px}
+.mascot{flex:none;width:68px;height:68px;transform-origin:50% 90%;animation:sway 4s ease-in-out infinite}
+.playing .mascot{animation:hop .5s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes hop{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+#status{
+position:relative;flex:1;min-width:0;margin:0;padding:14px 18px;border-radius:20px 20px 20px 6px;
+background:linear-gradient(135deg,#fff,#faf3ff);border:2px solid var(--lav2);
+line-height:1.6;font-weight:600;overflow-wrap:anywhere;word-break:break-word;
+}
+#status::before{
+content:"";position:absolute;left:-11px;bottom:8px;width:16px;height:16px;transform:rotate(45deg);
+background:#faf3ff;border-left:2px solid var(--lav2);border-bottom:2px solid var(--lav2);border-radius:0 0 0 5px;
+}
+
+/* ---------- note pebbles ---------- */
+#notes{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.note-chip{
+position:relative;min-width:96px;padding:10px 14px 9px;border-radius:20px 20px 20px 7px;
+font:700 19px/1.1 var(--display);background:#fff;border:2px solid var(--rose);color:var(--ink);
+box-shadow:0 3px 0 var(--rose);animation:pop .4s backwards;transition:transform .2s;
+}
+.note-chip:nth-child(4n+2){border-color:var(--lav2);box-shadow:0 3px 0 var(--lav2)}
+.note-chip:nth-child(4n+3){border-color:#a9d3b8;box-shadow:0 3px 0 #a9d3b8}
+.note-chip:nth-child(4n+4){border-color:#f0cf7e;box-shadow:0 3px 0 #f0cf7e}
+@keyframes pop{from{opacity:0;transform:scale(.7) translateY(8px)}}
+.note-chip small{display:block;margin-top:4px;font:600 11px var(--body);color:var(--muted)}
+.note-chip.active{
+background:linear-gradient(145deg,#d9679b,var(--berry2));border-color:var(--berry2);color:#fff;
+box-shadow:0 0 0 4px #f2b8c680,0 6px 14px #a3407a55;transform:translateY(-5px) scale(1.07) rotate(-2deg);
+}
+.note-chip.active small{color:#ffe3ef}
+.bar-chip{align-self:stretch;display:flex;align-items:center;padding:0 4px;font:300 34px var(--display);color:var(--lav2)}
+
+/* ---------- info + legend ---------- */
+.info{
+margin-top:20px;padding:18px 20px;border-radius:20px;background:linear-gradient(135deg,#fff7fa,#f6f0ff);
+border:2px dashed var(--lav2);font-size:14px;line-height:1.55;
+}
+.info>b{font:italic 700 19px var(--display);color:var(--berry2);display:block;margin-bottom:8px}
+.info ol{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:5px 24px;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.info li{counter-increment:s;padding-left:30px;position:relative;color:#5d4b68}
+.info li::before{
+content:counter(s);position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;
+background:var(--butter);color:#8a5a12;font:700 12px/21px var(--display);text-align:center;box-shadow:0 0 0 2px #fff,0 0 0 3px #f0cf7e;
+}
+.legend{display:flex;gap:10px 18px;flex-wrap:wrap;font-size:12.5px;font-weight:700;color:var(--muted);margin-top:18px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;box-shadow:0 0 0 2px #fff,0 0 0 3px currentColor}
+
+footer{position:relative;z-index:1;text-align:center;padding:6px 16px 40px;font:700 20px var(--hand);color:#9a82ab}
+footer .garland{margin:0 0 8px}
+
+/* ---------- responsive ---------- */
+@media(max-width:900px){
+:root{--k:.8}
+}
+@media(max-width:600px){
+:root{--k:.6}
+.card{padding:26px 18px 20px}
+button{flex:1}
+.settings{grid-template-columns:1fr 1fr}
+.mascot{width:54px;height:54px}
+.hint{font-size:19px}
+header{padding:calc(52px + var(--sat)) 14px 48px;padding-top:calc(52px + var(--sat))}
+.deco .ring.r1,.deco .ring.r4{width:220px;height:220px}
+.hang.x{display:none}
+.lights i.m{display:none}
+.lights i:nth-child(even){--t:32px}
+}
+@media(max-width:380px){
+.settings{grid-template-columns:1fr}
+h2{font-size:21px}
+}
+@media(min-width:1500px){
+main{width:min(1100px,100%)}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
-<body class="bg-black text-white min-h-screen selection:bg-white selection:text-black overflow-hidden">
-
-    <!-- ANIMATED NIGHT GARDEN (fixed, behind everything) -->
-    <canvas id="cosmic-canvas"></canvas>
-
-    <div class="text-white min-h-screen selection:bg-white selection:text-black overflow-hidden">
-        <section class="min-h-screen relative overflow-hidden flex flex-col">
-
-            <nav class="relative z-20 px-6 py-6 rise">
-                <div class="liquid-glass rounded-full max-w-5xl mx-auto pl-6 pr-1.5 py-1.5 flex items-center justify-between">
-
-                    <!-- Left Group -->
-                    <div class="flex items-center gap-2">
-                        <!-- blossom mark -->
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" aria-hidden="true" class="w-6 h-6">
-                            <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-                                <ellipse cx="12" cy="6.2" rx="2.3" ry="3.6"/>
-                                <ellipse cx="12" cy="6.2" rx="2.3" ry="3.6" transform="rotate(72 12 12)"/>
-                                <ellipse cx="12" cy="6.2" rx="2.3" ry="3.6" transform="rotate(144 12 12)"/>
-                                <ellipse cx="12" cy="6.2" rx="2.3" ry="3.6" transform="rotate(216 12 12)"/>
-                                <ellipse cx="12" cy="6.2" rx="2.3" ry="3.6" transform="rotate(288 12 12)"/>
-                            </g>
-                            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                        </svg>
-                        <span class="font-semibold text-lg tracking-tight">Lumora</span>
-
-                        <div class="hidden md:flex gap-8 ml-8">
-                            <a href="#" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Wander</a>
-                            <a href="#" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Seasons</a>
-                            <a href="#" class="text-white/80 hover:text-white text-sm font-medium transition-colors">Say hello</a>
-                        </div>
-                    </div>
-
-                    <!-- Right Group -->
-                    <div class="flex items-center gap-4">
-                        <button class="text-white text-sm font-medium">Sign In</button>
-                        <button class="bg-white rounded-full px-5 py-2 text-black text-sm font-medium whitespace-nowrap hover:scale-105 transition-transform duration-300">Enter the Garden</button>
-                    </div>
-
-                </div>
-            </nav>
-
-            <div class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12 text-center -translate-y-[20%]">
-
-                <div class="headline-halo relative flex flex-col items-center">
-                    <!-- Eyebrow -->
-                    <p class="rise rise-2 text-pink-200/70 text-xs tracking-[0.35em] uppercase mb-5"
-                       style="text-shadow: 0 0 24px rgba(0,0,0,.6);">
-                        ✦ &nbsp;open after sunset&nbsp; ✦
-                    </p>
-
-                    <!-- Headline -->
-                    <h1 class="rise rise-2 text-5xl md:text-7xl lg:text-8xl font-serif-instrument tracking-tight max-w-5xl mb-4 leading-[1.02]"
-                        style="text-shadow: 0 0 72px rgba(0, 0, 0, 0.6), 0 4px 28px rgba(0, 0, 0, 0.45);">
-                        Wander through a garden of <em class="italic text-pink-200">starlight</em>
-                    </h1>
-
-                    <!-- Subline -->
-                    <p class="rise rise-3 text-white/80 text-sm md:text-base leading-relaxed max-w-xl mb-10"
-                       style="text-shadow: 0 0 30px rgba(0, 0, 0, 0.6), 0 1px 10px rgba(0, 0, 0, 0.4);">
-                        One quiet walk beneath a pink galaxy, where every petal remembers the light.
-                    </p>
-                </div>
-
-                <!-- Email Capture -->
-                <div class="rise rise-4 max-w-xl w-full">
-                    <div class="liquid-glass rounded-full pl-6 pr-1.5 py-1.5 flex items-center gap-3">
-                        <input type="email" placeholder="Your email, for a lantern-lit invitation"
-                               class="bg-transparent border-none outline-none flex-1 min-w-0 text-white placeholder:text-white/80 text-sm">
-                        <button id="plant-btn" class="bg-white rounded-full px-6 py-3 text-black text-sm font-medium whitespace-nowrap hover:scale-105 transition-transform duration-300">Plant a Seed</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="relative z-10 flex justify-center gap-4 pb-12 rise rise-4">
-                <button class="liquid-glass-circle w-14 h-14 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/5 transition-all">
-                    <iconify-icon icon="lucide:instagram" class="text-xl"></iconify-icon>
-                </button>
-                <button class="liquid-glass-circle w-14 h-14 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/5 transition-all">
-                    <iconify-icon icon="lucide:twitter" class="text-xl"></iconify-icon>
-                </button>
-                <button class="liquid-glass-circle w-14 h-14 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/5 transition-all">
-                    <iconify-icon icon="lucide:globe" class="text-xl"></iconify-icon>
-                </button>
-            </div>
-
-        </section>
-    </div>
-
-    <!-- MUSIC TOGGLE -->
-    <div class="fixed z-30 bottom-6 right-6 flex items-center gap-3 rise rise-4">
-        <span id="music-hint" class="text-white/70 text-xs tracking-wide hidden sm:inline" style="text-shadow:0 0 12px #000;">♪ tap anywhere for calming music</span>
-        <button id="music-btn" type="button" aria-label="Toggle calming music" aria-pressed="false" title="Calming music"
-                class="liquid-glass-circle w-12 h-12 flex items-center justify-center rounded-full text-white/85 hover:text-white hover:bg-white/5 transition-all">
-            <!-- muted icon -->
-            <svg id="ic-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m16 9 5 6"/><path d="m21 9-5 6"/>
-            </svg>
-            <!-- playing icon -->
-            <svg id="ic-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
-                <path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>
-            </svg>
-        </button>
-    </div>
-
-    <!-- NIGHT GARDEN SCENE -->
-    <script>
-    (() => {
-        const canvas = document.getElementById('cosmic-canvas');
-        const ctx = canvas.getContext('2d');
-        let W = 0, H = 0, dpr = 1;
-
-        /* ---------- seeded random so the garden is the same every visit ---------- */
-        function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-        let rnd = mulberry(7);
-        const R = (a, b) => a + rnd() * (b - a);
-        const gau = () => (rnd() + rnd() + rnd() - 1.5) / 1.5;      // soft bell curve, about -1..1
-        const hsl = (h, s, l, a = 1) => `hsla(h,{s}%,l%,{a})`;
-
-        /* =====================================================================
-           GLOW SPRITES
-           ===================================================================== */
-        function makeGlow(r, g, b) {
-            const c = document.createElement('canvas'); c.width = c.height = 128;
-            const x = c.getContext('2d');
-            const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-            gr.addColorStop(0,   `rgba(r,{g},${b},1)`);
-            gr.addColorStop(0.25,`rgba(r,{g},${b},.45)`);
-            gr.addColorStop(1,   `rgba(r,{g},${b},0)`);
-            x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
-            return c;
-        }
-        const GLOW = [makeGlow(255, 120, 190), makeGlow(255, 225, 245), makeGlow(190, 140, 255), makeGlow(255, 215, 140)];
-
-        function makeMist() {
-            const c = document.createElement('canvas'); c.width = 512; c.height = 128;
-            const x = c.getContext('2d');
-            x.save(); x.scale(1, 0.25);
-            const gr = x.createRadialGradient(256, 256, 0, 256, 256, 256);
-            gr.addColorStop(0, 'rgba(255,170,220,.55)');
-            gr.addColorStop(1, 'rgba(255,170,220,0)');
-            x.fillStyle = gr; x.fillRect(0, 0, 512, 512); x.restore();
-            return c;
-        }
-        const MIST = makeMist();
-
-        /* =====================================================================
-           PAINTED FLOWER HEADS — each bloom is drawn once, petal by petal,
-           with gradients, veins and shading, then stamped thousands of times.
-           ===================================================================== */
-        const SZ = 192, C0 = 96, RAD = 88;
-        function mk(draw) {
-            const c = document.createElement('canvas'); c.width = c.height = SZ;
-            const g = c.getContext('2d'); g.translate(C0, C0); draw(g); return c;
-        }
-        function petalPath(g, len, wid, round, notch) {
-            const tipx = notch ? wid * 0.38 : 0;
-            g.beginPath(); g.moveTo(0, 0);
-            g.bezierCurveTo(wid * (1 + round * 0.4), -len * 0.1, wid * (1 + round * 0.3), -len * (0.88 + round * 0.08), tipx, -len);
-            if (notch) { g.lineTo(0, -len * 0.92); g.lineTo(-tipx, -len); }
-            g.bezierCurveTo(-wid * (1 + round * 0.3), -len * (0.88 + round * 0.08), -wid * (1 + round * 0.4), -len * 0.1, 0, 0);
-            g.closePath();
-        }
-        // col = [hue, sat, lightness at base, lightness at tip]
-        function petal(g, len, wid, col, o = {}) {
-            const { round = 0, notch = false, rot = 0, vein = true } = o;
-            const [h, s, lb, lt] = col;
-            g.save(); g.rotate(rot);
-            const gr = g.createLinearGradient(0, 0, 0, -len);
-            gr.addColorStop(0, hsl(h, s + 8, lb - 10));
-            gr.addColorStop(0.45, hsl(h, s, lb + (lt - lb) * 0.45));
-            gr.addColorStop(1, hsl(h + 5, s - 12, lt));
-            petalPath(g, len, wid, round, notch); g.fillStyle = gr; g.fill();
-            if (vein) {
-                g.strokeStyle = hsl(h, s, lb - 14, 0.32); g.lineWidth = Math.max(0.5, len * 0.011);
-                for (const v of [-0.45, 0, 0.45]) {
-                    g.beginPath(); g.moveTo(0, -len * 0.05);
-                    g.quadraticCurveTo(wid * v * 0.9, -len * 0.5, wid * v * 0.5, -len * 0.9); g.stroke();
-                }
-            }
-            g.strokeStyle = hsl(h, s - 10, Math.min(99, lt + 4), 0.45); g.lineWidth = 0.8;
-            petalPath(g, len, wid, round, notch); g.stroke();
-            g.restore();
-        }
-        const disc = (g, x, y, r, f) => { g.fillStyle = f; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); };
-
-        function bloomDaisy(col) {
-            return mk(g => {
-                const n = 20;
-                for (let i = 0; i < n; i++) petal(g, 86, 6.5, col, { rot: i / n * 6.283, vein: false });
-                for (let i = 0; i < n; i++) petal(g, 74, 6.2, col, { rot: (i + 0.5) / n * 6.283, vein: false });
-                disc(g, 0, 0, 22, 'rgba(90,40,20,.35)');
-                const cg = g.createRadialGradient(-4, -4, 1, 0, 0, 19);
-                cg.addColorStop(0, '#fff0a0'); cg.addColorStop(0.6, '#f2b52c'); cg.addColorStop(1, '#b8721a');
-                disc(g, 0, 0, 18, cg);
-                for (let i = 0; i < 46; i++) {
-                    const a = Math.random() * 6.283, r = Math.sqrt(Math.random()) * 16;
-                    disc(g, Math.cos(a) * r, Math.sin(a) * r, 1.1, Math.random() < 0.5 ? 'rgba(130,70,10,.55)' : 'rgba(255,240,170,.6)');
-                }
-            });
-        }
-        function bloomCosmos(col) {
-            return mk(g => {
-                for (let i = 0; i < 8; i++) petal(g, 86, 30, col, { round: 0.6, notch: true, rot: i / 8 * 6.283 });
-                for (let i = 0; i < 8; i++) petal(g, 64, 23, [col[0], col[1], col[2] + 6, col[3] + 4], { round: 0.6, notch: true, rot: (i + 0.5) / 8 * 6.283, vein: false });
-                disc(g, 0, 0, 14, 'rgba(70,20,40,.4)');
-                const cg = g.createRadialGradient(-2, -2, 1, 0, 0, 12);
-                cg.addColorStop(0, '#fff2a8'); cg.addColorStop(1, '#e8a31e');
-                disc(g, 0, 0, 11, cg);
-                for (let i = 0; i < 22; i++) { const a = i / 22 * 6.283; disc(g, Math.cos(a) * 9.5, Math.sin(a) * 9.5, 1.6, '#ffd45a'); }
-            });
-        }
-        function bloomRose(col) {
-            return mk(g => {
-                const rings = [[9, 84, 36], [8, 70, 32], [7, 56, 27], [6, 43, 22], [5, 31, 16], [4, 19, 11]];
-                rings.forEach(([n, len, w], k) => {
-                    disc(g, 0, 0, len * 0.72, 'rgba(40,0,25,.26)');
-                    const off = Math.random() * 6.283;
-                    for (let i = 0; i < n; i++)
-                        petal(g, len, w, [col[0], col[1], col[2] - k * 2, col[3] - k * 3],
-                              { round: 1, rot: off + i / n * 6.283 + (Math.random() - 0.5) * 0.18, vein: k < 3 });
-                });
-                g.strokeStyle = hsl(col[0], col[1], col[2] - 16, 0.55); g.lineWidth = 1.2; g.beginPath();
-                for (let a = 0; a < 9; a += 0.25) { const r = a * 1.1; g.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
-                g.stroke();
-            });
-        }
-        function bloomTulip(col) {
-            return mk(g => {
-                g.translate(0, 34);
-                petal(g, 104, 34, col, { round: 0.9, rot: -0.34 });
-                petal(g, 104, 34, col, { round: 0.9, rot: 0.34 });
-                petal(g, 100, 30, [col[0], col[1], col[2] - 12, col[3] - 10], { round: 0.9, vein: false });
-                petal(g, 98, 33, col, { round: 0.9 });
-                g.strokeStyle = 'rgba(255,255,255,.28)'; g.lineWidth = 2.2; g.lineCap = 'round';
-                g.beginPath(); g.moveTo(-6, -12); g.quadraticCurveTo(-12, -48, -4, -84); g.stroke();
-            });
-        }
-        function bloomLily(col) {
-            return mk(g => {
-                for (let i = 0; i < 6; i++) {
-                    const a = i / 6 * 6.283 + 0.2, big = i % 2 === 0;
-                    petal(g, big ? 90 : 78, big ? 19 : 17, col, { round: -0.45, rot: a });
-                    g.save(); g.rotate(a);
-                    g.strokeStyle = 'rgba(255,255,215,.5)'; g.lineWidth = 2; g.lineCap = 'round';
-                    g.beginPath(); g.moveTo(0, -8); g.lineTo(0, -(big ? 62 : 52)); g.stroke();
-                    for (let d = 0; d < 13; d++) disc(g, (Math.random() - 0.5) * 16, -14 - Math.random() * 40, 1.2, hsl(col[0], 70, 26, 0.8));
-                    g.restore();
-                }
-                disc(g, 0, 0, 5, '#c9d87a');
-                for (let i = 0; i < 6; i++) {
-                    const a = i / 6 * 6.283 + 0.5, L = 46 + Math.random() * 12, ex = Math.cos(a) * L, ey = Math.sin(a) * L;
-                    g.strokeStyle = '#f4e3b0'; g.lineWidth = 1.6; g.lineCap = 'round';
-                    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(ex * 0.5 + 3, ey * 0.5 - 3, ex, ey); g.stroke();
-                    g.save(); g.translate(ex, ey); g.rotate(a);
-                    g.fillStyle = '#b5551a'; g.beginPath(); g.ellipse(0, 0, 5, 2.4, 0, 0, 6.283); g.fill(); g.restore();
-                }
-            });
-        }
-        function bloomFloret(col) {
-            return mk(g => {
-                for (let i = 0; i < 5; i++) petal(g, 70, 34, col, { round: 1, rot: i / 5 * 6.283, vein: false });
-                disc(g, 0, -6, 12, hsl(col[0], col[1], Math.min(96, col[3] + 12), 0.9));
-            });
-        }
-        const VAR = {
-            daisy:  [[340, 60, 78, 97], [48, 40, 84, 98], [290, 45, 76, 95]],
-            cosmos: [[325, 85, 45, 70], [340, 80, 50, 78], [300, 70, 52, 76]],
-            rose:   [[338, 78, 38, 70], [322, 70, 40, 68], [8, 78, 46, 74]],
-            tulip:  [[345, 80, 45, 72], [322, 76, 44, 70], [14, 85, 52, 74]],
-            lily:   [[330, 70, 52, 88], [350, 35, 80, 97], [18, 85, 55, 80]],
-            lupin:  [[285, 60, 48, 76], [310, 62, 52, 78], [262, 60, 52, 78]]
-        };
-        const SPR = {
-            daisy:  VAR.daisy.map(bloomDaisy),
-            cosmos: VAR.cosmos.map(bloomCosmos),
-            rose:   VAR.rose.map(bloomRose),
-            tulip:  VAR.tulip.map(bloomTulip),
-            lily:   VAR.lily.map(bloomLily),
-            lupin:  VAR.lupin.map(bloomFloret)
-        };
-        const TYPEK = { daisy: 1.0, cosmos: 1.05, rose: 1.0, tulip: 1.0, lily: 1.12 };
-        const TYPES = ['daisy', 'cosmos', 'rose', 'tulip', 'lily', 'lupin', 'cosmos', 'rose', 'daisy', 'lily'];
-        const SPECK = [[330, 80, 70], [300, 70, 75], [20, 90, 75], [280, 60, 75]];
-
-        /* =====================================================================
-           TERRAIN
-           ===================================================================== */
-        const hill = (x, layer) => {
-            const base = [0.735, 0.80, 0.91][layer];
-            const amp  = [0.022, 0.020, 0.018][layer];
-            return H * base
-                 + Math.sin(x * 0.0035 + layer * 2.1) * H * amp
-                 + Math.sin(x * 0.0102 + layer * 1.3) * H * amp * 0.45;
-        };
-        const ridge = (x, k) => H * (0.66 - k * 0.035)
-                 - Math.abs(Math.sin(x * 0.0021 + k * 3.7)) * H * (0.07 + k * 0.02)
-                 - Math.sin(x * 0.0074 + k) * H * 0.012;
-
-        /* =====================================================================
-           SCENE DATA
-           ===================================================================== */
-        let stars = [], flowers = [], grass = [[], [], []], fireflies = [], petals = [], shooting = [];
-        let starfield = null, nebula = null, gal = null;
-
-        /* ---- a deep, dusty starfield + milky band, painted once ---- */
-        function buildStarfield() {
-            const c = document.createElement('canvas');
-            c.width = Math.round(W * dpr); c.height = Math.round(H * 0.82 * dpr);
-            const g = c.getContext('2d'); g.scale(dpr, dpr);
-            const cols = ['255,255,255', '255,220,235', '200,220,255', '255,240,210'];
-            const star = () => {
-                g.fillStyle = `rgba(cols[(rnd()*4)|0],{0.18 + Math.pow(rnd(), 2) * 0.7})`;
-                return 0.4 + Math.pow(rnd(), 3) * 1.1;
-            };
-            for (let i = 0; i < 2600; i++) { const s = star(); g.fillRect(rnd() * W, rnd() * H * 0.82, s, s); }
-            // milky band sweeping across the sky
-            for (let i = 0; i < 5200; i++) {
-                const t = rnd(), x = -W * 0.1 + t * W * 1.2, y = H * (0.56 - 0.52 * t);
-                const nx = 0.69, ny = 0.72;                        // normal of the band
-                const off = gau() * H * 0.075 * (0.6 + rnd() * 0.8);
-                const s = star(); g.fillRect(x + nx * off, y + ny * off, s, s);
-            }
-            starfield = c;
-        }
-
-        /* ---- soft nebula clouds (half-res; they are blurry anyway) ---- */
-        function buildNebula() {
-            const sc = 0.5, w = Math.ceil((W + 120) * sc), h = Math.ceil((H * 0.82 + 60) * sc);
-            const c = document.createElement('canvas'); c.width = w; c.height = h;
-            const g = c.getContext('2d');
-            const blob = (sx, sy, sr, col, a) => {
-                const x = (sx + 60) * sc, y = (sy + 30) * sc, r = sr * sc;
-                const gr = g.createRadialGradient(x, y, 0, x, y, r);
-                gr.addColorStop(0, `rgba(col,{a})`); gr.addColorStop(0.5, `rgba(col,{a * 0.45})`); gr.addColorStop(1, `rgba(${col},0)`);
-                g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
-            };
-            const sets = [['255,70,170', '200,60,210'], ['130,80,255', '255,110,200'], ['70,150,255', '150,90,255'], ['255,100,160', '255,170,110'], ['60,200,220', '120,120,255']];
-            g.globalCompositeOperation = 'lighter';
-            for (let i = 0; i < 10; i++) {                           // scattered emission nebulae
-                const cx = rnd() * W, cy = rnd() * H * 0.6, set = sets[i % 5];
-                for (let j = 0; j < 18; j++) blob(cx + gau() * W * 0.12, cy + gau() * H * 0.09, 50 + rnd() * 150, rnd() < 0.6 ? set[0] : set[1], 0.035 + rnd() * 0.07);
-            }
-            for (let i = 0; i < 16; i++) {                           // halo of colour around the galaxy
-                const set = sets[(rnd() * 3) | 0];
-                blob(W / 2 + gau() * W * 0.22, H * 0.27 + gau() * H * 0.14, 90 + rnd() * 200, rnd() < 0.6 ? set[0] : set[1], 0.04 + rnd() * 0.05);
-            }
-            for (let i = 0; i < 24; i++) {                           // glow along the milky band
-                const t = rnd();
-                blob(-W * 0.1 + t * W * 1.2 + gau() * 40, H * (0.56 - 0.52 * t) + gau() * 40, 120 + rnd() * 120, '190,150,255', 0.035);
-            }
-            g.globalCompositeOperation = 'source-over';              // dark dust gives the clouds structure
-            for (let i = 0; i < 16; i++) blob(rnd() * W, rnd() * H * 0.6, 60 + rnd() * 120, '6,0,12', 0.2);
-            nebula = c;
-        }
-
-        /* ---- the galaxy itself, painted once and then slowly spun ---- */
-        function buildGalaxy() {
-            const S = 820, c0 = 410;
-            const c = document.createElement('canvas'); c.width = c.height = S;
-            const g = c.getContext('2d');
-            const glow = (x, y, r, col, a) => {
-                const gr = g.createRadialGradient(x, y, 0, x, y, r);
-                gr.addColorStop(0, `rgba(col,{a})`); gr.addColorStop(0.5, `rgba(col,{a * 0.4})`); gr.addColorStop(1, `rgba(${col},0)`);
-                g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
-            };
-            g.globalCompositeOperation = 'lighter';
-            glow(c0, c0, 380, '150,60,190', 0.16); glow(c0, c0, 260, '255,110,185', 0.22); glow(c0, c0, 120, '255,170,200', 0.35);
-
-            const arms = [0, Math.PI, Math.PI * 0.5, Math.PI * 1.5], TW = 0.0135;
-            for (let i = 0; i < 15000; i++) {                        // ~15k stars across four arms
-                const m = i % 10, ai = m < 4 ? 0 : m < 8 ? 1 : m < 9 ? 2 : 3;
-                const r = 16 + Math.pow(rnd(), 0.62) * 340;
-                const th = arms[ai] + r * TW + gau() * (0.16 + r / 1100) * (ai > 1 ? 1.8 : 1);
-                const k = r / 356;
-                const col = k < 0.22 ? '255,228,196' : k < 0.5 ? (rnd() < 0.5 ? '255,170,215' : '255,205,225') : (rnd() < 0.55 ? '190,215,255' : '255,160,215');
-                g.fillStyle = `rgba(col,{(0.2 + rnd() * 0.7) * (1 - k * 0.5)})`;
-                const s = 0.5 + Math.pow(rnd(), 3) * 1.7;
-                g.fillRect(c0 + Math.cos(th) * r, c0 + Math.sin(th) * r, s, s);
-            }
-            for (let i = 0; i < 2500; i++) {                         // warm central bulge
-                const r = Math.abs(gau()) * 70, a = rnd() * 6.283;
-                g.fillStyle = `rgba(255,200+(rnd()*40)|0,{160 + (rnd() * 50) | 0},${0.25 + rnd() * 0.6})`;
-                g.fillRect(c0 + Math.cos(a) * r, c0 + Math.sin(a) * r, 0.7 + rnd() * 1.1, 0.7 + rnd() * 1.1);
-            }
-            for (let i = 0; i < 100; i++) {                          // glowing star-forming knots
-                const ai = rnd() < 0.5 ? 0 : 1, r = 70 + rnd() * 270, th = arms[ai] + r * TW + gau() * 0.1;
-                glow(c0 + Math.cos(th) * r, c0 + Math.sin(th) * r, 6 + rnd() * 16, rnd() < 0.75 ? '255,90,180' : '110,170,255', 0.4);
-            }
-            g.globalCompositeOperation = 'source-over';             // dark dust lanes
-            for (let i = 0; i < 260; i++) {
-                const ai = rnd() < 0.5 ? 0 : 1, r = 50 + rnd() * 280, th = arms[ai] + r * TW - 0.16 + gau() * 0.04;
-                glow(c0 + Math.cos(th) * r, c0 + Math.sin(th) * r, 5 + rnd() * 13, '14,2,20', 0.2);
-            }
-            g.globalCompositeOperation = 'lighter';
-            glow(c0, c0, 70, '255,240,225', 0.9); glow(c0, c0, 26, '255,255,250', 0.95);
-            gal = c;
-        }
-
-        function build() {
-            rnd = mulberry(7);
-
-            buildStarfield(); buildNebula(); buildGalaxy();
-
-            // twinkling stars (a handful are bright enough to carry diffraction spikes)
-            stars = Array.from({ length: Math.round(W * H / 4200) }, () => ({
-                x: R(0, W), y: R(0, H * 0.72), s: Math.pow(rnd(), 2.4) * 1.9 + 0.35,
-                a: rnd(), sp: R(0.4, 1.6), tint: rnd() < 0.3 ? '255,200,235' : '255,255,255', big: false
-            }));
-            for (let i = 0; i < 16; i++) { const s = stars[i]; s.big = true; s.s = R(1.8, 2.8); }
-
-            // flowers
-            flowers = [];
-            const add = (layer, count, hMin, hMax, sMin, sMax, yJit) => {
-                for (let i = 0; i < count; i++) {
-                    const x = R(-30, W + 30);
-                    const type = TYPES[(rnd() * TYPES.length) | 0], v = (rnd() * 3) | 0;
-                    const y = hill(x, layer) + R(yJit[0], yJit[1]);
-                    const sp = SPECK[(rnd() * 4) | 0];
-                    flowers.push({
-                        x, by: y, h: R(hMin, hMax), size: R(sMin, sMax), type, v, tilt: R(0.62, 1),
-                        hue: sp[0], sat: sp[1], lit: sp[2],
-                        ph: R(0, 6.28), layer, front: layer === 2 || (layer === 1 && y > hill(x, 1) + 5),
-                        glow: type === 'daisy' ? 1 : (type === 'lupin' ? 2 : 0)
-                    });
-                }
-            };
-            const scale = Math.max(0.7, Math.min(1.5, H / 760));
-            add(0, Math.round(W / 8),  8 * scale, 20 * scale, 1.6 * scale, 2.8 * scale, [0, 16]);
-            add(1, Math.round(W / 10), 40 * scale, 84 * scale, 6.5 * scale, 11 * scale, [-4, 26]);
-            add(2, Math.round(W / 75), 150 * scale, 270 * scale, 17 * scale, 28 * scale, [8, 40]);
-            flowers.sort((a, b) => a.by - b.by);
-
-            // blades of grass for the meadow and the foreground
-            grass = [[], [[], []], [[], []]];
-            for (let i = 0; i < Math.round(W / 2.2); i++) { const x = R(-20, W + 20); grass[1][i % 2].push({ x, by: hill(x, 1) + R(-6, 30), h: R(16, 46) * scale }); }
-            for (let i = 0; i < Math.round(W / 5); i++)   { const x = R(-20, W + 20); grass[2][i % 2].push({ x, by: hill(x, 2) + R(6, 60),  h: R(50, 130) * scale }); }
-
-            fireflies = Array.from({ length: 46 }, () => ({
-                x: R(0, W), y: R(H * 0.45, H * 0.92), ph: R(0, 6.28), sp: R(0.25, 0.7), r: R(14, 30)
-            }));
-            petals = Array.from({ length: 46 }, () => newPetal(true));
-        }
-
-        function newPetal(anywhere) {
-            return {
-                x: R(-50, W + 50), y: anywhere ? R(0, H) : R(-40, -10), s: R(3, 9) * (H / 760),
-                vy: R(14, 38), vx: R(-14, 14), a: R(0, 6.28), sp: R(-1.2, 1.2), sw: R(0, 6.28),
-                c: rnd() > 0.5 ? '255,150,210' : '255,205,240', blur: rnd() < 0.2
-            };
-        }
-
-        function resize() {
-            dpr = Math.min(window.devicePixelRatio || 1, 2);
-            W = window.innerWidth; H = window.innerHeight;
-            canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            build();
-            man.x = Math.min(man.x, W + 80);
-        }
-
-        /* =====================================================================
-           THE WALKER
-           ===================================================================== */
-        const man = { x: -140, phase: 0, speed: 52 };
-        let lantern = { x: -999, y: 0, r: 0 };
-        const mScale = () => Math.max(0.75, Math.min(1.5, H / 760));
-
-        function windAt(x, t) {
-            return Math.sin(t * 0.0011 + x * 0.006) * 0.55 + Math.sin(t * 0.0027 + x * 0.013) * 0.25 + Math.sin(t * 0.0006 + x * 0.002) * 0.3;
-        }
-        function pushAt(x) {                         // flowers part around the walker
-            const d = x - man.x, reach = 60 * mScale();
-            if (Math.abs(d) > reach) return 0;
-            return Math.sign(d || 1) * Math.pow(1 - Math.abs(d) / reach, 1.4);
-        }
-        function litAt(x, y) {
-            const d = Math.hypot(x - lantern.x, (y - lantern.y) * 1.3);
-            return Math.max(0, 1 - d / (230 * mScale()));
-        }
-
-        /* ---------- grass ---------- */
-        function drawGrass(layer, t) {
-            const cols = layer === 1 ? ['hsl(155,35%,13%)', 'hsl(140,32%,18%)'] : ['hsl(158,30%,9%)', 'hsl(150,30%,13%)'];
-            ctx.lineWidth = layer === 2 ? 2.2 : 1.3; ctx.lineCap = 'round';
-            for (let k = 0; k < 2; k++) {
-                ctx.strokeStyle = cols[k]; ctx.beginPath();
-                for (const b of grass[layer][k]) {
-                    const sway = windAt(b.x, t) * b.h * 0.18 + (layer === 1 ? pushAt(b.x) * b.h * 0.35 : 0);
-                    ctx.moveTo(b.x, b.by); ctx.quadraticCurveTo(b.x + sway * 0.3, b.by - b.h * 0.6, b.x + sway, b.by - b.h);
-                }
-                ctx.stroke();
-            }
-        }
-
-        /* ---------- leaves ---------- */
-        function leaf(x, y, len, ang, col, mid) {
-            ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-            ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, 0);
-            ctx.quadraticCurveTo(len * 0.45, -len * 0.26, len, 0); ctx.quadraticCurveTo(len * 0.45, len * 0.2, 0, 0); ctx.fill();
-            ctx.strokeStyle = mid; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(len * 0.9, -len * 0.01); ctx.stroke();
-            ctx.restore();
-        }
-
-        /* ---------- one flower: stem, leaves, glow, painted bloom ---------- */
-        function drawFlower(f, t) {
-            const push = f.layer === 1 ? pushAt(f.x) * 0.7 : 0;
-            const lean = (windAt(f.x, t) * 0.12 + push * 0.55) * f.h * (f.layer === 2 ? 0.8 : 1) + Math.sin(t * 0.002 + f.ph) * f.h * 0.012;
-            const tx = f.x + lean, ty = f.by - f.h;
-            const cx = f.x + lean * 0.15, cy = f.by - f.h * 0.55;
-            const lit = f.layer === 0 ? 0 : litAt(f.x, f.by - f.h * 0.5);
-            const dim = [0.55, 1, 1][f.layer];
-
-            // stem
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = `hsl(150-lit*20,{38 + lit * 10}%,${(13 + lit * 20) * dim + (f.layer === 2 ? 2 : 0)}%)`;
-            ctx.lineWidth = Math.max(1, f.size * (f.type === 'lupin' ? 0.2 : 0.15));
-            ctx.beginPath(); ctx.moveTo(f.x, f.by); ctx.quadraticCurveTo(cx, cy, tx, ty); ctx.stroke();
-
-            if (f.layer === 0) {                      // far meadow: just a glowing speck
-                const p = (Math.sin(t * 0.003 + f.ph) + 1) * 0.5;
-                ctx.fillStyle = hsl(f.hue, f.sat, f.lit, 0.45 + p * 0.4);
-                ctx.beginPath(); ctx.arc(tx, ty, f.size, 0, 6.283); ctx.fill();
-                return;
-            }
-
-            // leaves, in pairs along the stem
-            const bez = u => [(1 - u) * (1 - u) * f.x + 2 * (1 - u) * u * cx + u * u * tx, (1 - u) * (1 - u) * f.by + 2 * (1 - u) * u * cy + u * u * ty];
-            const lc = `hsl(150,40%,(15+lit*18)*dim%)`,lm=`hsl(150,35%,{(24 + lit * 16) * dim}%)`;
-            const sw = Math.sin(t * 0.002 + f.ph) * 0.08;
-            const L = f.size * (f.layer === 2 ? 2.4 : 2.1);
-            let p = bez(0.24); leaf(p[0], p[1], L, -0.75 + sw, lc, lm);
-            p = bez(0.42);     leaf(p[0], p[1], L * 0.85, Math.PI + 0.75 - sw, lc, lm);
-            if (f.layer === 2) { p = bez(0.1); leaf(p[0], p[1], L * 1.1, -0.35 + sw, lc, lm); }
-
-            // soft glow under the bloom
-            const pulse = (Math.sin(t * 0.0022 + f.ph) + 1) * 0.5;
-            const ga = (0.13 + pulse * 0.12 + lit * 0.45) * (f.layer === 2 ? 0.7 : 1);
-            const gs = f.size * (f.type === 'lupin' ? 3.2 : 4.4);
-            ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = ga;
-            ctx.drawImage(GLOW[f.glow], tx - gs, ty - gs, gs * 2, gs * 2);
-            ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-
-            if (f.type === 'lupin') {                 // a spike of tiny florets
-                const n = 14;
-                for (let i = n - 1; i >= 0; i--) {
-                    const k = i / (n - 1), u = 1 - k * 0.42, q = bez(u);
-                    const side = (i % 2 ? 1 : -1) * f.size * 0.35 * (1 - k * 0.4), sz = f.size * (0.38 + 0.38 * k);
-                    ctx.drawImage(SPR.lupin[f.v], q[0] + side - sz * 1.2, q[1] - sz * 1.2, sz * 2.4, sz * 2.4);
-                    if (lit > 0.05) {
-                        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = lit * 0.3;
-                        ctx.drawImage(SPR.lupin[f.v], q[0] + side - sz * 1.2, q[1] - sz * 1.2, sz * 2.4, sz * 2.4);
-                        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-                    }
-                }
-                return;
-            }
-
-            // painted bloom, tilted toward the viewer and swaying with the stem
-            const spr = SPR[f.type][f.v], k = TYPEK[f.type] * f.size / RAD;
-            ctx.save(); ctx.translate(tx, ty); ctx.rotate(lean / f.h * 1.1);
-            ctx.scale(k, f.type === 'tulip' ? k : k * f.tilt);
-            ctx.drawImage(spr, -C0, -C0);
-            if (lit > 0.05) {                         // lantern-lit petals glow warmer
-                ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = lit * 0.35;
-                ctx.drawImage(spr, -C0, -C0);
-                ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-            }
-            ctx.restore();
-        }
-
-        /* ---------- man with a lantern ---------- */
-        function limb(x1, y1, x2, y2, w, col) {
-            ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        }
-        function drawMan(t) {
-            const s = mScale() * 1.3, ph = man.phase, gy = hill(man.x, 1) + 12 * s;
-            const bob = Math.abs(Math.sin(ph)) * 2.4;
-            const dark = '#17081a', trouser = '#10050f';
-
-            ctx.save(); ctx.translate(man.x, gy); ctx.scale(s, s);
-
-            // contact shadow
-            ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(0, 1, 18, 4, 0, 0, 6.283); ctx.fill();
-
-            // legs
-            const leg = (p) => {
-                const a = Math.sin(p) * 0.55, bend = 0.12 + 0.6 * Math.max(0, Math.cos(p));
-                const hx = 0, hy = -50 + bob * 0.4;
-                const kx = hx + Math.sin(a) * 25, ky = hy + Math.cos(a) * 25;
-                const b = a - bend;
-                const fx = kx + Math.sin(b) * 25, fy = Math.min(0, ky + Math.cos(b) * 25);
-                limb(hx, hy, kx, ky, 8, trouser); limb(kx, ky, fx, fy, 7, trouser);
-                ctx.fillStyle = '#0a030a'; ctx.beginPath(); ctx.ellipse(fx + 3, fy - 1, 6, 3, 0, 0, 6.283); ctx.fill();
-            };
-            leg(ph + Math.PI);
-
-            // back arm
-            const sa = -Math.sin(ph) * 0.55;
-            limb(-2, -88 + bob, -2 + Math.sin(sa) * 28, -88 + bob + Math.cos(sa) * 28, 6.5, dark);
-
-            // coat
-            const sw = Math.sin(ph) * 3.2, y0 = bob;
-            ctx.fillStyle = dark; ctx.strokeStyle = 'rgba(255,165,215,.38)'; ctx.lineWidth = 1.1;
-            ctx.beginPath();
-            ctx.moveTo(-9, -92 + y0);
-            ctx.quadraticCurveTo(-14, -66 + y0, -15 + sw, -33 + y0);
-            ctx.lineTo(-3, -31 + y0); ctx.lineTo(2, -35 + y0); ctx.lineTo(16 + sw, -32 + y0);
-            ctx.quadraticCurveTo(12, -66 + y0, 9, -92 + y0);
-            ctx.quadraticCurveTo(0, -97 + y0, -9, -92 + y0);
-            ctx.closePath(); ctx.fill(); ctx.stroke();
-
-            // scarf that streams behind in the breeze
-            ctx.strokeStyle = '#ff8fc8'; ctx.lineWidth = 4.2; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(-3, -91 + y0);
-            ctx.bezierCurveTo(-14, -90 + y0 + Math.sin(t * 0.006) * 2, -22, -84 + y0 + Math.sin(t * 0.005 + 1) * 4, -34, -86 + y0 + Math.sin(t * 0.0045) * 6);
-            ctx.stroke();
-            ctx.lineWidth = 5; ctx.strokeStyle = '#f26aa8';
-            ctx.beginPath(); ctx.moveTo(-8, -91 + y0); ctx.lineTo(7, -91 + y0); ctx.stroke();
-
-            // head + hat
-            ctx.fillStyle = dark;
-            ctx.beginPath(); ctx.arc(2, -103 + y0, 7.4, 0, 6.283); ctx.fill();
-            ctx.strokeStyle = 'rgba(255,165,215,.4)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(2, -103 + y0, 7.4, 3.5, 5.1); ctx.stroke();
-            ctx.fillStyle = '#12050f';
-            ctx.beginPath(); ctx.ellipse(2, -108 + y0, 14, 3.1, 0, 0, 6.283); ctx.fill();
-            ctx.beginPath(); ctx.moveTo(-5, -108 + y0); ctx.quadraticCurveTo(-4, -121 + y0, 2, -121 + y0); ctx.quadraticCurveTo(9, -121 + y0, 9, -108 + y0); ctx.fill();
-            ctx.fillStyle = '#f26aa8'; ctx.fillRect(-5, -111.5 + y0, 14, 2.4);
-
-            // front leg
-            leg(ph);
-
-            // lantern arm (reaches forward, gentle sway)
-            const hx = 16, hy = -68 + y0 + Math.sin(ph * 2) * 0.8;
-            limb(3, -88 + y0, 11, -76 + y0, 6.5, dark); limb(11, -76 + y0, hx, hy, 6, dark);
-            const swy = Math.sin(t * 0.004) * 2 + Math.sin(ph) * 1.4;
-            limb(hx, hy, hx + swy * 0.5, hy + 8, 1.2, '#2a1020');
-            const lx0 = hx + swy * 0.5, ly0 = hy + 8;
-            ctx.fillStyle = '#2a1424'; ctx.fillRect(lx0 - 4.5, ly0 - 1, 9, 2);
-            ctx.fillStyle = '#fff0c8'; ctx.fillRect(lx0 - 3.2, ly0 + 1, 6.4, 8);
-            ctx.fillStyle = '#2a1424'; ctx.fillRect(lx0 - 4.5, ly0 + 9, 9, 2);
-
-            // store world position for lighting
-            const tr = ctx.getTransform();
-            lantern = { x: tr.e / dpr + lx0 * s, y: tr.f / dpr + (ly0 + 5) * s, r: 230 * s };
-            ctx.restore();
-        }
-
-        /* =====================================================================
-           FRAME
-           ===================================================================== */
-        let last = 0;
-        function frame(now) {
-            const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
-            const t = now;
-
-            man.x += man.speed * dt * mScale();
-            man.phase += man.speed * dt * mScale() * (6.283 / (88 * mScale()));
-            if (man.x > W + 120) man.x = -140;
-
-            /* sky */
-            const sky = ctx.createLinearGradient(0, 0, 0, H * 0.8);
-            sky.addColorStop(0, '#06010d'); sky.addColorStop(0.35, '#16041a');
-            sky.addColorStop(0.7, '#3f0d37'); sky.addColorStop(1, '#7c2a5a');
-            ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-
-            /* deep starfield + milky band */
-            ctx.drawImage(starfield, 0, 0, W, H * 0.82);
-
-            /* drifting, breathing nebulae */
-            ctx.globalCompositeOperation = 'lighter';
-            ctx.globalAlpha = 0.72 + Math.sin(t * 0.00031) * 0.1;
-            ctx.drawImage(nebula, -60 + Math.sin(t * 0.00005) * 14, -30 + Math.cos(t * 0.00004) * 8, W + 120, H * 0.82 + 60);
-            ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-
-            /* twinkling stars (the brightest get diffraction spikes) */
-            for (const s of stars) {
-                const a = 0.25 + (Math.sin(t * 0.001 * s.sp + s.a * 20) + 1) * 0.36;
-                ctx.fillStyle = `rgba(s.tint,{a})`;
-                ctx.fillRect(s.x, s.y, s.s, s.s);
-                if (s.big) {
-                    ctx.globalCompositeOperation = 'lighter';
-                    ctx.globalAlpha = a * 0.55; ctx.drawImage(GLOW[1], s.x - 14, s.y - 14, 28, 28);
-                    ctx.globalAlpha = a * 0.5; ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.7;
-                    const L = 9 + a * 10;
-                    ctx.beginPath(); ctx.moveTo(s.x - L, s.y); ctx.lineTo(s.x + L, s.y); ctx.moveTo(s.x, s.y - L); ctx.lineTo(s.x, s.y + L); ctx.stroke();
-                    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-                }
-            }
-
-            /* spiral galaxy */
-            const gx = W / 2, gy = H * 0.27, gs = Math.min(1.15, W / 1000);
-            ctx.save(); ctx.translate(gx, gy); ctx.rotate(0.45); ctx.scale(gs, gs * 0.5); ctx.rotate(t * 0.00004);
-            ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.82;
-            ctx.drawImage(gal, -410, -410);
-            ctx.restore();
-
-            /* shooting stars */
-            ctx.lineWidth = 2; ctx.lineCap = 'round';
-            for (let i = shooting.length - 1; i >= 0; i--) {
-                const st = shooting[i], dx = Math.cos(st.angle) * st.len, dy = Math.sin(st.angle) * st.len;
-                const gr = ctx.createLinearGradient(st.x, st.y, st.x - dx, st.y - dy);
-                gr.addColorStop(0, `rgba(255,255,255,${st.o})`); gr.addColorStop(1, 'rgba(255,200,235,0)');
-                ctx.strokeStyle = gr; ctx.beginPath(); ctx.moveTo(st.x, st.y); ctx.lineTo(st.x - dx, st.y - dy); ctx.stroke();
-                st.x += Math.cos(st.angle) * st.speed * dt * 60; st.y += Math.sin(st.angle) * st.speed * dt * 60; st.o -= 1.2 * dt;
-                if (st.o <= 0) shooting.splice(i, 1);
-            }
-
-            /* horizon glow + distant ridges */
-            const hg = ctx.createRadialGradient(W * 0.5, H * 0.7, 10, W * 0.5, H * 0.7, W * 0.6);
-            hg.addColorStop(0, 'rgba(255,120,190,.28)'); hg.addColorStop(1, 'rgba(255,120,190,0)');
-            ctx.fillStyle = hg; ctx.fillRect(0, 0, W, H);
-            [[0, 'rgba(70,16,66,.75)'], [1, 'rgba(46,10,48,.9)']].forEach(([k, col]) => {
-                ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, H);
-                for (let x = 0; x <= W; x += 10) ctx.lineTo(x, ridge(x, k));
-                ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-            });
-
-            /* mist drifting between hills */
-            ctx.globalCompositeOperation = 'lighter';
-            for (let i = 0; i < 4; i++) {
-                const mx = ((t * 0.006 * (1 + i * 0.3) + i * 380) % (W + 700)) - 350;
-                ctx.globalAlpha = 0.16; ctx.drawImage(MIST, mx - 300, H * (0.64 + i * 0.03), 700, 150);
-            }
-            ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-
-            /* hill layers */
-            const fillHill = (layer, c1, c2) => {
-                const top = hill(W / 2, layer) - H * 0.04;
-                const gr = ctx.createLinearGradient(0, top, 0, H);
-                gr.addColorStop(0, c1); gr.addColorStop(1, c2);
-                ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(0, H);
-                for (let x = 0; x <= W + 10; x += 8) ctx.lineTo(x, hill(x, layer));
-                ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-            };
-            fillHill(0, '#2c0c2c', '#1a0619');
-            for (const f of flowers) if (f.layer === 0) drawFlower(f, t);
-            fillHill(1, '#240a24', '#10030f');
-            drawGrass(1, t);
-
-            /* flowers behind the walker */
-            for (const f of flowers) if (f.layer === 1 && !f.front) drawFlower(f, t);
-
-            drawMan(t);
-
-            /* flowers in front of the walker */
-            for (const f of flowers) if (f.layer === 1 && f.front) drawFlower(f, t);
-
-            /* lantern light spilling on the meadow */
-            if (lantern.r) {
-                ctx.globalCompositeOperation = 'lighter';
-                const lg = ctx.createRadialGradient(lantern.x, lantern.y, 0, lantern.x, lantern.y, lantern.r);
-                lg.addColorStop(0, 'rgba(255,215,150,.55)'); lg.addColorStop(0.3, 'rgba(255,170,130,.22)'); lg.addColorStop(1, 'rgba(255,140,170,0)');
-                ctx.fillStyle = lg; ctx.fillRect(lantern.x - lantern.r, lantern.y - lantern.r, lantern.r * 2, lantern.r * 2);
-                ctx.globalCompositeOperation = 'source-over';
-            }
-
-            /* foreground hill + giant blooms */
-            fillHill(2, '#13041a', '#050106');
-            drawGrass(2, t);
-            for (const f of flowers) if (f.layer === 2) drawFlower(f, t);
-
-            /* falling seeds + landing ripples (Plant a Seed) */
-            drawSeeds();
-
-            /* fireflies */
-            ctx.globalCompositeOperation = 'lighter';
-            for (const fl of fireflies) {
-                const x = fl.x + Math.sin(t * 0.0004 * fl.sp + fl.ph) * 60 + Math.sin(t * 0.0011 + fl.ph) * 14;
-                const y = fl.y + Math.cos(t * 0.0005 * fl.sp + fl.ph * 2) * 30;
-                const a = Math.max(0, Math.sin(t * 0.0018 * fl.sp + fl.ph));
-                ctx.globalAlpha = a * 0.9; ctx.drawImage(GLOW[3], x - fl.r / 2, y - fl.r / 2, fl.r, fl.r);
-                ctx.globalAlpha = a; ctx.fillStyle = '#fff6d0'; ctx.fillRect(x - 1, y - 1, 2, 2);
-            }
-            ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-
-            /* drifting petals */
-            for (const p of petals) {
-                p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 0.0007 + p.sw) * 16) * dt; p.a += p.sp * dt;
-                if (p.y > H + 20) Object.assign(p, newPetal(false));
-                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
-                ctx.scale(1, Math.abs(Math.cos(p.a * 0.7)) * 0.7 + 0.3);
-                ctx.fillStyle = `rgba(p.c,{p.blur ? 0.28 : 0.75})`;
-                const sz = p.blur ? p.s * 2.6 : p.s;
-                ctx.beginPath(); ctx.moveTo(0, -sz * 0.5); ctx.quadraticCurveTo(sz, -sz * 0.6, sz, 0); ctx.quadraticCurveTo(sz * 0.5, sz * 0.6, 0, sz * 0.5); ctx.quadraticCurveTo(-sz * 0.3, 0, 0, -sz * 0.5);
-                ctx.fill(); ctx.restore();
-            }
-
-            /* vignette */
-            const v = ctx.createRadialGradient(W / 2, H * 0.5, Math.min(W, H) * 0.35, W / 2, H * 0.5, Math.max(W, H) * 0.8);
-            v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)');
-            ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
-
-            requestAnimationFrame(frame);
-        }
-
-        setInterval(() => {
-            if (document.hidden) return;
-            shooting.push({ x: Math.random() * W * 0.8, y: Math.random() * H * 0.3, len: 60 + Math.random() * 80,
-                            speed: 7 + Math.random() * 6, angle: Math.PI / 4 + (Math.random() * 0.3 - 0.15), o: 1 });
-        }, 3500);
-
-        window.addEventListener('resize', resize);
-        resize();
-        requestAnimationFrame(frame);
-
-        /* =====================================================================
-           PLANT A SEED — a glowing seed drops from the button, lands in the
-           garden, and a random flower grows from it.
-           ===================================================================== */
-        const planted = [], seeds = [], rings = [];
-        const M = (a, b) => a + Math.random() * (b - a);
-        const sc = () => Math.max(0.7, Math.min(1.5, H / 760));
-        const ease = x => 1 - Math.pow(1 - x, 3), smooth = x => x * x * (3 - 2 * x);
-
-        // build a flower object from a "recipe"; the stem rises first, then the bud opens
-        function toFlower(r, grown) {
-            const x = r.nx * W, by = hill(x, r.layer) + r.jit * H, k = sc();
-            return {
-                planted: true, x, by, type: r.type, v: r.v, tilt: r.tilt,
-                hue: r.hue, sat: r.sat, lit: r.lit, ph: r.ph, layer: r.layer,
-                front: r.layer === 2 || by > hill(x, 1) + 5,
-                glow: r.type === 'daisy' ? 1 : (r.type === 'lupin' ? 2 : 0),
-                t0: grown ? -1e9 : Infinity,
-                get p() { return Math.min(1, Math.max(0, (performance.now() - this.t0) / 3600)); },
-                get h() { return 1 + r.H * k * ease(Math.min(1, this.p / 0.8)); },
-                get size() { return r.S * k * (0.14 + 0.86 * smooth(Math.max(0, (this.p - 0.35) / 0.65))); }
-            };
-        }
-
-        function plant() {
-            const layer = Math.random() < 0.22 ? 2 : 1;
-            const sp = SPECK[(Math.random() * SPECK.length) | 0];
-            const rec = {
-                nx: M(0.07, 0.93), layer,
-                jit: (layer === 2 ? M(8, 40) : M(-4, 26)) / H,
-                type: TYPES[(Math.random() * TYPES.length) | 0], v: (Math.random() * 3) | 0,
-                tilt: M(0.62, 1), hue: sp[0], sat: sp[1], lit: sp[2], ph: M(0, 6.28),
-                H: layer === 2 ? M(150, 250) : M(70, 115), S: layer === 2 ? M(17, 26) : M(9, 14)
-            };
-            const f = toFlower(rec, false); rec.f = f;
-            const b = document.getElementById('plant-btn').getBoundingClientRect();
-            seeds.push({ sx: b.left + b.width / 2, sy: b.top + b.height / 2, tx: f.x, ty: f.by, t0: performance.now(), dur: 950, f, rec });
-        }
-
-        function drawSeeds() {
-            const now = performance.now();
-            for (let i = seeds.length - 1; i >= 0; i--) {
-                const s = seeds[i], u = (now - s.t0) / s.dur;
-                if (u >= 1) {                                   // landed -> start growing
-                    s.f.t0 = now; flowers.push(s.f); flowers.sort((a, b) => a.by - b.by);
-                    planted.push(s.rec); rings.push({ x: s.tx, y: s.ty, t0: now });
-                    if (planted.length > 150) { const o = planted.shift(); flowers = flowers.filter(q => q !== o.f); }
-                    seeds.splice(i, 1); continue;
-                }
-                ctx.globalCompositeOperation = 'lighter';
-                for (let g = 0; g < 4; g++) {                   // light trail
-                    const uu = Math.max(0, u - g * 0.035);
-                    const x = s.sx + (s.tx - s.sx) * uu, y = s.sy + (s.ty - s.sy) * uu * uu - Math.sin(Math.PI * uu) * 90;
-                    const r = 34 - g * 7; ctx.globalAlpha = 0.9 - g * 0.22;
-                    ctx.drawImage(GLOW[3], x - r, y - r, r * 2, r * 2);
-                }
-                ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-            }
-            for (let i = rings.length - 1; i >= 0; i--) {       // ripple of light on the ground
-                const r = rings[i], u = (now - r.t0) / 1100;
-                if (u >= 1) { rings.splice(i, 1); continue; }
-                ctx.globalCompositeOperation = 'lighter';
-                ctx.strokeStyle = `rgba(255,200,235,${0.6 * (1 - u)})`; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.ellipse(r.x, r.y, 12 + u * 70, (12 + u * 70) * 0.32, 0, 0, 6.283); ctx.stroke();
-                ctx.globalAlpha = 0.5 * (1 - u); ctx.drawImage(GLOW[1], r.x - 26, r.y - 26, 52, 52);
-                ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-            }
-        }
-
-        // build() resets all flowers on resize, so put the planted ones back (this listener runs after resize())
-        window.addEventListener('resize', () => {
-            planted.forEach(r => { const f = toFlower(r, true); r.f = f; flowers.push(f); });
-            flowers.sort((a, b) => a.by - b.by);
-        });
-
-        // button + Enter in the email field
-        const pb = document.getElementById('plant-btn');
-        let pbTimer;
-        pb.addEventListener('click', () => {
-            plant();
-            pb.textContent = 'Planted ✿'; clearTimeout(pbTimer);
-            pbTimer = setTimeout(() => pb.textContent = 'Plant a Seed', 1400);
-        });
-        const em = document.querySelector('input[type="email"]');
-        if (em) em.addEventListener('keydown', e => { if (e.key === 'Enter') pb.click(); });
-    })();
-    </script>
-
-    <!-- CALMING MUSIC: generative ambient, made live with the Web Audio API (no audio files) -->
-    <script>
-    (() => {
-        const midi = m => 440 * Math.pow(2, (m - 69) / 12);
-        // F major, gently moving: Fmaj7 → Dm9 → B♭maj7 → Csus. Each entry is [bass, ...pad voices]
-        const CHORDS = [
-            [41, 57, 60, 64, 67],
-            [38, 57, 60, 64, 65],
-            [46, 58, 62, 65, 69],
-            [36, 55, 60, 62, 64]
-        ];
-        const BELLS = [69, 72, 74, 77, 79, 81, 84];      // F-major pentatonic, sparkling register
-        const CHORD_LEN = 12;                             // seconds per chord
-
-        let ac, master, reverb, dry, delay, on = false, timers = [], chordI = 0, bellI = 2, wind;
-
-        function impulse(secs = 6.5, decay = 2.6) {
-            const len = ac.sampleRate * secs, buf = ac.createBuffer(2, len, ac.sampleRate);
-            for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
-            return buf;
-        }
-        function init() {
-            ac = new (window.AudioContext || window.webkitAudioContext)();
-            master = ac.createGain(); master.gain.value = 0;
-            const warm = ac.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 3400;
-            master.connect(warm); warm.connect(ac.destination);
-
-            reverb = ac.createConvolver(); reverb.buffer = impulse();
-            const rg = ac.createGain(); rg.gain.value = 0.95; reverb.connect(rg); rg.connect(master);
-            dry = ac.createGain(); dry.gain.value = 0.5; dry.connect(master);
-
-            delay = ac.createDelay(1.5); delay.delayTime.value = 0.46;
-            const fb = ac.createGain(); fb.gain.value = 0.36;
-            const dl = ac.createBiquadFilter(); dl.type = 'lowpass'; dl.frequency.value = 1800;
-            delay.connect(dl); dl.connect(fb); fb.connect(delay); dl.connect(reverb);
-
-            // a faint breeze: filtered noise with a slow swell
-            const nb = ac.createBuffer(1, ac.sampleRate * 4, ac.sampleRate), nd = nb.getChannelData(0);
-            for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
-            wind = ac.createBufferSource(); wind.buffer = nb; wind.loop = true;
-            const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 0.6;
-            const wg = ac.createGain(); wg.gain.value = 0.012;
-            const lfo = ac.createOscillator(); lfo.frequency.value = 0.07;
-            const lg = ac.createGain(); lg.gain.value = 0.01;
-            lfo.connect(lg); lg.connect(wg.gain);
-            wind.connect(bp); bp.connect(wg); wg.connect(dry); wg.connect(reverb);
-            wind.start(); lfo.start();
-        }
-
-        function pad(freq, t0, dur, peak) {
-            const out = ac.createGain();
-            out.gain.setValueAtTime(0.0001, t0);
-            out.gain.linearRampToValueAtTime(peak, t0 + 4);
-            out.gain.setValueAtTime(peak, t0 + dur - 1);
-            out.gain.linearRampToValueAtTime(0.0001, t0 + dur + 5);
-            const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 760;
-            out.connect(lp); lp.connect(dry); lp.connect(reverb);
-            [['sine', 0], ['triangle', 6], ['sine', -6]].forEach(([type, cents], i) => {
-                const o = ac.createOscillator(); o.type = type; o.frequency.value = freq; o.detune.value = cents;
-                const g = ac.createGain(); g.gain.value = i === 0 ? 1 : 0.4;
-                o.connect(g); g.connect(out); o.start(t0); o.stop(t0 + dur + 5.2);
-            });
-        }
-        function bell(freq, t0, vel = 1) {
-            const out = ac.createGain();
-            out.gain.setValueAtTime(0.0001, t0);
-            out.gain.linearRampToValueAtTime(0.07 * vel, t0 + 0.012);
-            out.gain.exponentialRampToValueAtTime(0.0001, t0 + 3.6);
-            out.connect(dry); out.connect(reverb); out.connect(delay);
-            [[1, 1], [2, 0.22], [3.01, 0.07]].forEach(([mult, amp]) => {
-                const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = freq * mult;
-                const g = ac.createGain(); g.gain.value = amp;
-                o.connect(g); g.connect(out); o.start(t0); o.stop(t0 + 3.7);
-            });
-        }
-
-        function playChord() {
-            if (!on) return;
-            const c = CHORDS[chordI++ % CHORDS.length], t0 = ac.currentTime + 0.05;
-            pad(midi(c[0]), t0, CHORD_LEN, 0.07);                         // warm bass
-            for (let i = 1; i < c.length; i++) pad(midi(c[i]), t0 + i * 0.35, CHORD_LEN, 0.034);
-            timers.push(setTimeout(playChord, CHORD_LEN * 1000));
-        }
-        function playBell() {
-            if (!on) return;
-            bellI = Math.max(0, Math.min(BELLS.length - 1, bellI + ((Math.random() * 5) | 0) - 2));
-            const t0 = ac.currentTime + 0.05;
-            bell(midi(BELLS[bellI]), t0, 0.7 + Math.random() * 0.5);
-            if (Math.random() < 0.22) bell(midi(BELLS[Math.max(0, bellI - 2)]), t0 + 0.28, 0.5);
-            timers.push(setTimeout(playBell, 1800 + Math.random() * 3800));
-        }
-
-        function start() {
-            if (on) return;
-            if (!ac) init();
-            on = true;
-            ac.resume();
-            master.gain.cancelScheduledValues(ac.currentTime);
-            master.gain.setTargetAtTime(0.9, ac.currentTime, 1.8);        // slow fade-in
-            playChord(); timers.push(setTimeout(playBell, 2500));
-        }
-        function stop() {
-            if (!on) return;
-            on = false; timers.forEach(clearTimeout); timers = [];
-            master.gain.cancelScheduledValues(ac.currentTime);
-            master.gain.setTargetAtTime(0, ac.currentTime, 0.5);          // gentle fade-out
-            setTimeout(() => { if (!on) ac.suspend(); }, 1800);
-        }
-        document.addEventListener('visibilitychange', () => {
-            if (!ac) return;
-            if (document.hidden) ac.suspend(); else if (on) ac.resume();
-        });
-
-        /* ---------- UI wiring ---------- */
-        const btn = document.getElementById('music-btn'), icOn = document.getElementById('ic-on'),
-              icOff = document.getElementById('ic-off'), hint = document.getElementById('music-hint');
-        let chosen = false;
-        const ui = () => {
-            icOn.style.display = on ? '' : 'none'; icOff.style.display = on ? 'none' : '';
-            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-            if (hint) { hint.style.opacity = on || chosen ? '0' : ''; }
-        };
-        btn.addEventListener('click', () => { chosen = true; on ? stop() : start(); ui(); });
-
-        // Browsers block autoplay, so the music begins on the visitor's first click, tap or key press.
-        const first = e => {
-            if (chosen || on) return;
-            if (e.target && e.target.closest && e.target.closest('#music-btn')) return;
-            start(); ui();
-            ['pointerdown', 'keydown', 'touchstart'].forEach(ev => removeEventListener(ev, first));
-        };
-        ['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, first, { passive: true }));
-        ui();
-    })();
-    </script>
+
+<body>
+
+<!-- trinket library: hand-drawn SVG, no emojis -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-note" viewBox="0 0 24 24"><ellipse cx="8" cy="18" rx="4.2" ry="3.1" transform="rotate(-20 8 18)" stroke="none"/><path d="M11.6 17V4.5c3 .2 6 1.6 6 5.2" fill="none" stroke-width="1.9" stroke-linecap="round"/></symbol>
+<symbol id="i-notes" viewBox="0 0 24 24"><ellipse cx="6.5" cy="18" rx="3.4" ry="2.6" transform="rotate(-20 6.5 18)" stroke="none"/><ellipse cx="17" cy="16" rx="3.4" ry="2.6" transform="rotate(-20 17 16)" stroke="none"/><path d="M9.6 17V6.5L20 4.5v11M9.6 10l10.4-2" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 1c.8 6.2 4.8 10.2 11 11-6.2.8-10.2 4.8-11 11-.8-6.2-4.8-10.2-11-11C7.2 11.2 11.2 7.2 12 1z" stroke="none"/></symbol>
+<symbol id="i-star5" viewBox="0 0 24 24"><path d="M12 2.2l2.9 6.2 6.8.8-5 4.7 1.3 6.7L12 17.200 6 20.600l1.300-6.700-5-4.700 6.800-.8z" stroke="none"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><rect x="9" y="1" width="6" height="4" rx="1.2" stroke="none" opacity=".7"/><path d="M12 5c-4 0-6.500 3-6.500 6.200 0 2.400 1.300 3.800 2.400 5 .6.700 1 1.500 1 2.300h6.200c0-.8.4-1.600 1-2.300 1.100-1.200 2.400-2.600 2.400-5C18.500 8 16 5 12 5z" stroke="none"/><rect x="9.500" y="19.500" width="5" height="2.500" rx="1" stroke="none" opacity=".7"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C5 15.5 2.5 12 2.5 8.4A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 9.5 1.8C21.5 12 19 15.5 12 21z" stroke="none"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" stroke="none"/></symbol>
+<symbol id="i-flower" viewBox="0 0 24 24"><g stroke="none"><circle cx="12" cy="5.5" r="3.6"/><circle cx="18.2" cy="10" r="3.6"/><circle cx="15.8" cy="17.3" r="3.6"/><circle cx="8.2" cy="17.3" r="3.6"/><circle cx="5.8" cy="10" r="3.6"/><circle cx="12" cy="12" r="2.6" fill="#fff"/></g></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.8 9a4.8 4.8 0 0 1-.3 9.5z" stroke="none"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H8l1.4-2h5.2L16 6h2.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z" class="line"/><circle cx="12" cy="13" r="3.6" class="line"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.3" class="line"/><path d="M15.4 15.4L21 21" class="line"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5c0-1 1-1.5 1.8-1l11 7.5c.7.5.7 1.5 0 2l-11 7.5c-.8.5-1.8 0-1.8-1z" stroke="none"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="5.5" y="5.5" width="13" height="13" rx="3.5" stroke="none"/></symbol>
+<symbol id="i-redo" viewBox="0 0 24 24"><path d="M20 6v5h-5" class="line"/><path d="M19.4 11A8 8 0 1 0 17.5 17" class="line"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3" class="line"/><path d="M16 10.5l5-3v9l-5-3z" class="line"/></symbol>
+<symbol id="i-clef" viewBox="0 0 40 64"><path d="M22 4C14 12 14 22 21 30c6 7 5 17-2 18-6 .8-8-6-3-8 4-1.7 8 1.500 6 6" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 4v52" fill="none" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="17" cy="57" rx="4.2" ry="3.4" stroke="none"/></symbol>
+<symbol id="i-swirl" viewBox="0 0 120 30"><path d="M2 15c10-12 20-12 28 0s18 12 28 0 18-12 28 0 18 12 30 0" fill="none"/></symbol>
+</defs>
+</svg>
+
+<div class="sky" aria-hidden="true">
+<svg class="fl" style="left:5%;top:14%;color:#e79bb8;--d:0s"><use href="#i-note"/></svg>
+<svg class="fl" style="left:90%;top:10%;color:#bda7ea;--s:34px;--d:-2s"><use href="#i-notes"/></svg>
+<svg class="fl" style="left:12%;top:58%;color:#f0cf7e;--s:20px;--d:-4s"><use href="#i-spark"/></svg>
+<svg class="fl" style="left:93%;top:52%;color:#e79bb8;--s:22px;--d:-1s"><use href="#i-heart"/></svg>
+<svg class="fl" style="left:3%;top:82%;color:#a9d3b8;--s:30px;--d:-5s"><use href="#i-flower"/></svg>
+<svg class="fl" style="left:88%;top:84%;color:#bda7ea;--s:26px;--d:-3s"><use href="#i-moon"/></svg>
+<svg class="fl" style="left:48%;top:3%;color:#f0cf7e;--s:18px;--d:-6s"><use href="#i-spark"/></svg>
+<svg class="fl" style="left:70%;top:92%;color:#e79bb8;--s:24px;--d:-2.5s"><use href="#i-note"/></svg>
+<svg class="fl" style="left:25%;top:94%;color:#cfe6f7;--s:40px;--d:-7s"><use href="#i-cloud"/></svg>
+</div>
+
+<!-- hanging lights & stars along both screen edges -->
+<div class="hangs" aria-hidden="true">
+<span class="hang" style="left:1.5%;--h:110;--s:30px;--d:0s;color:#f0cf7e"><svg viewBox="0 0 24 24"><use href="#i-star5"/></svg></span>
+<span class="hang x" style="left:4.2%;--h:190;--s:22px;--d:-1.4s;color:#e79bb8"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></span>
+<span class="hang" style="left:7%;--h:70;--s:20px;--d:-2.6s;color:#bda7ea"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></span>
+<span class="hang x" style="left:10%;--h:150;--s:26px;--d:-3.4s;color:#f0cf7e"><svg viewBox="0 0 24 24"><use href="#i-star5"/></svg></span>
+<span class="hang x" style="left:13%;--h:90;--s:18px;--d:-4.2s;color:#a9d3b8"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></span>
+
+<span class="hang" style="right:1.5%;--h:130;--s:28px;--d:-.8s;color:#e79bb8"><svg viewBox="0 0 24 24"><use href="#i-star5"/></svg></span>
+<span class="hang x" style="right:4.2%;--h:80;--s:22px;--d:-2s;color:#f0cf7e"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></span>
+<span class="hang" style="right:7%;--h:175;--s:22px;--d:-3s;color:#bda7ea"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></span>
+<span class="hang x" style="right:10%;--h:100;--s:26px;--d:-3.8s;color:#a9d3b8"><svg viewBox="0 0 24 24"><use href="#i-star5"/></svg></span>
+<span class="hang x" style="right:13%;--h:155;--s:18px;--d:-4.6s;color:#e79bb8"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></span>
+</div>
+
+<header>
+<div class="deco" aria-hidden="true">
+<span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+<span class="ring r4"></span><span class="ring r5"></span><span class="ring r6"></span>
+<svg viewBox="0 0 24 24" style="left:9%;top:34%;width:34px;height:34px;color:#fff;opacity:.9;--d:-1s"><use href="#i-moon"/></svg>
+<svg viewBox="0 0 24 24" style="right:9%;top:30%;width:30px;height:30px;color:#c2578a;opacity:.55;--d:-3s"><use href="#i-spark"/></svg>
+<svg viewBox="0 0 24 24" style="left:20%;top:70%;width:20px;height:20px;color:#f0cf7e;--d:-2s"><use href="#i-spark"/></svg>
+<svg viewBox="0 0 24 24" style="right:21%;top:68%;width:24px;height:24px;color:#fff;opacity:.9;--d:-4s"><use href="#i-spark"/></svg>
+<svg viewBox="0 0 24 24" style="left:30%;top:22%;width:16px;height:16px;color:#fff;opacity:.9;--d:-5s"><use href="#i-spark"/></svg>
+<svg viewBox="0 0 24 24" style="right:30%;top:20%;width:18px;height:18px;color:#e0a93a;opacity:.8;--d:-6s"><use href="#i-spark"/></svg>
+<svg class="stroke" viewBox="0 0 120 30" style="left:3%;bottom:14%;width:120px;height:30px;color:#fff"><use href="#i-swirl"/></svg>
+<svg class="stroke" viewBox="0 0 120 30" style="right:3%;bottom:14%;width:120px;height:30px;color:#fff"><use href="#i-swirl"/></svg>
+</div>
+
+<div class="lights" aria-hidden="true">
+<i style="--c:#f0cf7e;--d:0s"></i>
+<i class="m" style="--c:#e79bb8;--d:-.4s"></i>
+<i style="--c:#bda7ea;--d:-.8s"></i>
+<i class="m" style="--c:#a9d3b8;--d:-1.2s"></i>
+<i style="--c:#f0cf7e;--d:-1.6s"></i>
+<i class="m" style="--c:#e79bb8;--d:-2s"></i>
+<i style="--c:#bda7ea;--d:-2.4s"></i>
+<i class="m" style="--c:#a9d3b8;--d:-.6s"></i>
+<i style="--c:#f0cf7e;--d:-1s"></i>
+<i class="m" style="--c:#e79bb8;--d:-1.4s"></i>
+<i style="--c:#bda7ea;--d:-1.8s"></i>
+<i class="m" style="--c:#a9d3b8;--d:-2.2s"></i>
+<i style="--c:#f0cf7e;--d:-.2s"></i>
+</div>
+
+<div class="logo">
+<svg class="clef" viewBox="0 0 40 64" aria-hidden="true"><use href="#i-clef"/></svg>
+<h1>Melo<b>Tunes</b></h1>
+</div>
+<p>sheet music, sung back to you</p>
+<div class="orn" aria-hidden="true"><svg class="ico"><use href="#i-spark"/></svg></div>
+<div class="garland" aria-hidden="true">
+<svg class="ico"><use href="#i-spark"/></svg><svg class="ico"><use href="#i-note"/></svg><svg class="ico"><use href="#i-heart"/></svg><svg class="ico"><use href="#i-flower"/></svg><svg class="ico"><use href="#i-moon"/></svg><svg class="ico"><use href="#i-notes"/></svg><svg class="ico"><use href="#i-spark"/></svg>
+</div>
+</header>
+
+<main>
+
+<section class="card">
+<h2><span class="seal">1</span>Choose a camera</h2>
+
+<label>
+Available camera
+<select id="cameraSelect">
+<option value="">Default camera</option>
+</select>
+</label>
+
+<div class="row">
+<button id="frontBtn" class="secondary"><svg class="ico"><use href="#i-camera"/></svg>Front camera</button>
+<button id="backBtn" class="secondary"><svg class="ico"><use href="#i-camera"/></svg>Back camera</button>
+<button id="startBtn"><svg class="ico"><use href="#i-video"/></svg>Start camera</button>
+<button id="stopBtn" class="secondary"><svg class="ico"><use href="#i-stop"/></svg>Stop camera</button>
+</div>
+</section>
+
+<section class="card">
+<h2><span class="seal">2</span>Scan or upload a music sheet</h2>
+
+<video id="video" autoplay playsinline webkit-playsinline muted></video>
+
+<div class="row">
+<button id="captureBtn" disabled><svg class="ico"><use href="#i-camera"/></svg>Capture sheet</button>
+
+<label>
+Upload image
+<input id="fileInput" type="file" accept="image/*">
+</label>
+</div>
+
+<img id="preview" alt="Music sheet preview" hidden>
+
+<p class="hint">
+A sharp, straight photo works best, with one or more complete staves in view.
+Crop away big empty margins and shy away from shadows.
+</p>
+</section>
+
+<section class="card">
+<h2><span class="seal">3</span>Set the notation</h2>
+
+<div class="settings">
+
+<label>
+Clef
+<select id="clef">
+<option value="treble">Treble clef</option>
+<option value="bass">Bass clef</option>
+</select>
+</label>
+
+<label>
+Key signature
+<select id="keySignature">
+<option value="C">C major / A minor</option>
+<option value="G">G major / E minor</option>
+<option value="D">D major / B minor</option>
+<option value="A">A major / F# minor</option>
+<option value="E">E major / C# minor</option>
+<option value="B">B major / G# minor</option>
+<option value="F#">F# major / D# minor</option>
+<option value="C#">C# major / A# minor</option>
+<option value="F">F major / D minor</option>
+<option value="Bb">Bb major / G minor</option>
+<option value="Eb">Eb major / C minor</option>
+<option value="Ab">Ab major / F minor</option>
+<option value="Db">Db major / Bb minor</option>
+<option value="Gb">Gb major / Eb minor</option>
+<option value="Cb">Cb major / Ab minor</option>
+</select>
+</label>
+
+<label>
+Time signature
+<select id="timeSig">
+<option value="8" selected>4/4</option>
+<option value="6">3/4 (or 6/8)</option>
+<option value="4">2/4</option>
+<option value="auto">Auto-detect</option>
+</select>
+</label>
+
+<label>
+Tempo (BPM)
+<input id="tempo" type="number" inputmode="numeric" min="40" max="220" value="100">
+</label>
+
+<label>
+Sound
+<select id="sound">
+<option value="piano">Piano-like</option>
+<option value="soft">Soft sine</option>
+<option value="organ">Organ</option>
+</select>
+</label>
+
+</div>
+
+<div class="info">
+<b>How Melo reads your music</b>
+<ol>
+<li>Detects the five staff lines.</li>
+<li>Finds where the clef, key and time signature end.</li>
+<li>Spots barlines (the line closing a row is ignored).</li>
+<li>Identifies noteheads and stems.</li>
+<li>Recovers missed notes from stems and spacing.</li>
+<li>Checks each measure against the time signature.</li>
+<li>Calculates the musical pitches.</li>
+</ol>
+</div>
+</section>
+
+<section class="card">
+<h2><span class="seal">4</span>Detect and play</h2>
+
+<div class="row">
+<button id="detectBtn" disabled><svg class="ico"><use href="#i-search"/></svg>Detect notes</button>
+<button id="playBtn" disabled><svg class="ico"><use href="#i-play"/></svg>Play music</button>
+<button id="stopMusicBtn" class="secondary" disabled><svg class="ico"><use href="#i-stop"/></svg>Stop</button>
+<button id="redetectBtn" class="secondary" disabled><svg class="ico"><use href="#i-redo"/></svg>Re-detect</button>
+</div>
+
+<div class="melo-row">
+<svg class="mascot" viewBox="0 0 64 64" aria-hidden="true">
+<rect x="43" y="8" width="4.5" height="38" rx="2.2" fill="#a3407a"/>
+<path d="M47 8c12 4 14 14 8 24 1-9-3-13-8-14z" fill="#a3407a"/>
+<ellipse cx="27" cy="45" rx="19" ry="15.5" fill="#f7c6d4" stroke="#a3407a" stroke-width="2.4"/>
+<circle cx="20.500" cy="43" r="2.3" fill="#4b3a55"/><circle cx="33" cy="43" r="2.3" fill="#4b3a55"/>
+<circle cx="21.200" cy="42.2" r=".8" fill="#fff"/><circle cx="33.700" cy="42.2" r=".8" fill="#fff"/>
+<ellipse cx="15.5" cy="48.5" rx="3.4" ry="2.2" fill="#ef8fb0" opacity=".8"/><ellipse cx="38.500" cy="48.5" rx="3.4" ry="2.2" fill="#ef8fb0" opacity=".8"/>
+<path d="M23.500 49c1.8 2 4.2 2 6 0" fill="none" stroke="#4b3a55" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M9 22l1.600 4 4 1.600-4 1.600L9 33l-1.600-3.800-4-1.600 4-1.600z" fill="#f0cf7e"/>
+</svg>
+<p id="status" role="status" aria-live="polite">
+Loading recognition engine...
+</p>
+</div>
+
+<div id="notes" aria-live="polite"></div>
+
+<canvas id="sheetCanvas" hidden></canvas>
+
+<div class="row" id="editRow" hidden>
+<label>
+Add clicked note as
+<select id="addType">
+<option value="auto">Auto (measure decides)</option>
+<option value="quarter">Quarter note</option>
+<option value="half">Half note</option>
+<option value="whole">Whole note</option>
+<option value="eighth">Eighth note</option>
+</select>
+</label>
+</div>
+
+<p class="hint" id="editHint" hidden>
+Fix a mistake: click the sheet where a missed note belongs to add it, or click an existing dot to remove it.
+</p>
+
+<div class="legend">
+<span style="color:#e0527a"><i class="dot" style="background:#e0527a"></i>Detected noteheads</span>
+<span style="color:#6b7fd7"><i class="dot" style="background:#6b7fd7"></i>Staff lines</span>
+<span style="color:#3fa97c"><i class="dot" style="background:#3fa97c"></i>Measure barlines</span>
+<span style="color:#f0a030"><i class="dot" style="background:#f0a030"></i>Recovered notes</span>
+<span style="color:#8a5cd6"><i class="dot" style="background:#8a5cd6"></i>Added by you</span>
+</div>
+
+<p class="small" style="margin-top:16px">
+Rhythm is estimated from notehead, stem and flag appearance, then corrected so every measure adds up to the time signature. Rests, ties, dots and local accidentals are not yet reliably recognized.
+</p>
+</section>
+
+</main>
+
+<footer>
+<div class="garland" aria-hidden="true"><svg class="ico"><use href="#i-heart"/></svg><svg class="ico"><use href="#i-notes"/></svg><svg class="ico"><use href="#i-heart"/></svg></div>
+made with love for little melodies
+</footer>
+
+<script>
+'use strict';
+
+const $=id=>document.getElementById(id);
+const video=$('video'),preview=$('preview'),canvas=$('sheetCanvas'),statusBox=$('status'),notesBox=$('notes'),cameraSelect=$('cameraSelect');
+
+let cvReady=false,stream=null,imageBlob=null,imageURL=null;
+let detectedNotes=[],playbackEvents=[];
+let audioContext=null,activeOscillators=[],playbackTimers=[],playbackToken=0;
+let lastImage=null,lastStaffs=[];
+
+function status(message){statusBox.textContent=message;}
+
+/* =========================
+   OPENCV INITIALIZATION
+========================= */
+
+function waitForOpenCV(){
+const started=Date.now();
+const timer=setInterval(()=>{
+if(window.cv&&window.cv.Mat&&window.cv.imread){
+clearInterval(timer);
+cvReady=true;
+status('MeloTunes recognition engine ready.');
+if(imageBlob){$('detectBtn').disabled=false;}
+}else if(Date.now()-started>60000){
+clearInterval(timer);
+status('OpenCV failed to load. Check your internet connection.');
+}
+},150);
+}
+waitForOpenCV();
+
+/* =========================
+   CAMERA
+========================= */
+
+function stopCamera(show=true){
+if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+video.srcObject=null;
+$('captureBtn').disabled=true;
+if(show){status('Camera stopped.');}
+}
+
+async function refreshCameras(){
+if(!navigator.mediaDevices?.enumerateDevices)return;
+try{
+const cams=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+const old=cameraSelect.value;
+cameraSelect.replaceChildren(new Option('Default camera',''));
+cams.forEach((c,i)=>{cameraSelect.add(new Option(c.label||`Camera ${i+1}`,c.deviceId));});
+if(cams.some(c=>c.deviceId===old)){cameraSelect.value=old;}
+}catch(e){console.warn(e);}
+}
+
+async function startCamera(deviceId=null,facing='environment'){
+if(!navigator.mediaDevices?.getUserMedia){
+status('Camera requires HTTPS or localhost. Upload an image instead.');
+return;
+}
+stopCamera(false);
+try{
+const constraints=deviceId
+?{deviceId:{exact:deviceId},width:{ideal:2560},height:{ideal:1440}}
+:{facingMode:{ideal:facing},width:{ideal:2560},height:{ideal:1440}};
+stream=await navigator.mediaDevices.getUserMedia({video:constraints,audio:false});
+video.srcObject=stream;
+await video.play();
+$('captureBtn').disabled=false;
+await refreshCameras();
+if(deviceId){cameraSelect.value=deviceId;}
+status('Camera ready. Capture your sheet music.');
+}catch(e){
+stopCamera(false);
+status('Camera error: '+e.message);
+}
+}
+
+/* =========================
+   IMAGE HANDLING
+========================= */
+
+function stopMusic(){
+playbackToken++;
+playbackTimers.forEach(clearTimeout);
+playbackTimers=[];
+activeOscillators.forEach(o=>{try{o.stop();}catch(e){}});
+activeOscillators=[];
+$('stopMusicBtn').disabled=true;
+document.body.classList.remove('playing');
+document.querySelectorAll('.note-chip.active').forEach(el=>el.classList.remove('active'));
+}
+
+function saveImage(blob){
+if(!blob)return;
+imageBlob=blob;
+if(imageURL){URL.revokeObjectURL(imageURL);}
+imageURL=URL.createObjectURL(blob);
+preview.src=imageURL;
+preview.hidden=false;
+detectedNotes=[];
+playbackEvents=[];
+notesBox.replaceChildren();
+canvas.hidden=true;
+lastImage=null;
+lastStaffs=[];
+$('editRow').hidden=true;
+$('editHint').hidden=true;
+$('detectBtn').disabled=!cvReady;
+$('playBtn').disabled=true;
+$('redetectBtn').disabled=true;
+stopMusic();
+status(cvReady
+?'Image ready. Select your clef, key and time signature, then detect notes.'
+:'Image ready. Waiting for OpenCV...');
+}
+
+$('startBtn').onclick=()=>startCamera(cameraSelect.value||null);
+$('frontBtn').onclick=()=>startCamera(null,'user');
+$('backBtn').onclick=()=>startCamera(null,'environment');
+$('stopBtn').onclick=()=>stopCamera();
+cameraSelect.onchange=()=>{if(cameraSelect.value){startCamera(cameraSelect.value);}};
+
+$('captureBtn').onclick=()=>{
+if(!stream||!video.videoWidth){status('Start the camera first.');return;}
+const c=document.createElement('canvas');
+c.width=video.videoWidth;
+c.height=video.videoHeight;
+c.getContext('2d').drawImage(video,0,0,c.width,c.height);
+c.toBlob(blob=>{if(blob){saveImage(blob);}},'image/jpeg',.98);
+};
+
+$('fileInput').onchange=e=>{
+const f=e.target.files?.[0];
+if(!f)return;
+if(!f.type.startsWith('image/')){status('Please upload an image file.');return;}
+saveImage(f);
+};
+
+function loadImage(blob){
+return new Promise((resolve,reject)=>{
+const im=new Image();
+const url=URL.createObjectURL(blob);
+im.onload=()=>{URL.revokeObjectURL(url);resolve(im);};
+im.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Image could not be opened.'));};
+im.src=url;
+});
+}
+
+/* =========================
+   STAFF DETECTION
+========================= */
+
+function staffBounds(lineMask,lines,width,height){
+let left=width,right=0;
+for(const line of lines){
+const mid=Math.round(line);
+for(let y=Math.max(0,mid-2);y<=Math.min(height-1,mid+2);y++){
+const row=lineMask.ucharPtr(y);
+for(let x=0;x<width;x++){
+if(row[x]>0){left=Math.min(left,x);right=Math.max(right,x);}
+}
+}
+}
+if(right<=left){left=0;right=width-1;}
+return{left,right,width:right-left};
+}
+
+function findStaffGroups(lineMask,width,height){
+const scores=new Float32Array(height);
+for(let y=0;y<height;y++){
+const row=lineMask.ucharPtr(y);
+let count=0;
+for(let x=0;x<width;x++){if(row[x]>0){count++;}}
+scores[y]=count/width;
+}
+const smooth=new Float32Array(height);
+for(let y=0;y<height;y++){
+let sum=0,n=0;
+for(let d=-1;d<=1;d++){
+if(y+d>=0&&y+d<height){sum+=scores[y+d];n++;}
+}
+smooth[y]=sum/n;
+}
+let max=0;
+for(const v of smooth){max=Math.max(max,v);}
+const cutoff=Math.max(.075,max*.22);
+const peaks=[];
+let y=0;
+while(y<height){
+if(smooth[y]>=cutoff){
+let end=y,weighted=0,total=0,strength=0;
+while(end<height&&smooth[end]>=cutoff){
+weighted+=end*smooth[end];
+total+=smooth[end];
+strength=Math.max(strength,smooth[end]);
+end++;
+}
+peaks.push({y:weighted/Math.max(total,.001),strength});
+y=end;
+}else{y++;}
+}
+const candidates=[];
+for(let i=0;i<=peaks.length-5;i++){
+const p=peaks.slice(i,i+5);
+const diff=p.slice(1).map((v,k)=>v.y-p[k].y).sort((a,b)=>a-b);
+const gap=diff[2];
+if(gap<3||gap>Math.min(120,height*.09))continue;
+const spread=Math.max(...diff)-Math.min(...diff);
+if(spread>gap*.30)continue;
+const strength=p.reduce((s,v)=>s+v.strength,0)/5;
+candidates.push({lines:p.map(v=>v.y),gap,score:strength-spread/gap*.18});
+}
+candidates.sort((a,b)=>b.score-a.score);
+const selected=[];
+for(const c of candidates){
+const overlap=selected.some(s=>
+s.lines.filter(a=>c.lines.some(b=>Math.abs(a-b)<Math.min(s.gap,c.gap)*.55)).length>=3
+);
+if(overlap)continue;
+const bounds=staffBounds(lineMask,c.lines,width,height);
+if(bounds.width>width*.18){selected.push({...c,...bounds});}
+}
+return selected.sort((a,b)=>a.lines[0]-b.lines[0]);
+}
+
+function nearStaffRow(y,lines,gap){
+const tolerance=Math.max(1.5,gap*.14);
+return lines.some(line=>Math.abs(y-line)<=tolerance);
+}
+
+/* =========================
+   PITCH MAPPING
+========================= */
+
+const NATURAL={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+
+const KEY_ALTER={
+C:{},
+G:{F:1},
+D:{F:1,C:1},
+A:{F:1,C:1,G:1},
+E:{F:1,C:1,G:1,D:1},
+B:{F:1,C:1,G:1,D:1,A:1},
+'F#':{F:1,C:1,G:1,D:1,A:1,E:1},
+'C#':{F:1,C:1,G:1,D:1,A:1,E:1,B:1},
+F:{B:-1},
+Bb:{B:-1,E:-1},
+Eb:{B:-1,E:-1,A:-1},
+Ab:{B:-1,E:-1,A:-1,D:-1},
+Db:{B:-1,E:-1,A:-1,D:-1,G:-1},
+Gb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1},
+Cb:{B:-1,E:-1,A:-1,D:-1,G:-1,C:-1,F:-1}
+};
+
+function pitchForStep(step,clef,key){
+const base=clef==='bass'?18:30;
+const d=base+step;
+const octave=Math.floor(d/7);
+const letter=['C','D','E','F','G','A','B'][(d%7+7)%7];
+const alter=(KEY_ALTER[key]||{})[letter]||0;
+const midi=12*(octave+1)+NATURAL[letter]+alter;
+const accidental=alter===1?'♯':alter===-1?'♭':'';
+return{name:letter+accidental+octave,letter,octave,midi,step};
+}
+
+/* =========================
+   HEADER (CLEF / KEY / TIME)
+========================= */
+
+function findNoteStart(binary,staff,key){
+const gap=staff.gap;
+const accidentalCount=Object.keys(KEY_ALTER[key]||{}).length;
+const cap=Math.round(staff.left+gap*(7+accidentalCount*1.2));
+const fallback=Math.min(cap,Math.round(staff.left+Math.max(gap*5.5,staff.width*.075)));
+const top=Math.round(staff.lines[0]);
+const bottom=Math.round(staff.lines[4]);
+const x0=Math.max(0,Math.floor(staff.left));
+const x1=Math.min(binary.cols-1,Math.floor(staff.right));
+const accidentals=Object.keys(KEY_ALTER[key]||{}).length;
+const maxHeader=gap*(8+accidentals*1.3);
+const need=Math.ceil(gap*1.05);
+let run=0,inkSeen=0,lastInk=x0;
+for(let x=x0;x<=x1;x++){
+let dark=0;
+for(let y=top;y<=bottom;y++){
+if(nearStaffRow(y,staff.lines,gap))continue;
+if(binary.ucharPtr(y)[x]>0){dark++;}
+}
+if(dark>=2){
+lastInk=x;inkSeen++;run=0;
+}else{
+run++;
+if(run>=need&&inkSeen>=gap*1.2){
+const end=lastInk-staff.left;
+if(end>0&&end<=maxHeader){return Math.min(cap,Math.round(lastInk+gap*.9));}
+break;
+}
+}
+if(x-staff.left>maxHeader)break;
+}
+return fallback;
+}
+
+/* =========================
+   BARLINE (MEASURE LINE) DETECTION
+========================= */
+
+function detectBarlines(binary,staff){
+const gap=staff.gap;
+const top=Math.round(staff.lines[0]);
+const bottom=Math.round(staff.lines[4]);
+const span=Math.max(1,bottom-top+1);
+const x0=Math.max(1,Math.floor(staff.minX));
+const x1=Math.min(binary.cols-2,Math.ceil(staff.right+gap*.5));
+if(x1<=x0)return [];
+const hits=new Float32Array(binary.cols);
+for(let y=top;y<=bottom;y++){
+const row=binary.ucharPtr(y);
+for(let x=x0;x<=x1;x++){
+if(row[x-1]>0||row[x]>0||row[x+1]>0){hits[x]++;}
+}
+}
+const threshold=.92;
+const clusters=[];
+let x=x0;
+while(x<=x1){
+if(hits[x]/span>=threshold){
+let end=x;
+while(end+1<=x1&&hits[end+1]/span>=threshold){end++;}
+const width=end-x+1;
+const candidate={start:x,end,center:(x+end)/2};
+if(width<=gap*1.5&&isPlainBarline(binary,staff,candidate)){clusters.push(candidate);}
+x=end+1;
+}else{x++;}
+}
+const merged=[];
+for(const c of clusters){
+const last=merged[merged.length-1];
+if(last&&c.start-last.end<gap*1.3){
+last.end=c.end;
+last.center=(last.start+last.end)/2;
+}else{merged.push({...c});}
+}
+const all=merged.map(c=>c.center);
+const endLimit=staff.right-gap*1.8;
+staff.rowEnd=all.filter(b=>b>=endLimit);
+return all.filter(b=>b<endLimit);
+}
+
+function isPlainBarline(binary,staff,c){
+const gap=staff.gap;
+const cx=Math.round(c.center);
+const bw=c.end-c.start+1;
+const limit=bw+gap*.55;
+const y0=Math.max(0,Math.round(staff.lines[0]-gap*2));
+const y1=Math.min(binary.rows-1,Math.round(staff.lines[4]+gap*1.8));
+let wide=0;
+for(let y=y0;y<=y1;y++){
+if(nearStaffRow(y,staff.lines,gap))continue;
+const row=binary.ucharPtr(y);
+let x=-1;
+for(let d=0;d<=Math.ceil(bw/2)+1;d++){
+if(cx+d<binary.cols&&row[cx+d]>0){x=cx+d;break;}
+if(cx-d>=0&&row[cx-d]>0){x=cx-d;break;}
+}
+if(x<0)continue;
+let l=x,r=x;
+while(l>0&&row[l-1]>0)l--;
+while(r<binary.cols-1&&row[r+1]>0)r++;
+if(r-l+1>limit)wide++;
+}
+return wide<Math.max(2,gap*.25);
+}
+
+function nearBarline(x,barlines,gap){
+return barlines.some(b=>Math.abs(x-b)<gap*.45);
+}
+
+/* =========================
+   NOTEHEAD SHAPE DETECTION
+========================= */
+
+function makeHeadOffsets(gap){
+const rx=.66*gap,ry=.43*gap,ix=.35*gap,iy=.23*gap;
+const angle=-20*Math.PI/180;
+const cos=Math.cos(angle),sin=Math.sin(angle);
+const core=[],ring=[];
+for(let dy=-Math.ceil(ry);dy<=Math.ceil(ry);dy++){
+for(let dx=-Math.ceil(rx);dx<=Math.ceil(rx);dx++){
+const xr=dx*cos+dy*sin;
+const yr=-dx*sin+dy*cos;
+const outer=xr*xr/(rx*rx)+yr*yr/(ry*ry);
+const inner=xr*xr/(ix*ix)+yr*yr/(iy*iy);
+if(outer<=1){
+const p={dx,dy,xr,yr};
+if(inner<=1){core.push(p);}else{ring.push(p);}
+}
+}
+}
+return{core,ring};
+}
+
+function headMetrics(binary,x,y,gap,lines,offsets){
+let coreDark=0,coreTotal=0,ringDark=0,ringTotal=0;
+const quadrants=[{d:0,n:0},{d:0,n:0},{d:0,n:0},{d:0,n:0}];
+for(const p of offsets.core){
+const xx=x+p.dx,yy=y+p.dy;
+if(xx<0||xx>=binary.cols||yy<0||yy>=binary.rows||nearStaffRow(yy,lines,gap))continue;
+coreTotal++;
+if(binary.ucharPtr(yy)[xx]>0){coreDark++;}
+}
+for(const p of offsets.ring){
+const xx=x+p.dx,yy=y+p.dy;
+if(xx<0||xx>=binary.cols||yy<0||yy>=binary.rows||nearStaffRow(yy,lines,gap))continue;
+ringTotal++;
+const q=(p.xr>=0?1:0)+(p.yr>=0?2:0);
+quadrants[q].n++;
+if(binary.ucharPtr(yy)[xx]>0){ringDark++;quadrants[q].d++;}
+}
+const core=coreDark/Math.max(1,coreTotal);
+const ring=ringDark/Math.max(1,ringTotal);
+const coverage=quadrants.filter(q=>q.n>0&&q.d/q.n>.20).length;
+const filled=core>=.50&&ring>=.48&&coverage>=3;
+const hollow=core<=.34&&ring>=.25&&coverage>=3;
+return{core,ring,coverage,filled,hollow,confidence:filled?Math.min(core,ring):hollow?ring*.78:0};
+}
+
+/* =========================
+   NOTE DETECTION
+========================= */
+
+function detectStaffNotes(binary,staff,staffIndex,clef,key){
+const gap=staff.gap;
+const bottom=staff.lines[4];
+const barlines=[...(staff.barlines||[]),...(staff.rowEnd||[])];
+const offsets=makeHeadOffsets(gap);
+
+const minX=Math.max(0,Math.round(staff.minX));
+const maxX=Math.min(binary.cols-1,Math.round(staff.right-gap*.35));
+const minY=Math.max(0,Math.floor(staff.lines[0]-gap*1.5));
+const maxY=Math.min(binary.rows-1,Math.ceil(staff.lines[4]+gap*1.65));
+const xStep=Math.max(1,Math.round(gap/15));
+const yStep=Math.max(1,Math.round(gap/18));
+const candidates=[];
+
+if(maxX<=minX||maxY<=minY){return [];}
+
+for(let y=minY;y<=maxY;y+=yStep){
+for(let x=minX;x<=maxX;x+=xStep){
+if(nearBarline(x,barlines,gap))continue;
+const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
+const goodFilled=m.filled&&m.core>=.72&&m.ring>=.68&&m.confidence>=.70;
+const goodHollow=m.hollow&&m.ring>=.54&&m.coverage>=3;
+if(!goodFilled&&!goodHollow)continue;
+candidates.push({
+x,y,
+head:goodHollow&&!goodFilled?'hollow':'filled',
+confidence:m.confidence,core:m.core,ring:m.ring,coverage:m.coverage
+});
+}
+}
+
+candidates.sort((a,b)=>b.confidence-a.confidence);
+
+const peaks=[];
+const radiusX=gap*1.25;
+
+for(const p of candidates){
+let duplicateIndex=-1;
+for(let i=0;i<peaks.length;i++){
+if(Math.abs(p.x-peaks[i].x)<radiusX){duplicateIndex=i;break;}
+}
+if(duplicateIndex===-1){
+peaks.push(p);
+}else{
+const existing=peaks[duplicateIndex];
+if(p.confidence>existing.confidence){peaks[duplicateIndex]=p;}
+}
+}
+
+peaks.sort((a,b)=>a.x-b.x);
+
+const refined=[];
+const dxRange=Math.max(2,xStep)*2;
+
+for(const peak of peaks){
+const rawStep=(bottom-peak.y)/(gap/2);
+const baseStep=Math.round(rawStep);
+let best=null;
+for(let s=baseStep-1;s<=baseStep+1;s++){
+if(s<-4||s>12)continue;
+const y=Math.round(bottom-s*gap/2);
+if(y<0||y>=binary.rows)continue;
+for(let dx=-dxRange;dx<=dxRange;dx++){
+const x=Math.round(peak.x+dx);
+if(x<minX||x>maxX)continue;
+if(nearBarline(x,barlines,gap))continue;
+const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
+const validFilled=m.filled&&m.core>=.72&&m.ring>=.68;
+const validHollow=m.hollow&&m.ring>=.54&&m.coverage>=3;
+if(!validFilled&&!validHollow)continue;
+if(!best||m.confidence>best.confidence){
+best={
+x,y,step:s,
+head:validHollow&&!validFilled?'hollow':'filled',
+confidence:m.confidence,core:m.core,ring:m.ring,coverage:m.coverage
+};
+}
+}
+}
+refined.push(best||{...peak,step:Math.max(-4,Math.min(12,baseStep))});
+}
+
+const notes=[];
+
+for(const p of refined){
+if(p.step<-4||p.step>12)continue;
+const pitch=pitchForStep(p.step,clef,key);
+notes.push({
+...pitch,
+x:p.x,y:p.y,
+staff:staffIndex,
+head:p.head,
+confidence:p.confidence,
+positionError:0,
+coreRatio:p.core,ringRatio:p.ring
+});
+}
+
+const recovered=recoverMissedNotes(binary,staff,staffIndex,clef,key,notes,offsets,barlines);
+const filled=fillSpacingGaps(binary,staff,staffIndex,clef,key,notes.concat(recovered),offsets,barlines);
+
+return notes.concat(recovered).concat(filled).sort((a,b)=>a.x-b.x);
+}
+
+/* =========================
+   MISSED NOTE RECOVERY
+========================= */
+
+function findStemClusters(binary,staff,barlines){
+const gap=staff.gap;
+const y0=Math.max(0,Math.floor(staff.lines[0]-gap*3.5));
+const y1=Math.min(binary.rows-1,Math.ceil(staff.lines[4]+gap*3.5));
+const x0=Math.max(0,Math.round(staff.minX));
+const x1=Math.min(binary.cols-1,Math.round(staff.right-gap*.35));
+const minRun=Math.round(gap*2.4);
+const cols=[];
+
+for(let x=x0;x<=x1;x++){
+if(nearBarline(x,barlines,gap*1.3))continue;
+let run=0,best=0,end=0;
+for(let y=y0;y<=y1;y++){
+if(binary.ucharPtr(y)[x]>0){
+run++;
+if(run>best){best=run;end=y;}
+}else{run=0;}
+}
+if(best>=minRun){cols.push({x,top:end-best+1,bottom:end,len:best});}
+}
+
+const clusters=[];
+for(const c of cols){
+const last=clusters[clusters.length-1];
+if(last&&c.x-last.end<=1){
+last.end=c.x;
+last.items.push(c);
+}else{
+clusters.push({start:c.x,end:c.x,items:[c]});
+}
+}
+
+return clusters
+.filter(c=>c.end-c.start+1<=gap*.6)
+.map(c=>{
+const longest=c.items.reduce((a,b)=>b.len>a.len?b:a);
+return{x:(c.start+c.end)/2,top:longest.top,bottom:longest.bottom};
+});
+}
+
+function recoverMissedNotes(binary,staff,staffIndex,clef,key,existing,offsets,barlines){
+const gap=staff.gap;
+const bottom=staff.lines[4];
+const stems=findStemClusters(binary,staff,barlines);
+const added=[];
+
+for(const st of stems){
+if(existing.some(n=>Math.abs(n.x-st.x)<gap*1.0))continue;
+if(added.some(n=>Math.abs(n.x-st.x)<gap*1.0))continue;
+
+const options=[
+{cx:st.x-gap*.55,cy:st.bottom-gap*.1},
+{cx:st.x+gap*.55,cy:st.top+gap*.1}
+];
+let best=null;
+
+for(const o of options){
+for(let dy=-Math.round(gap*.5);dy<=Math.round(gap*.5);dy++){
+for(let dx=-3;dx<=3;dx++){
+const x=Math.round(o.cx+dx);
+const y=Math.round(o.cy+dy);
+if(x<0||y<0||x>=binary.cols||y>=binary.rows)continue;
+const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
+const okFilled=m.core>=.55&&m.ring>=.50&&m.coverage>=3;
+const okHollow=m.core<=.40&&m.ring>=.40&&m.coverage>=3;
+if(!okFilled&&!okHollow)continue;
+const score=okFilled?Math.min(m.core,m.ring):m.ring*.78;
+if(!best||score>best.score){
+best={...m,x,y,score,head:okFilled?'filled':'hollow'};
+}
+}
+}
+}
+
+if(!best)continue;
+
+const rawStep=(bottom-best.y)/(gap/2);
+const step=Math.round(rawStep);
+const positionError=Math.abs(rawStep-step);
+
+if(step<-4||step>12)continue;
+
+added.push({
+...pitchForStep(step,clef,key),
+x:best.x,y:best.y,
+staff:staffIndex,
+head:best.head,
+confidence:best.score,
+positionError,
+coreRatio:best.core,ringRatio:best.ring,
+recovered:true
+});
+}
+
+return added;
+}
+
+function fillSpacingGaps(binary,staff,staffIndex,clef,key,notes,offsets,barlines){
+const gap=staff.gap;
+const bottom=staff.lines[4];
+
+if(notes.length<3)return [];
+
+const info=[...notes].sort((a,b)=>a.x-b.x).map(n=>{
+const stem=findStem(binary,n,staff);
+const hollow=n.head==='hollow';
+const units=hollow?(stem?4:8):((stem&&hasFlag(binary,stem,n,staff))?1:2);
+return{n,units};
+});
+
+const between=(x1,x2)=>barlines.some(b=>b>x1&&b<x2);
+const samples=[];
+
+for(let i=0;i<info.length-1;i++){
+if(info[i].units!==2)continue;
+if(between(info[i].n.x,info[i+1].n.x))continue;
+samples.push(info[i+1].n.x-info[i].n.x);
+}
+
+if(samples.length<2)return [];
+
+samples.sort((a,b)=>a-b);
+const q=samples[Math.floor(samples.length/2)];
+const added=[];
+const taken=()=>[...info.map(i=>i.n),...added];
+
+for(let i=0;i<info.length-1;i++){
+const a=info[i],b=info[i+1];
+if(a.units!==2)continue;
+if(between(a.n.x,b.n.x))continue;
+const d=b.n.x-a.n.x;
+if(d<q*1.75||d>q*3.6)continue;
+const missing=d<q*2.6?1:2;
+
+for(let k=1;k<=missing;k++){
+const cx=a.n.x+d*k/(missing+1);
+const width=Math.round(q*.3);
+let best=null;
+
+for(let dx=-width;dx<=width;dx++){
+const x=Math.round(cx+dx);
+if(x<0||x>=binary.cols)continue;
+if(nearBarline(x,barlines,gap))continue;
+if(taken().some(n=>Math.abs(n.x-x)<gap*1.25))continue;
+
+for(let s=-3;s<=11;s++){
+const y=Math.round(bottom-s*gap/2);
+if(y<0||y>=binary.rows)continue;
+const m=headMetrics(binary,x,y,gap,staff.lines,offsets);
+const okFilled=m.core>=.55&&m.ring>=.50&&m.coverage>=3;
+const okHollow=m.core<=.40&&m.ring>=.42&&m.coverage>=3;
+if(!okFilled&&!okHollow)continue;
+const score=okFilled?Math.min(m.core,m.ring):m.ring*.78;
+if(!best||score>best.score){
+best={...m,x,y,step:s,score,head:okFilled?'filled':'hollow'};
+}
+}
+}
+
+if(!best)continue;
+
+added.push({
+...pitchForStep(best.step,clef,key),
+x:best.x,y:best.y,
+staff:staffIndex,
+head:best.head,
+confidence:best.score,
+positionError:0,
+coreRatio:best.core,ringRatio:best.ring,
+recovered:true
+});
+}
+}
+
+return added;
+}
+
+/* =========================
+   RHYTHM ESTIMATION
+========================= */
+
+function stemScore(binary,x,cy,direction,gap,lines){
+const start=direction==='up'?Math.round(cy-gap*.35):Math.round(cy+gap*.35);
+const end=direction==='up'?Math.round(cy-gap*4.2):Math.round(cy+gap*4.2);
+const lo=Math.min(start,end),hi=Math.max(start,end);
+let dark=0,total=0,run=0,bestRun=0;
+for(let y=lo;y<=hi;y++){
+if(y<0||y>=binary.rows||nearStaffRow(y,lines,gap))continue;
+total++;
+const on=binary.ucharPtr(y)[x]>0;
+if(on){dark++;run++;bestRun=Math.max(bestRun,run);}else{run=0;}
+}
+return{ratio:dark/Math.max(1,total),bestRun,x,direction};
+}
+
+function findStem(binary,note,staff){
+const gap=staff.gap;
+const tries=[];
+for(const side of [-1,1]){
+for(const factor of [.48,.55,.62]){
+const x=Math.round(note.x+side*gap*factor);
+if(x<0||x>=binary.cols)continue;
+for(const dir of ['up','down']){
+tries.push(stemScore(binary,x,note.y,dir,gap,staff.lines));
+}
+}
+}
+tries.sort((a,b)=>b.ratio-a.ratio);
+const best=tries[0];
+return best&&best.ratio>.48&&best.bestRun>gap*1.2?best:null;
+}
+
+function stemTip(binary,x,y0,direction,gap){
+const step=direction==='up'?-1:1;
+const limit=Math.round(gap*5);
+let lastDark=y0,miss=0;
+for(let k=0;k<limit;k++){
+const y=y0+step*k;
+if(y<0||y>=binary.rows)break;
+const row=binary.ucharPtr(y);
+const on=row[x]>0||(x>0&&row[x-1]>0)||(x<binary.cols-1&&row[x+1]>0);
+if(on){lastDark=y;miss=0;}else{miss++;if(miss>2)break;}
+}
+return lastDark;
+}
+
+function hasFlag(binary,stem,note,staff){
+const gap=staff.gap;
+const step=stem.direction==='up'?-1:1;
+const startY=Math.round(note.y+step*gap*.35);
+const tip=stemTip(binary,stem.x,startY,stem.direction,gap);
+if(Math.abs(tip-startY)<gap*1.8)return false;
+const near=tip-step*Math.round(gap*1.2);
+const lo=Math.min(tip,near),hi=Math.max(tip,near);
+const xa=stem.x+2,xb=stem.x+Math.round(gap*.9);
+let dark=0,total=0;
+for(let y=lo;y<=hi;y++){
+if(y<0||y>=binary.rows||nearStaffRow(y,staff.lines,gap))continue;
+const row=binary.ucharPtr(y);
+for(let x=xa;x<=xb&&x<binary.cols;x++){
+total++;
+if(row[x]>0)dark++;
+}
+}
+return total>0&&dark/total>=.20;
+}
+
+function estimateRhythm(binary,note,staff){
+const stem=findStem(binary,note,staff);
+const hollow=note.head==='hollow';
+const flag=!hollow&&stem?hasFlag(binary,stem,note,staff):false;
+return{hollow,stem:!!stem,flag};
+}
+
+/* =========================
+   CHORD / EVENT GROUPING
+========================= */
+
+function groupEvents(notes,staffs){
+const events=[];
+for(let s=0;s<staffs.length;s++){
+const same=notes.filter(n=>n.staff===s).sort((a,b)=>a.x-b.x);
+const local=[];
+for(const note of same){
+let event=local.find(e=>Math.abs(e.x-note.x)<staffs[s].gap*.55);
+if(!event){
+event={x:note.x,notes:[],staff:s};
+local.push(event);
+}
+event.notes.push(note);
+}
+local.forEach(e=>{
+e.hollow=e.notes.some(n=>n.hollow);
+e.stem=e.notes.some(n=>n.stem);
+e.flag=e.notes.some(n=>n.flag);
+});
+events.push(...local.sort((a,b)=>a.x-b.x));
+}
+return events;
+}
+
+/* =========================
+   MEASURE-AWARE RHYTHM
+========================= */
+
+const RHYTHM_NAMES={1:'Eighth note',2:'Quarter note',3:'Dotted quarter',4:'Half note',6:'Dotted half',8:'Whole note'};
+
+function rhythmLabel(units){return RHYTHM_NAMES[units]||`${units/2} beats`;}
+
+function rhythmOptions(ev,index,count){
+const bias=.05*(1-index/Math.max(1,count));
+let list;
+if(ev.hollow){
+list=ev.stem?[[4,0],[6,1.6],[8,2.6]]:[[8,0],[4,2.6],[6,3.2]];
+}else if(ev.flag){
+list=[[1,0],[2,1.0],[3,1.6]];
+}else{
+list=[[2,0],[1,1.0],[3,1.6],[4,2.2],[6,3.0]];
+}
+return list.map(([u,c])=>({u,c:c>0?c+bias:0}));
+}
+
+function solveMeasure(evs,target){
+const n=evs.length;
+if(!n||n>16)return null;
+const opts=evs.map((e,i)=>rhythmOptions(e,i,n));
+const minRest=new Array(n+1).fill(0);
+const maxRest=new Array(n+1).fill(0);
+for(let i=n-1;i>=0;i--){
+minRest[i]=minRest[i+1]+Math.min(...opts[i].map(o=>o.u));
+maxRest[i]=maxRest[i+1]+Math.max(...opts[i].map(o=>o.u));
+}
+let best=null;
+const pick=new Array(n);
+(function dfs(i,sum,cost){
+if(best&&cost>=best.cost)return;
+if(sum+minRest[i]>target||sum+maxRest[i]<target)return;
+if(i===n){best={cost,units:pick.slice()};return;}
+for(const o of opts[i]){
+pick[i]=o.u;
+dfs(i+1,sum+o.u,cost+o.c);
+}
+})(0,0,0);
+return best;
+}
+
+function evaluateTarget(groups,target,edge){
+let total=0;
+const plans=new Map();
+groups.forEach((evs,key)=>{
+const sol=solveMeasure(evs,target);
+if(sol&&sol.cost<=7){
+plans.set(key,sol.units);
+total+=sol.cost;
+}else if(!edge.has(key)){
+total+=12;
+}
+});
+return{total,plans};
+}
+
+function applyMeasureRhythm(events,staffs,setting){
+events.forEach(ev=>{
+ev.units=ev.hollow?(ev.stem?4:8):(ev.flag?1:2);
+ev.measure=0;
+for(const b of staffs[ev.staff].barlines){
+if(b<ev.x)ev.measure++;
+}
+});
+
+const groups=new Map();
+const bounds=new Map();
+
+events.forEach(ev=>{
+if(!staffs[ev.staff].barlines.length)return;
+const key=ev.staff+':'+ev.measure;
+if(!groups.has(key))groups.set(key,[]);
+groups.get(key).push(ev);
+const b=bounds.get(ev.staff)||{min:ev.measure,max:ev.measure};
+b.min=Math.min(b.min,ev.measure);
+b.max=Math.max(b.max,ev.measure);
+bounds.set(ev.staff,b);
+});
+
+const edge=new Set();
+bounds.forEach((b,s)=>{
+edge.add(s+':'+b.min);
+edge.add(s+':'+b.max);
+});
+
+const targets=setting==='auto'?[8,6,4,10,12]:[Number(setting)||8];
+let chosen=null;
+
+for(const t of targets){
+const r=evaluateTarget(groups,t,edge);
+if(!chosen||r.total<chosen.total-1e-9){chosen={...r,target:t};}
+}
+
+let unresolved=0;
+
+if(chosen){
+groups.forEach((evs,key)=>{
+const plan=chosen.plans.get(key);
+if(plan){
+evs.forEach((ev,i)=>{ev.units=plan[i];});
+}else if(!edge.has(key)){
+unresolved++;
+}
+});
+}
+
+events.forEach(ev=>{
+ev.beats=ev.units/2;
+ev.notes.forEach(n=>{
+n.units=ev.units;
+n.beats=ev.beats;
+n.measure=ev.measure;
+n.label=rhythmLabel(ev.units);
+});
+});
+
+return{
+target:chosen?chosen.target:(Number(setting)||8),
+measures:groups.size,
+unresolved
+};
+}
+
+/* =========================
+   DRAW OVERLAY
+========================= */
+
+function drawOverlay(ctx,staffs,notes){
+ctx.save();
+
+ctx.lineWidth=2;
+ctx.strokeStyle='#6b7fd7';
+staffs.forEach(s=>{
+s.lines.forEach(y=>{
+ctx.beginPath();
+ctx.moveTo(s.left,y);
+ctx.lineTo(s.right,y);
+ctx.stroke();
+});
+});
+
+ctx.lineWidth=3;
+ctx.strokeStyle='#3fa97c';
+staffs.forEach(s=>{
+(s.barlines||[]).forEach(x=>{
+ctx.beginPath();
+ctx.moveTo(x,s.lines[0]-3);
+ctx.lineTo(x,s.lines[4]+3);
+ctx.stroke();
+});
+});
+
+notes.forEach(n=>{
+ctx.beginPath();
+ctx.arc(n.x,n.y,Math.max(5,staffs[n.staff].gap*.24),0,Math.PI*2);
+ctx.fillStyle=n.manual?'#8a5cd6':n.recovered?'#f0a030':'#e0527a';
+ctx.fill();
+ctx.strokeStyle='white';
+ctx.lineWidth=1.5;
+ctx.stroke();
+});
+
+ctx.restore();
+}
+
+/* =========================
+   MAIN IMAGE PROCESSING
+========================= */
+
+async function detectSheet(blob){
+if(!cvReady){throw new Error('Recognition engine is still loading.');}
+
+const im=await loadImage(blob);
+const scale=Math.min(1,1800/im.naturalWidth);
+const w=Math.max(1,Math.round(im.naturalWidth*scale));
+const h=Math.max(1,Math.round(im.naturalHeight*scale));
+
+canvas.width=w;
+canvas.height=h;
+canvas.hidden=false;
+
+const ctx=canvas.getContext('2d');
+ctx.drawImage(im,0,0,w,h);
+
+let src=cv.imread(canvas);
+let gray=new cv.Mat();
+let blur=new cv.Mat();
+let binary=new cv.Mat();
+let lineMask=new cv.Mat();
+let lineKernel=null;
+
+try{
+cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+cv.GaussianBlur(gray,blur,new cv.Size(3,3),0);
+cv.threshold(blur,binary,0,255,cv.THRESH_BINARY_INV+cv.THRESH_OTSU);
+
+lineKernel=cv.getStructuringElement(cv.MORPH_RECT,new cv.Size(Math.max(22,Math.round(w*.16)),1));
+cv.morphologyEx(binary,lineMask,cv.MORPH_OPEN,lineKernel);
+
+const staffs=findStaffGroups(lineMask,w,h);
+
+if(!staffs.length){
+throw new Error('Five staff lines could not be detected. Try a clearer, straighter image.');
+}
+
+const clef=$('clef').value;
+const key=$('keySignature').value;
+
+for(const staff of staffs){
+staff.minX=findNoteStart(binary,staff,key);
+staff.barlines=detectBarlines(binary,staff);
+}
+
+const allNotes=[];
+
+for(let s=0;s<staffs.length;s++){
+const found=detectStaffNotes(binary,staffs[s],s,clef,key);
+for(const n of found){
+const rhythm=estimateRhythm(binary,n,staffs[s]);
+allNotes.push({...n,...rhythm});
+}
+}
+
+if(!allNotes.length){
+throw new Error('Staff lines were found, but no noteheads were recognized. Try cropping closer to the music.');
+}
+
+allNotes.sort((a,b)=>a.staff-b.staff||a.x-b.x);
+
+const events=groupEvents(allNotes,staffs);
+const info=applyMeasureRhythm(events,staffs,$('timeSig').value);
+
+ctx.drawImage(im,0,0,w,h);
+drawOverlay(ctx,staffs,allNotes);
+
+lastImage=im;
+lastStaffs=staffs;
+
+return{notes:allNotes,events,staffs,info};
+
+}finally{
+src.delete();
+gray.delete();
+blur.delete();
+binary.delete();
+lineMask.delete();
+if(lineKernel){lineKernel.delete();}
+}
+}
+
+/* =========================
+   DISPLAY NOTES
+========================= */
+
+function esc(s){
+return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderNotes(){
+notesBox.replaceChildren();
+let previous=null;
+
+playbackEvents.forEach(ev=>{
+const key=ev.staff+':'+ev.measure;
+
+if(previous!==null&&key!==previous){
+const bar=document.createElement('div');
+bar.className='bar-chip';
+bar.textContent='|';
+notesBox.appendChild(bar);
+}
+
+previous=key;
+
+ev.notes.forEach(n=>{
+const el=document.createElement('div');
+el.className='note-chip';
+el.dataset.index=detectedNotes.indexOf(n);
+el.innerHTML=`${esc(n.name)}<small>${esc(n.label)} · ${n.beats} beat${n.beats===1?'':'s'}</small>`;
+notesBox.appendChild(el);
+});
+});
+}
+
+function sequenceText(events){
+let text='';
+let previous=null;
+events.forEach(ev=>{
+const key=ev.staff+':'+ev.measure;
+if(previous!==null){text+=key!==previous?' | ':' ';}
+text+=ev.notes.map(n=>n.name).join('+');
+previous=key;
+});
+return text;
+}
+
+/* =========================
+   SUMMARY TEXT
+========================= */
+
+function showSummary(info){
+const staffs=lastStaffs;
+const barCount=staffs.reduce((sum,s)=>sum+s.barlines.length,0);
+
+const rows=staffs.map((s,i)=>{
+const n=detectedNotes.filter(x=>x.staff===i).length;
+return `row ${i+1}: ${n} notes, ${s.barlines.length+1} measures`;
+}).join('; ');
+
+const recoveredCount=detectedNotes.filter(n=>n.recovered).length;
+const manualCount=detectedNotes.filter(n=>n.manual).length;
+
+let message=
+`Found ${staffs.length} staff system(s), ${barCount} measure barline(s) and ${detectedNotes.length} notehead(s) (${rows}). `+
+`Measure length: ${info.target/2} beats. `;
+
+if(recoveredCount){message+=`${recoveredCount} missed note(s) recovered automatically (orange). `;}
+if(manualCount){message+=`${manualCount} note(s) added by you (purple). `;}
+
+if(!barCount){
+message+='No measure barlines were detected, so rhythm could not be checked against measures. ';
+}else if(info.unresolved){
+message+=`${info.unresolved} measure(s) did not add up, so their rhythm was left as detected. `;
+}
+
+message+=`Sequence: ${sequenceText(playbackEvents)}.`;
+
+status(message);
+}
+
+/* =========================
+   DETECTION BUTTON
+========================= */
+
+async function runDetection(){
+if(!imageBlob)return;
+
+$('detectBtn').disabled=true;
+$('redetectBtn').disabled=true;
+$('playBtn').disabled=true;
+
+notesBox.replaceChildren();
+stopMusic();
+
+status('Scanning staff lines, barlines and noteheads...');
+
+try{
+const result=await detectSheet(imageBlob);
+
+detectedNotes=result.notes;
+playbackEvents=result.events;
+
+renderNotes();
+
+$('playBtn').disabled=false;
+$('redetectBtn').disabled=false;
+$('editRow').hidden=false;
+$('editHint').hidden=false;
+
+showSummary(result.info);
+
+}catch(e){
+detectedNotes=[];
+playbackEvents=[];
+status('Detection error: '+e.message);
+console.error(e);
+}finally{
+$('detectBtn').disabled=false;
+}
+}
+
+$('detectBtn').onclick=runDetection;
+$('redetectBtn').onclick=runDetection;
+
+['clef','keySignature','timeSig'].forEach(id=>{
+$(id).onchange=()=>{if(imageBlob){$('redetectBtn').disabled=false;}};
+});
+
+/* =========================
+   MANUAL FIXES
+========================= */
+
+function rebuildFromNotes(){
+stopMusic();
+
+detectedNotes.sort((a,b)=>a.staff-b.staff||a.x-b.x);
+
+const events=groupEvents(detectedNotes,lastStaffs);
+const info=applyMeasureRhythm(events,lastStaffs,$('timeSig').value);
+
+playbackEvents=events;
+
+const ctx=canvas.getContext('2d');
+ctx.drawImage(lastImage,0,0,canvas.width,canvas.height);
+drawOverlay(ctx,lastStaffs,detectedNotes);
+
+renderNotes();
+
+$('playBtn').disabled=!detectedNotes.length;
+
+showSummary(info);
+}
+
+function addManualNote(x,y){
+let staffIndex=-1;
+let bestD=Infinity;
+
+lastStaffs.forEach((s,i)=>{
+const center=(s.lines[0]+s.lines[4])/2;
+const d=Math.abs(y-center);
+if(d<bestD){bestD=d;staffIndex=i;}
+});
+
+if(staffIndex<0)return false;
+
+const staff=lastStaffs[staffIndex];
+
+if(bestD>staff.gap*6)return false;
+
+const step=Math.max(-4,Math.min(12,Math.round((staff.lines[4]-y)/(staff.gap/2))));
+
+const pitch=pitchForStep(step,$('clef').value,$('keySignature').value);
+
+const shapes={
+auto:{hollow:false,stem:true,flag:false},
+quarter:{hollow:false,stem:true,flag:false},
+eighth:{hollow:false,stem:true,flag:true},
+half:{hollow:true,stem:true,flag:false},
+whole:{hollow:true,stem:false,flag:false}
+};
+
+const shape=shapes[$('addType').value]||shapes.auto;
+
+detectedNotes.push({
+...pitch,
+x,
+y:staff.lines[4]-step*staff.gap/2,
+staff:staffIndex,
+head:shape.hollow?'hollow':'filled',
+...shape,
+manual:true
+});
+
+return true;
+}
+
+canvas.onclick=e=>{
+if(!lastImage||!lastStaffs.length)return;
+
+const rect=canvas.getBoundingClientRect();
+const x=(e.clientX-rect.left)*canvas.width/rect.width;
+const y=(e.clientY-rect.top)*canvas.height/rect.height;
+
+let hit=-1,hitD=Infinity;
+
+detectedNotes.forEach((n,i)=>{
+const g=lastStaffs[n.staff].gap;
+const d=Math.hypot(n.x-x,n.y-y);
+if(d<g*.8&&d<hitD){hit=i;hitD=d;}
+});
+
+if(hit>=0){
+detectedNotes.splice(hit,1);
+rebuildFromNotes();
+return;
+}
+
+if(addManualNote(x,y)){rebuildFromNotes();}
+};
+
+/* =========================
+   AUDIO PLAYBACK
+========================= */
+
+function midiFrequency(midi){return 440*Math.pow(2,(midi-69)/12);}
+
+function playTone(midi,start,duration,mode){
+const f=midiFrequency(midi);
+const partials=mode==='organ'?[1,.5,.25]:mode==='soft'?[1]:[1,.32,.13,.055];
+
+const master=audioContext.createGain();
+master.gain.setValueAtTime(.0001,start);
+master.gain.linearRampToValueAtTime(.13,start+.018);
+master.gain.setTargetAtTime(.0001,start+Math.max(.06,duration*.72),Math.max(.025,duration*.16));
+master.connect(audioContext.destination);
+
+partials.forEach((amp,i)=>{
+const osc=audioContext.createOscillator();
+const gain=audioContext.createGain();
+osc.type=mode==='organ'?'sine':i===0?'triangle':'sine';
+osc.frequency.value=f*(i+1);
+gain.gain.value=amp;
+osc.connect(gain);
+gain.connect(master);
+osc.start(start);
+osc.stop(start+duration+.05);
+activeOscillators.push(osc);
+});
+}
+
+/* =========================
+   PLAY MUSIC
+========================= */
+
+$('playBtn').onclick=async()=>{
+if(!playbackEvents.length)return;
+
+stopMusic();
+
+const token=playbackToken;
+
+try{
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC){throw new Error('Web Audio is not supported.');}
+if(!audioContext){audioContext=new AC();}
+await audioContext.resume();
+
+const tempo=Math.min(220,Math.max(40,Number($('tempo').value)||100));
+const beat=60/tempo;
+const mode=$('sound').value;
+const start=audioContext.currentTime+.12;
+let cursor=0;
+
+$('stopMusicBtn').disabled=false;
+document.body.classList.add('playing');
+
+status(`Playing at ${tempo} BPM.`);
+
+playbackEvents.forEach(event=>{
+const eventStart=start+cursor;
+
+event.notes.forEach(n=>{
+playTone(n.midi,eventStart,Math.max(.08,event.beats*beat*.90),mode);
+
+const i=detectedNotes.indexOf(n);
+
+playbackTimers.push(setTimeout(()=>{
+if(token!==playbackToken)return;
+document.querySelectorAll('.note-chip.active').forEach(el=>el.classList.remove('active'));
+const chip=notesBox.querySelector(`[data-index="${i}"]`);
+if(chip){
+chip.classList.add('active');
+chip.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+},cursor*1000));
+});
+
+cursor+=event.beats*beat;
+});
+
+playbackTimers.push(setTimeout(()=>{
+if(token!==playbackToken)return;
+activeOscillators=[];
+$('stopMusicBtn').disabled=true;
+document.body.classList.remove('playing');
+document.querySelectorAll('.note-chip.active').forEach(el=>el.classList.remove('active'));
+status('Playback finished.');
+},(cursor+.3)*1000));
+
+}catch(e){
+stopMusic();
+status('Audio error: '+e.message);
+}
+};
+
+$('stopMusicBtn').onclick=()=>{
+stopMusic();
+status('Playback stopped.');
+};
+
+/* =========================
+   INITIALIZATION
+========================= */
+
+if(navigator.mediaDevices?.addEventListener){
+navigator.mediaDevices.addEventListener('devicechange',refreshCameras);
+}
+
+refreshCameras();
+
+</script>
+
 </body>
 </html>
-
-
