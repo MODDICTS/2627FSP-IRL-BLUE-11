@@ -1365,7 +1365,7 @@ updateCoins();renderQuiz();resetKitchen();spawnBalls();renderInventory();refresh
 /* Mooncake Festival UPGRADE */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let uid=0;
 
 /* ================= CSS ================= */
@@ -1431,7 +1431,7 @@ const st=document.createElement("style");st.textContent=css;document.head.append
 
 /* ================= SVG ART ================= */
 function lanternSVG(c,t,w){const i=++uid;
-return `<svg viewBox="0 0 100 150" width="w"style="overflow:visible;filter:drop-shadow(0014pxrgba(255,200,90,.7))"><defs><radialGradientid="lg{i}" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fff2a8"/><stop offset=".4" stop-color="${c}"/><stop offset="1" stop-color="#3a0f1f"/></radialGradient></defs>
+return `<svg viewBox="0 0 100 150" width="${w}" style="overflow:visible;filter:drop-shadow(0 0 14px rgba(255,200,90,.7))"><defs><radialGradient id="lg${i}" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#fff2a8"/><stop offset=".4" stop-color="${c}"/><stop offset="1" stop-color="#3a0f1f"/></radialGradient></defs>
 <line x1="50" y1="0" x2="50" y2="22" stroke="#e7b446" stroke-width="2"/><ellipse cx="50" cy="70" rx="40" ry="46" fill="url(#lg${i})"/>
 <g fill="none" stroke="#e7b446" stroke-opacity=".75" stroke-width="1.6"><path d="M50 24C18 50 18 90 50 116"/><path d="M50 24C82 50 82 90 50 116"/><path d="M50 24C34 50 34 90 50 116"/><path d="M50 24C66 50 66 90 50 116"/></g>
 <rect x="28" y="18" width="44" height="9" rx="3" fill="#e7b446"/><rect x="28" y="113" width="44" height="9" rx="3" fill="#e7b446"/>
@@ -1439,10 +1439,10 @@ return `<svg viewBox="0 0 100 150" width="w"style="overflow:visible;filter:drop-
 <path d="M50 122V138M44 124L42 142M56 124L58 142" stroke="#e8c15d" stroke-width="2.2"/><circle cx="50" cy="141" r="4" fill="#d9363e" stroke="#e7b446"/></svg>`}
 
 function personSVG(c1,c2,hair,s){const k="p"+(++uid),skin="#f1bd9a";
-return `<svg viewBox="0 0 150 230" width="150" height="230"><defs><linearGradient id="k"x1="0"x2="1"><stopoffset="0"stop-color="{c1}"/><stop offset=".5" stop-color="c2"/><stopoffset="1"stop-color="{c1}"/></linearGradient></defs><g transform="translate(75 230) scale(${s}) translate(-75 -230)">
+return `<svg viewBox="0 0 150 230" width="150" height="230"><defs><linearGradient id="${k}" x1="0" x2="1"><stop offset="0" stop-color="${c1}"/><stop offset=".5" stop-color="${c2}"/><stop offset="1" stop-color="${c1}"/></linearGradient></defs><g transform="translate(75 230) scale(${s}) translate(-75 -230)">
 <path d="M28 230L42 100Q75 84 108 100L122 230Z" fill="url(#${k})"/><path d="M62 92L75 128L88 92Z" fill="#fff3d8"/><rect x="42" y="150" width="66" height="10" fill="#e7b446"/>
-<path d="M44 104Q8 150 52 182L68 166Q46 146 58 112Z" fill="c2"/><pathd="M106104Q14215098182L82166Q10414692112Z"fill="{c2}"/>
-<circle cx="60" cy="178" r="9" fill="skin"/><circlecx="90"cy="178"r="9"fill="{skin}"/><rect x="68" y="76" width="14" height="20" fill="skin"/><ellipsecx="75"cy="55"rx="27"ry="31"fill="{skin}"/>${hair}
+<path d="M44 104Q8 150 52 182L68 166Q46 146 58 112Z" fill="${c2}"/><path d="M106 104Q142 150 98 182L82 166Q104 146 92 112Z" fill="${c2}"/>
+<circle cx="60" cy="178" r="9" fill="${skin}"/><circle cx="90" cy="178" r="9" fill="${skin}"/><rect x="68" y="76" width="14" height="20" fill="${skin}"/><ellipse cx="75" cy="55" rx="27" ry="31" fill="${skin}"/>${hair}
 <path d="M62 58q4 3 8 0M80 58q4 3 8 0" stroke="#3a2230" stroke-width="2" fill="none"/><path d="M69 72q6 5 12 0" stroke="#b9455a" stroke-width="2" fill="none"/><circle cx="58" cy="68" r="5" fill="#ff8f94" opacity=".4"/><circle cx="92" cy="68" r="5" fill="#ff8f94" opacity=".4"/></g></svg>`}
 const cap='<path d="M48 52Q50 20 75 20Q100 20 102 52Q90 36 75 36Q60 36 48 52Z" fill="#241a2a"/>';
 const H={f:cap+'<circle cx="75" cy="13" r="13" fill="#241a2a"/><text x="84" y="22" font-size="16">🌸</text>',
@@ -1461,10 +1461,10 @@ const girlSVG=`<svg viewBox="0 0 210 330" width="210" height="330"><defs><linear
 <path d="M78 125Q14 160 46 232L90 208Q76 170 88 140Z" fill="#e8707f"/><path d="M132 125Q196 160 164 232L120 208Q134 170 122 140Z" fill="#e8707f"/>
 <path d="M46 232L90 208" stroke="#fff3d8" stroke-width="5"/><path d="M164 232L120 208" stroke="#fff3d8" stroke-width="5"/><circle cx="92" cy="206" r="9" fill="#f2c4a8"/><circle cx="118" cy="206" r="9" fill="#f2c4a8"/></svg>`;
 
-function mooncakeSVG(items){let d="";const n=Math.min(items.length,10);items.slice(0,10).forEach((e,i)=>{const a=i/n*6.283-1.57;d+=`<text x="100+80*Math.cos(a)"y="{108+80*Math.sin(a)}" font-size="22" text-anchor="middle">${e}</text>`});
+function mooncakeSVG(items){let d="";const n=Math.min(items.length,10);items.slice(0,10).forEach((e,i)=>{const a=i/n*6.283-1.57;d+=`<text x="${100+80*Math.cos(a)}" y="${108+80*Math.sin(a)}" font-size="22" text-anchor="middle">${e}</text>`});
 return `<svg viewBox="0 0 200 200" width="170"><defs><radialGradient id="mc" cx="40%" cy="35%"><stop offset="0" stop-color="#f3b768"/><stop offset=".6" stop-color="#c9803f"/><stop offset="1" stop-color="#8f5430"/></radialGradient></defs><ellipse cx="100" cy="188" rx="88" ry="9" fill="rgba(0,0,0,.3)"/><circle cx="100" cy="100" r="94" fill="#fff3d8" stroke="#e7b446" stroke-width="4"/><circle cx="100" cy="100" r="66" fill="url(#mc)" stroke="#8f5430" stroke-width="5"/><circle cx="100" cy="100" r="55" fill="none" stroke="#ffe0a0" stroke-opacity=".55" stroke-width="3" stroke-dasharray="3 6"/><text x="100" y="114" text-anchor="middle" font-family="Ma Shan Zheng,serif" font-size="40" fill="#ffe9b0">团圆</text>${d}</svg>`}
 
-function pagoda(){let s='<svg viewBox="0 0 200 340" width="190">',y=330;[70,62,54,46,38].forEach(w=>{s+=`<rect x="110-w"y="{y-34}" width="2*w-20"height="34"fill="#3a1d3f"/><pathd="M{100-w-14} y-30Q{100-w} ${y-22} ${100-w+14} y-34H{100+w-14}Q${100+w} ${y-22} ${100+w+14} y-30L{100+w-8} y-48H{100-w+8}Z" fill="#2b1633"/><rect x="92" y="${y-26}" width="16" height="16" fill="#ffcf6a" opacity=".85"/>`;y-=62});return s+`<path d="M100 yV{y-30}" stroke="#2b1633" stroke-width="4"/></svg>`}
+function pagoda(){let s='<svg viewBox="0 0 200 340" width="190">',y=330;[70,62,54,46,38].forEach(w=>{s+=`<rect x="${110-w}" y="${y-34}" width="${2*w-20}" height="34" fill="#3a1d3f"/><path d="M${100-w-14} ${y-30}Q${100-w} ${y-22} ${100-w+14} ${y-34}H${100+w-14}Q${100+w} ${y-22} ${100+w+14} ${y-30}L${100+w-8} ${y-48}H${100-w+8}Z" fill="#2b1633"/><rect x="92" y="${y-26}" width="16" height="16" fill="#ffcf6a" opacity=".85"/>`;y-=62});return s+`<path d="M100 ${y}V${y-30}" stroke="#2b1633" stroke-width="4"/></svg>`}
 const pavilion='<svg viewBox="0 0 300 200" width="300"><rect x="40" y="90" width="220" height="100" fill="#2b1633"/><rect x="62" y="104" width="176" height="82" fill="#ffcf6a" opacity=".5"/><g fill="#b3475a"><rect x="56" y="88" width="9" height="102"/><rect x="117" y="88" width="9" height="102"/><rect x="174" y="88" width="9" height="102"/><rect x="235" y="88" width="9" height="102"/></g><path d="M0 92Q40 88 58 56H242Q260 88 300 92Q150 70 0 92Z" fill="#7c3442"/><path d="M70 56Q90 40 110 24H190Q210 40 230 56Z" fill="#8f3a4a"/><g fill="#d9363e" stroke="#e7b446"><circle cx="90" cy="112" r="9"/><circle cx="150" cy="112" r="9"/><circle cx="210" cy="112" r="9"/></g><rect x="30" y="188" width="240" height="12" fill="#46253a"/></svg>';
 
 window.lanternSVG=lanternSVG;const ING={
@@ -1477,11 +1477,11 @@ salt:'<path d="M10 12H22L24 28H8Z" fill="#e8f0f5" stroke="#8aa0b4"/><path d="M9 
 $$(".ingredient").forEach(e=>{e.firstElementChild.outerHTML=`<svg viewBox="0 0 32 32" width="34" height="34">${ING[e.dataset.ing]}</svg>`});
 
 /* ================= SCENES ================= */
-function stars(el,n){for(let i=0;i<n;i++){const s=document.createElement("i");s.className="star";s.style.cssText=`left:Math.random()*100%;top:{Math.random()*60}%;animation-delay:${Math.random()*3}s`;el.appendChild(s)}}
-function flies(el,n){for(let i=0;i<n;i++){const s=document.createElement("i");s.className="ff";s.style.cssText=`left:Math.random()*100%;top:{45+Math.random()*45}%;animation-delay:Math.random()*6s;animation-duration:{5+Math.random()*5}s`;el.appendChild(s)}}
-stars(("#home"),45);stars(("#garden"),55);stars((".cutscene-sky"),60);flies(("#garden"),18);
-("#home").insertAdjacentHTML("beforeend",`<divclass="sil"style="right:6%">{pagoda()}</div>`);
-("#garden").insertAdjacentHTML("beforeend",`<divclass="sil"style="left:3%;bottom:16%;z-index:2">{pavilion}</div>`);
+function stars(el,n){for(let i=0;i<n;i++){const s=document.createElement("i");s.className="star";s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*60}%;animation-delay:${Math.random()*3}s`;el.appendChild(s)}}
+function flies(el,n){for(let i=0;i<n;i++){const s=document.createElement("i");s.className="ff";s.style.cssText=`left:${Math.random()*100}%;top:${45+Math.random()*45}%;animation-delay:${Math.random()*6}s;animation-duration:${5+Math.random()*5}s`;el.appendChild(s)}}
+stars($("#home"),45);stars($("#garden"),55);stars($(".cutscene-sky"),60);flies($("#garden"),18);
+$("#home").insertAdjacentHTML("beforeend",`<div class="sil" style="right:6%">${pagoda()}</div>`);
+$("#garden").insertAdjacentHTML("beforeend",`<div class="sil" style="left:3%;bottom:16%;z-index:2">${pavilion}</div>`);
 $$(".hanging-lantern").forEach((l,i)=>{l.innerHTML=lanternSVG(["#cf3b47","#d79b31","#df6378","#cf3b47","#b84462"][i%5],["福","喜","月","团","愿"][i%5],58)});
 $$(".serve-lantern").forEach(l=>{l.innerHTML=lanternSVG("#cf3b47","福",52)});
 $(".hanfu-girl").innerHTML=girlSVG;
@@ -1494,14 +1494,14 @@ window.launchLantern=function(){
   cinematicLantern.style.animation="none";void cinematicLantern.offsetWidth;
   cinematicLantern.style.animation="launchUp 5s 1.5s ease-in forwards";
   cutscene.querySelectorAll(".rise").forEach(x=>x.remove());
-  for(let i=0;i<12;i++){const d=document.createElement("div");d.className="rise";d.style.cssText=`left:5+Math.random()*90%;animation-delay:{Math.random()*6}s;animation-duration:9+Math.random()*6s;transform:scale({.28+Math.random()*.3})`;d.innerHTML=lanternSVG(["#cf3b47","#d79b31","#df6378"][i%3],"福",60);cutscene.appendChild(d)}
+  for(let i=0;i<12;i++){const d=document.createElement("div");d.className="rise";d.style.cssText=`left:${5+Math.random()*90}%;animation-delay:${Math.random()*6}s;animation-duration:${9+Math.random()*6}s;transform:scale(${.28+Math.random()*.3})`;d.innerHTML=lanternSVG(["#cf3b47","#d79b31","#df6378"][i%3],"福",60);cutscene.appendChild(d)}
   const w=wishText.value.trim();
   cutsceneWish.textContent=w?`「${w}」 · 愿望随花灯飞向月亮 ✨`:"愿你的愿望成真 · Semoga harapanmu terwujud ✨";
   cutscene.classList.add("show");setTimeout(closeCutscene,8000)};
 window.serveMooncake=function(){
   const items=$$(".decor-item").map(x=>x.textContent);
   if(!items.length){toast("Tambahkan minimal satu dekorasi dulu! 🥮");return}
-  ("#servedCake").innerHTML=mooncakeSVG(items);("#serveScene").classList.add("show")};
+  $("#servedCake").innerHTML=mooncakeSVG(items);$("#serveScene").classList.add("show")};
 updateLantern();
 
 /* ================= MUSIC (generative guzheng + erhu, D pentatonic) ================= */
@@ -1576,7 +1576,7 @@ async function buildStrip(){
 /* ===== V2 PATCH ===== */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];let u=0;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let u=0;
 const css=`
 .title{margin-bottom:44px!important}.title p{margin-top:8px}
 .topbar{display:flex!important;justify-content:flex-start!important;align-items:center;height:62px!important;min-height:0!important;padding:0 8px!important;gap:8px;overflow:visible!important;white-space:nowrap}
@@ -1639,7 +1639,7 @@ const st=document.createElement("style");st.textContent=css;document.head.append
 /* ---- nav: scrollable buttons + fixed right group (no overlap on any device) ---- */
 (function(){const nav=$(".topbar"),sc=document.createElement("div");sc.className="nav-scroll";
  $$(".topbar>button[data-room]").forEach(b=>sc.appendChild(b));
- const r=document.createElement("div");r.className="nav-right";const mb=("#musicBtn");if(mb)r.appendChild(mb);r.appendChild((".topbar>.coin-pill"));nav.append(sc,r);
+ const r=document.createElement("div");r.className="nav-right";const mb=$("#musicBtn");if(mb)r.appendChild(mb);r.appendChild($(".topbar>.coin-pill"));nav.append(sc,r);
  const g=window.go;window.go=function(id){g(id);const a=$(".nav-scroll button.active");if(a)sc.scrollLeft=a.offsetLeft-sc.clientWidth/2+a.offsetWidth/2};
  $$(".coin-pill").forEach(p=>{const n=p.firstChild;if(n&&n.nodeType===3)n.textContent="";p.insertAdjacentHTML("afterbegin",'<i class="coin-ico"></i>')});
  const uc=window.updateCoins;window.updateCoins=function(){uc();const l=$("#led");if(l)l.textContent=String(coins).padStart(2,"0")};
@@ -1647,17 +1647,17 @@ const st=document.createElement("style");st.textContent=css;document.head.append
 
 /* ---- hanging lanterns on every section ---- */
 (function(){const cols=["#cf3b47","#d79b31","#df6378","#b84462","#cf3b47","#d79b31"],chs=["福","喜","月","团","愿","爱"];
- const cl=i=>'<div class="hang-cl">'+[[10,28,16],[16,28,10]][i].map((c,j)=>`<div class="hl" style="--c:cpx;animation-delay:{j*.5+i*.3}s">${lanternSVG(cols[i*3+j],chs[i*3+j],50)}</div>`).join("")+"</div>";
+ const cl=i=>'<div class="hang-cl">'+[[10,28,16],[16,28,10]][i].map((c,j)=>`<div class="hl" style="--c:${c}px;animation-delay:${j*.5+i*.3}s">${lanternSVG(cols[i*3+j],chs[i*3+j],50)}</div>`).join("")+"</div>";
  $$(".room").forEach(r=>{if(r.id!=="garden")r.insertAdjacentHTML("afterbegin",`<div class="hang-row">${cl(0)}${cl(1)}</div>`)})})();
 
 /* ---- claw machine ---- */
-function clawSVG(){const arm=(s)=>`<path d="Ms?58:4274L{s?80:20} 98" stroke="#7a5a1c" stroke-width="8" stroke-linecap="round"/><path d="Ms?58:4274L{s?80:20} 98" stroke="url(#cg)" stroke-width="5.5" stroke-linecap="round"/><path d="Ms?80:2098L{s?72:28} 126" stroke="#7a5a1c" stroke-width="8" stroke-linecap="round"/><path d="Ms?80:2098L{s?72:28} 126" stroke="url(#cg)" stroke-width="5.5" stroke-linecap="round"/><path d="Ms?66:3456L{s?79:21} 97" stroke="#9aa0ad" stroke-width="2.5"/><circle cx="s?80:20"cy="98"r="4.5"fill="#d6dae3"stroke="#4a4f5c"stroke-width="1.5"/><circlecx="{s?58:42}" cy="74" r="3.5" fill="#d6dae3" stroke="#4a4f5c"/><rect x="s?67:23"y="122"width="10"height="8"rx="3"fill="#2b2733"transform="rotate({s?14:-14} ${s?72:28} 126)"/>`;
+function clawSVG(){const arm=(s)=>`<path d="M${s?58:42} 74L${s?80:20} 98" stroke="#7a5a1c" stroke-width="8" stroke-linecap="round"/><path d="M${s?58:42} 74L${s?80:20} 98" stroke="url(#cg)" stroke-width="5.5" stroke-linecap="round"/><path d="M${s?80:20} 98L${s?72:28} 126" stroke="#7a5a1c" stroke-width="8" stroke-linecap="round"/><path d="M${s?80:20} 98L${s?72:28} 126" stroke="url(#cg)" stroke-width="5.5" stroke-linecap="round"/><path d="M${s?66:34} 56L${s?79:21} 97" stroke="#9aa0ad" stroke-width="2.5"/><circle cx="${s?80:20}" cy="98" r="4.5" fill="#d6dae3" stroke="#4a4f5c" stroke-width="1.5"/><circle cx="${s?58:42}" cy="74" r="3.5" fill="#d6dae3" stroke="#4a4f5c"/><rect x="${s?67:23}" y="122" width="10" height="8" rx="3" fill="#2b2733" transform="rotate(${s?14:-14} ${s?72:28} 126)"/>`;
 return `<svg viewBox="0 0 100 135" width="76" height="103" style="overflow:visible"><defs><linearGradient id="cm" x1="0" x2="1"><stop offset="0" stop-color="#8d95a3"/><stop offset=".45" stop-color="#eef1f6"/><stop offset="1" stop-color="#7a8290"/></linearGradient><linearGradient id="cg" x1="0" x2="1"><stop offset="0" stop-color="#b97b2a"/><stop offset=".5" stop-color="#ffe08a"/><stop offset="1" stop-color="#b97b2a"/></linearGradient></defs>
 <line x1="50" y1="-460" x2="50" y2="30" stroke="#2b2733" stroke-width="5"/><line x1="50" y1="-460" x2="50" y2="30" stroke="#b8bcc6" stroke-width="3" stroke-dasharray="3 3"/>
 <rect x="28" y="28" width="44" height="24" rx="6" fill="url(#cm)" stroke="#4a4f5c" stroke-width="2"/><rect x="28" y="38" width="44" height="6" fill="#c93635"/><circle cx="35" cy="33" r="2" fill="#555"/><circle cx="65" cy="33" r="2" fill="#555"/><circle cx="50" cy="47" r="3" fill="#ffe27a"><animate attributeName="opacity" values="1;.25;1" dur="1.2s" repeatCount="indefinite"/></circle>
 <rect x="43" y="52" width="14" height="18" fill="url(#cm)" stroke="#4a4f5c"/><rect x="40" y="68" width="20" height="9" rx="3" fill="url(#cg)" stroke="#6b4414"/>
 <g class="pr" ><path d="M50 77V122" stroke="#7a5a1c" stroke-width="7" stroke-linecap="round"/><path d="M50 77V122" stroke="url(#cg)" stroke-width="4.5" stroke-linecap="round"/><rect x="45" y="118" width="10" height="8" rx="3" fill="#2b2733"/></g>
-<g class="pr pl">arm(0)</g><gclass="prpr2">{arm(1)}</g></svg>`}
+<g class="pr pl">${arm(0)}</g><g class="pr pr2">${arm(1)}</g></svg>`}
 (function(){clawRig.innerHTML=clawSVG();const ms=$("#machineScreen");
  ms.insertAdjacentHTML("afterbegin",'<div class="wall"></div>');
  ms.insertAdjacentHTML("beforeend",'<div class="rail"></div><div class="carriage" id="carriage"></div><div class="chute"><b>出口</b></div><div class="glare"></div>');
@@ -1666,7 +1666,7 @@ return `<svg viewBox="0 0 100 135" width="76" height="103" style="overflow:visib
  updateCoins()})();
 
 /* ---- mooncake + decor scene ---- */
-function face(k){let s=`<defs><radialGradient id="ka"cx="38%"cy="32%"r="75%"><stopoffset="0"stop-color="#ffd48a"/><stopoffset=".55"stop-color="#d48a40"/><stopoffset="1"stop-color="#9b5527"/></radialGradient><radialGradientid="{k}b" cx="40%" cy="35%"><stop offset="0" stop-color="#f6c57a"/><stop offset="1" stop-color="#b86f33"/></radialGradient></defs>`;
+function face(k){let s=`<defs><radialGradient id="${k}a" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ffd48a"/><stop offset=".55" stop-color="#d48a40"/><stop offset="1" stop-color="#9b5527"/></radialGradient><radialGradient id="${k}b" cx="40%" cy="35%"><stop offset="0" stop-color="#f6c57a"/><stop offset="1" stop-color="#b86f33"/></radialGradient></defs>`;
  for(let i=0;i<28;i++)s+=`<circle cx="0" cy="-95" r="8.5" transform="rotate(${i*360/28})" fill="#c27b3a" stroke="#8c4c22" stroke-width="1.2"/>`;
  s+=`<circle r="93" fill="url(#${k}a)" stroke="#8c4c22" stroke-width="2"/><circle r="84" fill="none" stroke="#7a4120" stroke-opacity=".6" stroke-width="2"/><circle r="80" fill="none" stroke="#ffe6b0" stroke-opacity=".45" stroke-width="1.5"/>`;
  for(let i=0;i<12;i++)s+=`<g transform="rotate(${i*30})"><ellipse cy="-68" rx="7" ry="12" fill="#e9a95a" stroke="#8c4c22" stroke-width="1.2"/><circle cy="-68" r="2.6" fill="#8c4c22"/><path d="M-13 -58Q0 -50 13 -58" fill="none" stroke="#7a4120" stroke-opacity=".7"/></g>`;
@@ -1674,12 +1674,12 @@ function face(k){let s=`<defs><radialGradient id="ka"cx="38%"cy="32%"r="75%"><st
  for(let i=0;i<8;i++)s+=`<path transform="rotate(${i*45})" d="M0 -46Q9 -37 0 -29Q-9 -37 0 -46Z" fill="#cf8a40" stroke="#8c4c22" stroke-width=".8"/>`;
  return s+`<text y="9" text-anchor="middle" font-family="Ma Shan Zheng,serif" font-size="30" fill="#fff0c0" stroke="#8c4c22" stroke-width=".8">团圆</text><ellipse cx="-30" cy="-40" rx="38" ry="18" fill="#fff" opacity=".22" transform="rotate(-30)"/>`}
 function plateScene(items){const k="m"+(++u);let it="";const n=Math.min(items.length,12);
- items.slice(0,12).forEach((e,i)=>{const a=i/n*6.283-1.2;it+=`<text x="230+80*Math.cos(a)"y="{214+30*Math.sin(a)}" font-size="26" text-anchor="middle">${e}</text>`});
- return `<svg viewBox="0 0 460 330" style="overflow:visible"><defs><linearGradient id="kp"x1="0"y1="0"x2="0"y2="1"><stopoffset="0"stop-color="#fffaf0"/><stopoffset="1"stop-color="#e8cfa4"/></linearGradient><linearGradientid="{k}s" x1="0" x2="1"><stop offset="0" stop-color="#7d4220"/><stop offset=".5" stop-color="#c47a3a"/><stop offset="1" stop-color="#7d4220"/></linearGradient></defs>
+ items.slice(0,12).forEach((e,i)=>{const a=i/n*6.283-1.2;it+=`<text x="${230+80*Math.cos(a)}" y="${214+30*Math.sin(a)}" font-size="26" text-anchor="middle">${e}</text>`});
+ return `<svg viewBox="0 0 460 330" style="overflow:visible"><defs><linearGradient id="${k}p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#e8cfa4"/></linearGradient><linearGradient id="${k}s" x1="0" x2="1"><stop offset="0" stop-color="#7d4220"/><stop offset=".5" stop-color="#c47a3a"/><stop offset="1" stop-color="#7d4220"/></linearGradient></defs>
 <ellipse cx="230" cy="272" rx="214" ry="40" fill="rgba(50,15,20,.3)"/><ellipse cx="230" cy="244" rx="212" ry="62" fill="#c9a36a"/><ellipse cx="230" cy="236" rx="212" ry="62" fill="url(#${k}p)" stroke="#e5c28f" stroke-width="3"/>
 <ellipse cx="230" cy="236" rx="192" ry="52" fill="none" stroke="#3f6aa5" stroke-width="2" stroke-dasharray="7 7" opacity=".7"/><ellipse cx="230" cy="238" rx="160" ry="40" fill="#fff6e4" stroke="#e5c28f"/>
-<path d="M130 210V232A100 46 0 0 0 330 232V210Z" fill="url(#ks)"/><gtransform="translate(230210)scale(.97.45)">{face(k)}</g>${it}</svg>`}
-function tableBG(){let p="";for(let i=0;i<46;i++){const x=(i*173)%800,y=(i*97+40)%600,r=i%3;p+=`<ellipse cx="x"cy="{y}" rx="4+r*2"ry="{2+r}" fill="#ffd36b" opacity=".55" transform="rotate(${i*37} ${x} ${y})"/>`}
+<path d="M130 210V232A100 46 0 0 0 330 232V210Z" fill="url(#${k}s)"/><g transform="translate(230 210) scale(.97 .45)">${face(k)}</g>${it}</svg>`}
+function tableBG(){let p="";for(let i=0;i<46;i++){const x=(i*173)%800,y=(i*97+40)%600,r=i%3;p+=`<ellipse cx="${x}" cy="${y}" rx="${4+r*2}" ry="${2+r}" fill="#ffd36b" opacity=".55" transform="rotate(${i*37} ${x} ${y})"/>`}
  return `<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%"><defs><pattern id="tcl" width="44" height="44" patternUnits="userSpaceOnUse"><rect width="44" height="44" fill="#8f2a3f"/><path d="M22 2L42 22L22 42L2 22Z" fill="none" stroke="#e7b446" stroke-opacity=".35" stroke-width="1.5"/><circle cx="22" cy="22" r="3.5" fill="#e7b446" fill-opacity=".4"/><path d="M0 0L6 6M44 0L38 6M0 44L6 38M44 44L38 38" stroke="#e7b446" stroke-opacity=".3"/></pattern><radialGradient id="tgl" cx="50%" cy="50%" r="62%"><stop offset="0" stop-color="#ffd98a" stop-opacity=".55"/><stop offset="1" stop-color="#2b1020" stop-opacity=".6"/></radialGradient></defs>
 <rect width="800" height="600" fill="url(#tcl)"/><rect width="800" height="600" fill="url(#tgl)"/>
 <circle cx="712" cy="86" r="62" fill="#ffe89b" opacity=".25"/><circle cx="712" cy="86" r="40" fill="#fff0b8" stroke="#e7b446" stroke-width="3"/><circle cx="700" cy="76" r="7" fill="#e6c36a" opacity=".6"/><circle cx="725" cy="98" r="5" fill="#e6c36a" opacity=".6"/>
@@ -1691,23 +1691,23 @@ function tableBG(){let p="";for(let i=0;i<46;i++){const x=(i*173)%800,y=(i*97+40
  cakeTable.insertAdjacentHTML("beforeend",`<div class="plate-scene">${plateScene([])}</div><div class="table-banner">中秋快乐 ✦ Happy Mid-Autumn</div>`)})();
 
 /* ---- serving scene: lantern sky + banquet table ---- */
-function ftable(){let f="";for(let i=0;i<14;i++)f+=`<rect x="20+i*67"y="215"width="{i%2?30:22}" height="145" fill="${i%2?"rgba(255,255,255,.07)":"rgba(0,0,0,.14)"}"/>`;
- const dish=(x,y,c)=>`<ellipse cx="x"cy="{y+8}" rx="42" ry="12" fill="rgba(0,0,0,.22)"/><ellipse cx="x"cy="{y}" rx="40" ry="12" fill="#fff8ea" stroke="#3f6aa5" stroke-width="2"/><ellipse cx="x"cy="{y-3}" rx="26" ry="9" fill="c"/><ellipsecx="{x-7}" cy="${y-6}" rx="8" ry="3" fill="#fff" opacity=".35"/>`;
- const cup=(x,y)=>`<ellipse cx="x"cy="{y}" rx="11" ry="4" fill="#fff8ea" stroke="#3f6aa5"/><path d="M${x-11} yQ{x-9} ${y+13} ${x} y+13Q{x+9} ${y+13} ${x+11} yZ"fill="#fff8ea"stroke="#3f6aa5"/><ellipsecx="{x}" cy="${y+1}" rx="8" ry="2.5" fill="#c98a3a"/>`;
+function ftable(){let f="";for(let i=0;i<14;i++)f+=`<rect x="${20+i*67}" y="215" width="${i%2?30:22}" height="145" fill="${i%2?"rgba(255,255,255,.07)":"rgba(0,0,0,.14)"}"/>`;
+ const dish=(x,y,c)=>`<ellipse cx="${x}" cy="${y+8}" rx="42" ry="12" fill="rgba(0,0,0,.22)"/><ellipse cx="${x}" cy="${y}" rx="40" ry="12" fill="#fff8ea" stroke="#3f6aa5" stroke-width="2"/><ellipse cx="${x}" cy="${y-3}" rx="26" ry="9" fill="${c}"/><ellipse cx="${x-7}" cy="${y-6}" rx="8" ry="3" fill="#fff" opacity=".35"/>`;
+ const cup=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="#fff8ea" stroke="#3f6aa5"/><path d="M${x-11} ${y}Q${x-9} ${y+13} ${x} ${y+13}Q${x+9} ${y+13} ${x+11} ${y}Z" fill="#fff8ea" stroke="#3f6aa5"/><ellipse cx="${x}" cy="${y+1}" rx="8" ry="2.5" fill="#c98a3a"/>`;
  const d=dish(215,248,"#d9532f")+dish(300,262,"#6f9a4a")+dish(680,262,"#e7b446")+dish(765,248,"#b3475a")+dish(300,170,"#c9803f")+dish(680,170,"#8f6aa6")+cup(150,230)+cup(176,240)+cup(805,240)+cup(830,230);
  let dots="";for(let i=0;i<24;i++)dots+=`<circle cx="${40+i*39}" cy="323" r="5" fill="#ffd36b" opacity=".8"/>`;
- return `<svg class="ftable" viewBox="0 0 980 360" preserveAspectRatio="none"><defs><linearGradient id="fcl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b83a50"/><stop offset="1" stop-color="#6e1c2f"/></linearGradient><radialGradient id="ftp" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f0d8ad"/></radialGradient></defs><path d="M20 215V360H960V215Z" fill="url(#fcl)"/>f<rectx="20"y="300"width="940"height="10"fill="#e7b446"opacity=".85"/>{dots}
+ return `<svg class="ftable" viewBox="0 0 980 360" preserveAspectRatio="none"><defs><linearGradient id="fcl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b83a50"/><stop offset="1" stop-color="#6e1c2f"/></linearGradient><radialGradient id="ftp" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f0d8ad"/></radialGradient></defs><path d="M20 215V360H960V215Z" fill="url(#fcl)"/>${f}<rect x="20" y="300" width="940" height="10" fill="#e7b446" opacity=".85"/>${dots}
 <ellipse cx="490" cy="222" rx="472" ry="70" fill="rgba(40,10,20,.35)"/><ellipse cx="490" cy="215" rx="470" ry="70" fill="url(#ftp)" stroke="#e7b446" stroke-width="6"/><ellipse cx="490" cy="215" rx="440" ry="62" fill="none" stroke="#c93635" stroke-width="3" stroke-dasharray="14 8"/><ellipse cx="490" cy="215" rx="420" ry="57" fill="none" stroke="#e7b446" stroke-width="1.5"/>${d}</svg>`}
 $(".family-table").insertAdjacentHTML("beforeend",ftable());
 let skyDone=false;
 function fillSky(){if(skyDone)return;skyDone=true;let h="";
- for(let i=0;i<110;i++)h+=`<i class="star" style="left:Math.random()*100%;top:{Math.random()*66}%;animation-delay:Math.random()*3s;{Math.random()<.2?"width:4px;height:4px;":""}"></i>`;
+ for(let i=0;i<110;i++)h+=`<i class="star" style="left:${Math.random()*100}%;top:${Math.random()*66}%;animation-delay:${Math.random()*3}s;${Math.random()<.2?"width:4px;height:4px;":""}"></i>`;
  let n=0;while(n<80){const x=Math.random()*100,y=Math.random()*68;if(x>26&&x<74&&y>5&&y<42)continue;n++;const s=5+Math.random()*7;
-  h+=`<i class="tl" style="left:x%;top:{y}%;width:spx;height:{s*1.28}px;--d:4+Math.random()*5s;--x:{(Math.random()*24-12)|0}px;animation-delay:${-Math.random()*6}s"></i>`}
+  h+=`<i class="tl" style="left:${x}%;top:${y}%;width:${s}px;height:${s*1.28}px;--d:${4+Math.random()*5}s;--x:${(Math.random()*24-12)|0}px;animation-delay:${-Math.random()*6}s"></i>`}
  $(".serve-sky").insertAdjacentHTML("beforeend",h)}
 window.serveMooncake=function(){const items=$$(".decor-item").map(x=>x.textContent);
  if(!items.length){toast("Tambahkan minimal satu dekorasi dulu! 🥮");return}
- ("#servedCake").innerHTML=plateScene(items);fillSky();("#serveScene").classList.add("show")};
+ $("#servedCake").innerHTML=plateScene(items);fillSky();$("#serveScene").classList.add("show")};
 })();
 
 </script>
@@ -1715,7 +1715,7 @@ window.serveMooncake=function(){const items=$$(".decor-item").map(x=>x.textConte
 /* ===== V3 PATCH: shared frame, identical swaying lanterns, tarot room ===== */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];let u=0;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let u=0;
 const css=`
 @keyframes swing{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 @keyframes spinr{to{transform:translate(-50%,-50%) rotate(360deg)}}
@@ -1769,14 +1769,14 @@ const css=`
 `;
 const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
-function bigL(){const i=++u;return `<svg viewBox="0 0 150 235" style="overflow:visible"><defs><radialGradient id="bli"cx="50%"cy="42%"r="62%"><stopoffset="0"stop-color="#ff8f86"/><stopoffset=".5"stop-color="#d3364a"/><stopoffset="1"stop-color="#7a1428"/></radialGradient><linearGradientid="bg{i}" x1="0" x2="1"><stop offset="0" stop-color="#b9862a"/><stop offset=".5" stop-color="#ffe08a"/><stop offset="1" stop-color="#b9862a"/></linearGradient></defs>
+function bigL(){const i=++u;return `<svg viewBox="0 0 150 235" style="overflow:visible"><defs><radialGradient id="bl${i}" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#ff8f86"/><stop offset=".5" stop-color="#d3364a"/><stop offset="1" stop-color="#7a1428"/></radialGradient><linearGradient id="bg${i}" x1="0" x2="1"><stop offset="0" stop-color="#b9862a"/><stop offset=".5" stop-color="#ffe08a"/><stop offset="1" stop-color="#b9862a"/></linearGradient></defs>
 <circle cx="75" cy="96" r="72" fill="none" stroke="#ffd36b" stroke-opacity=".28"/><circle cx="75" cy="96" r="84" fill="none" stroke="#ffd36b" stroke-opacity=".14"/><text x="4" y="100" font-size="14" fill="#ffd36b">✦</text><text x="132" y="104" font-size="14" fill="#ffd36b">✦</text>
-<line x1="75" y1="-60" x2="75" y2="22" stroke="#c9a24f" stroke-width="3"/><rect x="55" y="20" width="40" height="14" rx="5" fill="url(#bgi)"/><rectx="66"y="12"width="18"height="10"rx="4"fill="url(#bg{i})"/>
-<ellipse cx="75" cy="96" rx="58" ry="64" fill="url(#bli)"stroke="url(#bg{i})" stroke-width="5"/>
+<line x1="75" y1="-60" x2="75" y2="22" stroke="#c9a24f" stroke-width="3"/><rect x="55" y="20" width="40" height="14" rx="5" fill="url(#bg${i})"/><rect x="66" y="12" width="18" height="10" rx="4" fill="url(#bg${i})"/>
+<ellipse cx="75" cy="96" rx="58" ry="64" fill="url(#bl${i})" stroke="url(#bg${i})" stroke-width="5"/>
 <g fill="none" stroke="#ffd36b" stroke-opacity=".45" stroke-width="2"><path d="M75 34C40 62 40 130 75 158"/><path d="M75 34C110 62 110 130 75 158"/><path d="M75 34C58 62 58 130 75 158"/><path d="M75 34C92 62 92 130 75 158"/></g>
 <ellipse cx="75" cy="96" rx="42" ry="48" fill="rgba(120,10,30,.35)" stroke="url(#bg${i})" stroke-width="2.5"/><text x="75" y="106" text-anchor="middle" font-family="Ma Shan Zheng,serif" font-size="34" fill="#ffe7a0">中秋</text>
 <g fill="#ffe7a0"><circle cx="42" cy="70" r="4"/><circle cx="108" cy="70" r="4"/><circle cx="42" cy="126" r="4"/><circle cx="108" cy="126" r="4"/></g><ellipse cx="55" cy="70" rx="9" ry="16" fill="#fff" opacity=".18" transform="rotate(20 55 70)"/>
-<rect x="55" y="156" width="40" height="14" rx="5" fill="url(#bgi)"/><pathd="M75170V186"stroke="#c9a24f"stroke-width="3"/><circlecx="75"cy="190"r="6"fill="url(#bg{i})"/>
+<rect x="55" y="156" width="40" height="14" rx="5" fill="url(#bg${i})"/><path d="M75 170V186" stroke="#c9a24f" stroke-width="3"/><circle cx="75" cy="190" r="6" fill="url(#bg${i})"/>
 <path d="M62 196h26l6 38H56Z" fill="#c93a43"/><g stroke="#8e1e2e" stroke-width="1.4">${[0,1,2,3,4,5,6].map(k=>`<path d="M${64+k*3.7} 198V232"/>`).join("")}</g><rect x="60" y="194" width="30" height="5" rx="2" fill="url(#bg${i})"/></svg>`}
 
 /* identical lantern on every section (garden keeps its hanging row, same design) */
@@ -1792,12 +1792,12 @@ const sp='<div class="spark">✦ ✿ ✦ ☾ ✦ ✿ ✦</div>';
 /* tarot reading room */
 (function(){const r=$("#quotes"),bg=r.querySelector(".fr-bg");
  let t="",b="";const br="子丑寅卯辰巳午未申酉戌亥",tg="☰☱☲☳☴☵☶☷";
- for(let i=0;i<72;i++)t+=`<line x1="0" y1="-290" x2="0" y2="i%6?-280:-268"transform="rotate({i*5})"/>`;
- for(let i=0;i<12;i++)b+=`<text transform="rotate(i*30)translate(0-236)"text-anchor="middle"font-size="26"fill="#ffd36b"font-family="MaShanZheng,serif">{br[i]}</text>`;
- for(let i=0;i<8;i++)b+=`<text transform="rotate(i*45)translate(0-150)"text-anchor="middle"font-size="30"fill="#ffd36b">{tg[i]}</text>`;
- let s="";for(let i=0;i<70;i++)s+=`<i class="star" style="left:Math.random()*100%;top:{Math.random()*100}%;animation-delay:${Math.random()*3}s"></i>`;
- bg.insertAdjacentHTML("beforeend",`<div class="trays"></div><svg class="tring" viewBox="-300 -300 600 600"><g fill="none" stroke="#ffd36b" stroke-width="1.5"><circle r="290"/><circle r="262"/><circle r="206"/><circle r="196" stroke-dasharray="3 7"/><circle r="118"/><circle r="60"/>t<polygonpoints="0,-11883,-83118,083,830,118-83,83-118,0-83,-83"/></g>{b}<circle r="30" fill="#ffd36b" opacity=".35"/></svg>${s}`);
- const sc=(side,top,h,d)=>`<div class="sconce" style="side:2.2%;top:{top}%;--h:hpx"><iclass="flame"style="animation-delay:{d}s"></i><b class="wax"></b><u class="cup"></u></div>`;
+ for(let i=0;i<72;i++)t+=`<line x1="0" y1="-290" x2="0" y2="${i%6?-280:-268}" transform="rotate(${i*5})"/>`;
+ for(let i=0;i<12;i++)b+=`<text transform="rotate(${i*30}) translate(0 -236)" text-anchor="middle" font-size="26" fill="#ffd36b" font-family="Ma Shan Zheng,serif">${br[i]}</text>`;
+ for(let i=0;i<8;i++)b+=`<text transform="rotate(${i*45}) translate(0 -150)" text-anchor="middle" font-size="30" fill="#ffd36b">${tg[i]}</text>`;
+ let s="";for(let i=0;i<70;i++)s+=`<i class="star" style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s"></i>`;
+ bg.insertAdjacentHTML("beforeend",`<div class="trays"></div><svg class="tring" viewBox="-300 -300 600 600"><g fill="none" stroke="#ffd36b" stroke-width="1.5"><circle r="290"/><circle r="262"/><circle r="206"/><circle r="196" stroke-dasharray="3 7"/><circle r="118"/><circle r="60"/>${t}<polygon points="0,-118 83,-83 118,0 83,83 0,118 -83,83 -118,0 -83,-83"/></g>${b}<circle r="30" fill="#ffd36b" opacity=".35"/></svg>${s}`);
+ const sc=(side,top,h,d)=>`<div class="sconce" style="${side}:2.2%;top:${top}%;--h:${h}px"><i class="flame" style="animation-delay:${d}s"></i><b class="wax"></b><u class="cup"></u></div>`;
  r.insertAdjacentHTML("beforeend",sc("left",38,70,0)+sc("left",54,44,.2)+sc("right",38,70,.3)+sc("right",54,44,.1)+
   '<div class="tarot-table"><div class="mc" style="left:8%;--r:-12deg"></div><div class="mc" style="left:calc(8% + 30px);--r:4deg"></div><div class="mc" style="left:calc(8% + 60px);--r:16deg"></div><div class="ball"></div></div><div class="curtain" id="curtain"><div class="cl"></div><div class="cr"></div></div>');
  const g=window.go;window.go=function(id){g(id);if(id==="quotes"){const c=$("#curtain");c.classList.add("nt");c.classList.remove("open");void c.offsetWidth;c.classList.remove("nt");setTimeout(()=>c.classList.add("open"),350)}};
@@ -1809,7 +1809,7 @@ const sp='<div class="spark">✦ ✿ ✦ ☾ ✦ ✿ ✦</div>';
 /* ===== V4 PATCH ===== */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const fl=document.createElement("link");fl.rel="stylesheet";fl.href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&display=swap";document.head.appendChild(fl);
 const css=`
@@ -1918,35 +1918,35 @@ const st=document.createElement("style");st.textContent=css;document.head.append
 
 /* ---------- scenery (garden + cutscene) ---------- */
 function scene(){let m1="M0 260",m2="M0 300",wl="",wr="",gl="",pg="",br="",rp="",rd="";
- for(let x=0;x<=1440;x+=60){m1+=` L${x} (210+Math.sin(x*.011)*34+Math.sin(x*.037)*14)|0`;m2+=`L{x} ${(250+Math.sin(x*.015+1)*28+Math.sin(x*.05)*10)|0}`}
+ for(let x=0;x<=1440;x+=60){m1+=` L${x} ${(210+Math.sin(x*.011)*34+Math.sin(x*.037)*14)|0}`;m2+=` L${x} ${(250+Math.sin(x*.015+1)*28+Math.sin(x*.05)*10)|0}`}
  m1+=" V460H0Z";m2+=" V460H0Z";
- for(let i=0;i<9;i++){const x=1170+i*10;wl+=`<path d="Mx150Q{x+10} 205 ${x-8} ${255+(i%5)*16}"/>`}
- for(let i=0;i<8;i++){const x=1318+i*8;wr+=`<path d="Mx130Q{x+10} 190 ${x-6} ${240+(i%4)*18}"/>`}
- for(let i=0;i<9;i++)gl+=`<ellipse class="glim" cx="1215" cy="318+i*13"rx="{44-i*3.5}" ry="2.2" style="animation-delay:${i*.3}s"/>`;
- for(let i=0;i<4;i++){const y=214-i*24,w=36-i*6;pg+=`<rect x="1018-w"y="{y-18}" width="2*w-16"height="18"fill="#241b47"/><pathd="M{1010-w-8} ${y-14}L1010 y-30L{1010+w+8} y-14Z"fill="#1c1538"/><rectx="1005"y="{y-14}" width="10" height="9" fill="#ffcf6a" opacity=".8"/>`}
- for(let i=0;i<=8;i++){const t=i/8,x=460+360*t,y=318-2*t*(1-t)*86;br+=`<path d="M${x} yV{y-14}" stroke="#7d3347" stroke-width="3"/>`;if(i%2===0)br+=`<circle class="lg" cx="x"cy="{y-17}" r="4.5" fill="#ff6a5a" style="animation-delay:${i*.2}s;filter:drop-shadow(0 0 6px #ff9a5a)"/>`}
- for(let i=0;i<7;i++)rp+=`<ellipse class="rip" cx="rnd(60,1400)|0"cy="{rnd(335,445)|0}" rx="14" ry="3.5" style="animation-delay:${i*.8}s"/>`;
- for(let i=0;i<14;i++)rd+=`<path d="M30+i*9460Q{34+i*9} ${400-i%4*14} ${24+i*10} ${372-i%5*10}" stroke="#1c3a34" stroke-width="2.4" fill="none"/>`;
- const will=(g)=>`<g class="wil"><path d="M1250 460Q1236 300 1262 160" stroke="#150f26" stroke-width="18" fill="none" stroke-linecap="round"/><path d="M1262 160Q1210 118 1160 150" stroke="#150f26" stroke-width="9" fill="none"/><path d="M1262 160Q1310 108 1370 138" stroke="#150f26" stroke-width="9" fill="none"/><g stroke="#3d6b57" stroke-width="1.6" fill="none" opacity=".78">wl{wr}</g></g>`;
+ for(let i=0;i<9;i++){const x=1170+i*10;wl+=`<path d="M${x} 150Q${x+10} 205 ${x-8} ${255+(i%5)*16}"/>`}
+ for(let i=0;i<8;i++){const x=1318+i*8;wr+=`<path d="M${x} 130Q${x+10} 190 ${x-6} ${240+(i%4)*18}"/>`}
+ for(let i=0;i<9;i++)gl+=`<ellipse class="glim" cx="1215" cy="${318+i*13}" rx="${44-i*3.5}" ry="2.2" style="animation-delay:${i*.3}s"/>`;
+ for(let i=0;i<4;i++){const y=214-i*24,w=36-i*6;pg+=`<rect x="${1018-w}" y="${y-18}" width="${2*w-16}" height="18" fill="#241b47"/><path d="M${1010-w-8} ${y-14}L1010 ${y-30}L${1010+w+8} ${y-14}Z" fill="#1c1538"/><rect x="1005" y="${y-14}" width="10" height="9" fill="#ffcf6a" opacity=".8"/>`}
+ for(let i=0;i<=8;i++){const t=i/8,x=460+360*t,y=318-2*t*(1-t)*86;br+=`<path d="M${x} ${y}V${y-14}" stroke="#7d3347" stroke-width="3"/>`;if(i%2===0)br+=`<circle class="lg" cx="${x}" cy="${y-17}" r="4.5" fill="#ff6a5a" style="animation-delay:${i*.2}s;filter:drop-shadow(0 0 6px #ff9a5a)"/>`}
+ for(let i=0;i<7;i++)rp+=`<ellipse class="rip" cx="${rnd(60,1400)|0}" cy="${rnd(335,445)|0}" rx="14" ry="3.5" style="animation-delay:${i*.8}s"/>`;
+ for(let i=0;i<14;i++)rd+=`<path d="M${30+i*9} 460Q${34+i*9} ${400-i%4*14} ${24+i*10} ${372-i%5*10}" stroke="#1c3a34" stroke-width="2.4" fill="none"/>`;
+ const will=(g)=>`<g class="wil"><path d="M1250 460Q1236 300 1262 160" stroke="#150f26" stroke-width="18" fill="none" stroke-linecap="round"/><path d="M1262 160Q1210 118 1160 150" stroke="#150f26" stroke-width="9" fill="none"/><path d="M1262 160Q1310 108 1370 138" stroke="#150f26" stroke-width="9" fill="none"/><g stroke="#3d6b57" stroke-width="1.6" fill="none" opacity=".78">${wl}${wr}</g></g>`;
  return `<svg viewBox="0 0 1440 460" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="lk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2f66"/><stop offset="1" stop-color="#120d28"/></linearGradient><linearGradient id="ms" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
-<path d="m1"fill="#2a2150"/><pathd="{m2}" fill="#1f1842"/><rect y="236" width="1440" height="64" fill="url(#ms)"/>${pg}
+<path d="${m1}" fill="#2a2150"/><path d="${m2}" fill="#1f1842"/><rect y="236" width="1440" height="64" fill="url(#ms)"/>${pg}
 <rect y="300" width="1440" height="160" fill="url(#lk)"/>
 <g opacity=".22" transform="translate(0 636) scale(1 -1)"><path d="M460 318Q640 232 820 318" fill="none" stroke="#5a2a3c" stroke-width="12"/></g>
 <path d="M460 318Q640 232 820 318" fill="none" stroke="#5a2a3c" stroke-width="13" stroke-linecap="round"/><path d="M462 304Q640 218 818 304" fill="none" stroke="#8a3a50" stroke-width="3"/>${br}
-gl{rp}will()<gtransform="translate(14400)scale(-11)">{will()}</g>rd<gtransform="translate(14400)scale(-11)">{rd}</g></svg>`}
+${gl}${rp}${will()}<g transform="translate(1440 0) scale(-1 1)">${will()}</g>${rd}<g transform="translate(1440 0) scale(-1 1)">${rd}</g></svg>`}
 
 /* ---------- garden ---------- */
-(function(){const g=("#garden");leth=`<divclass="g-scene">{scene()}</div><div class="g-vig"></div>`;
- for(let i=0;i<3;i++)h+=`<i class="gcloud" style="top:10+i*9%;width:{260+i*80}px;--d:90+i*35s;animation-delay:{-i*30}s"></i>`;
- for(let i=0;i<3;i++)h+=`<i class="ss" style="left:10+i*28%;top:{6+i*7}%;animation-delay:${i*3.7}s"></i>`;
- for(let i=0;i<16;i++){const s=rnd(6,12);h+=`<i class="sl" style="left:rnd(2,98)%;width:{s}px;height:s*1.28px;--d:{rnd(26,48)}s;--x:rnd(-80,80)|0px;animation-delay:{-rnd(0,40)}s"></i>`}
- for(let i=0;i<26;i++)h+=`<i class="pt" style="left:rnd(0,100)%;--d:{rnd(9,17)}s;animation-delay:${-rnd(0,14)}s;transform-origin:center"></i>`;
- for(let i=0;i<6;i++)h+=`<i class="rl" style="bottom:3+rnd(0,9)%;--t:{rnd(60,110)}s;animation-delay:-rnd(0,90)s,{-rnd(0,3)}s"></i>`;
+(function(){const g=$("#garden");let h=`<div class="g-scene">${scene()}</div><div class="g-vig"></div>`;
+ for(let i=0;i<3;i++)h+=`<i class="gcloud" style="top:${10+i*9}%;width:${260+i*80}px;--d:${90+i*35}s;animation-delay:${-i*30}s"></i>`;
+ for(let i=0;i<3;i++)h+=`<i class="ss" style="left:${10+i*28}%;top:${6+i*7}%;animation-delay:${i*3.7}s"></i>`;
+ for(let i=0;i<16;i++){const s=rnd(6,12);h+=`<i class="sl" style="left:${rnd(2,98)}%;width:${s}px;height:${s*1.28}px;--d:${rnd(26,48)}s;--x:${rnd(-80,80)|0}px;animation-delay:${-rnd(0,40)}s"></i>`}
+ for(let i=0;i<26;i++)h+=`<i class="pt" style="left:${rnd(0,100)}%;--d:${rnd(9,17)}s;animation-delay:${-rnd(0,14)}s;transform-origin:center"></i>`;
+ for(let i=0;i<6;i++)h+=`<i class="rl" style="bottom:${3+rnd(0,9)}%;--t:${rnd(60,110)}s;animation-delay:${-rnd(0,90)}s,${-rnd(0,3)}s"></i>`;
  g.insertAdjacentHTML("afterbegin",h)})();
 
 /* ---------- photobooth ---------- */
 (function(){const b=$("#booth");let s="",c=0;
- for(let q=0;q<3;q++)for(let i=1;i<10;i++){const t=i/10,x=q*480+480*t,y=8+124*t*(1-t);s+=`<circle class="bulb" cx="x"cy="{y}" r="4.5" fill="["#ffd36b","#ff8f86","#fff3b0"][c%3]"style="animation-delay:{(c++%7)*.35}s;filter:drop-shadow(0 0 6px #ffc94a)"/>`}
+ for(let q=0;q<3;q++)for(let i=1;i<10;i++){const t=i/10,x=q*480+480*t,y=8+124*t*(1-t);s+=`<circle class="bulb" cx="${x}" cy="${y}" r="4.5" fill="${["#ffd36b","#ff8f86","#fff3b0"][c%3]}" style="animation-delay:${(c++%7)*.35}s;filter:drop-shadow(0 0 6px #ffc94a)"/>`}
  b.insertAdjacentHTML("afterbegin",`<div class="bb"><div class="bd l"></div><div class="bd r"></div><div class="bring"></div><div class="bring b2"></div><svg class="blights" viewBox="0 0 1440 110" preserveAspectRatio="none"><path d="M0 8Q240 70 480 8Q720 70 960 8Q1200 70 1440 8" fill="none" stroke="#c9a24f" stroke-width="2"/>${s}</svg></div>`);
  $(".booth-cam").insertAdjacentHTML("afterbegin",'<div class="cam-ph" id="camPh">📷 Allow camera to begin<br>请允许相机</div>');
  boothVideo.addEventListener("playing",()=>{$("#camPh").style.display="none"});
@@ -1961,15 +1961,15 @@ const girl=`<svg viewBox="0 0 210 330" width="210" height="330" style="overflow:
 <g class="garm l"><path d="M78 125Q14 160 46 232L90 208Q76 170 88 140Z" fill="#e8707f"/><path d="M46 232L90 208" stroke="#fff3d8" stroke-width="5"/><circle cx="92" cy="206" r="9" fill="#f2c4a8"/></g>
 <g class="garm r"><path d="M132 125Q196 160 164 232L120 208Q134 170 122 140Z" fill="#e8707f"/><path d="M164 232L120 208" stroke="#fff3d8" stroke-width="5"/><circle cx="118" cy="206" r="9" fill="#f2c4a8"/></g></svg>`;
 $(".hanfu-girl").innerHTML=girl;
-(".cutscene-sky").insertAdjacentHTML("beforeend",`<divclass="cs-scene"style="width:100%">{scene()}</div>`);
+$(".cutscene-sky").insertAdjacentHTML("beforeend",`<div class="cs-scene" style="width:100%">${scene()}</div>`);
 let tm=[];const clr=()=>{tm.forEach(t=>{clearTimeout(t);clearInterval(t)});tm=[];$$(".spk").forEach(x=>x.remove())};
-function spark(x,y,dx,dy){const s=document.createElement("i");s.className="spk";s.style.cssText=`left:xpx;top:{y}px;--dx:dxpx;--dy:{dy}px`;cutscene.appendChild(s);setTimeout(()=>s.remove(),1400)}
+function spark(x,y,dx,dy){const s=document.createElement("i");s.className="spk";s.style.cssText=`left:${x}px;top:${y}px;--dx:${dx}px;--dy:${dy}px`;cutscene.appendChild(s);setTimeout(()=>s.remove(),1400)}
 const cc=window.closeCutscene;window.closeCutscene=function(){clr();cc()};
 window.launchLantern=function(){clr();
  cinematicLantern.innerHTML=lanternSVG(lanternColor.value,lanternText.value,110);
  cinematicLantern.style.animation="none";void cinematicLantern.offsetWidth;cinematicLantern.style.animation="lanternFly 9.5s .8s ease-in-out forwards";
  cutscene.querySelectorAll(".rise").forEach(x=>x.remove());
- for(let i=0;i<26;i++){const d=document.createElement("div");d.className="rise";d.style.cssText=`left:rnd(3,97)%;animation-delay:{rnd(3,9)}s,rnd(0,3)s;animation-duration:{rnd(9,16)}s,rnd(3,5)s;transform:scale({rnd(.18,.45)});transform-origin:top center`;d.innerHTML=lanternSVG(["#cf3b47","#d79b31","#df6378","#ffcf5e"][i%4],["福","喜","月","团"][i%4],60);cutscene.appendChild(d)}
+ for(let i=0;i<26;i++){const d=document.createElement("div");d.className="rise";d.style.cssText=`left:${rnd(3,97)}%;animation-delay:${rnd(3,9)}s,${rnd(0,3)}s;animation-duration:${rnd(9,16)}s,${rnd(3,5)}s;transform:scale(${rnd(.18,.45)});transform-origin:top center`;d.innerHTML=lanternSVG(["#cf3b47","#d79b31","#df6378","#ffcf5e"][i%4],["福","喜","月","团"][i%4],60);cutscene.appendChild(d)}
  const w=wishText.value.trim();cutsceneWish.textContent=w?`「${w}」 · 愿望随花灯飞向月亮 ✨`:"愿你的愿望成真 · Semoga harapanmu terwujud ✨";
  cutscene.classList.add("show");
  tm.push(setTimeout(()=>{const r=cinematicLantern.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;for(let i=0;i<30;i++){const a=i/30*6.283,v=rnd(50,130);spark(x,y,Math.cos(a)*v,Math.sin(a)*v)}},3600));
@@ -1982,7 +1982,7 @@ window.launchLantern=function(){clr();
 /* ===== V5 PATCH — paste at end of body ===== */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const css=`
 /* yellow line up */
@@ -2059,7 +2059,7 @@ const _t=window.toast;window.toast=m=>_t(String(m).replace(/🪙\s?/g,""));
 
 /* ---------- quote card back: keep MEANING ---------- */
 (function(){const q=quotes[quoteIndex]||quotes[0];
- (".face.back").innerHTML=`<divclass="hanzi"id="quoteHanzi">{q.h}</div><div class="pinyin" id="quotePinyin">q.p</div><divclass="m-label">意思·MEANING</div><divclass="meaning"id="quoteMeaning">{q.m}</div><div class="explain" id="quoteExplain">${q.e}</div>`})();
+ $(".face.back").innerHTML=`<div class="hanzi" id="quoteHanzi">${q.h}</div><div class="pinyin" id="quotePinyin">${q.p}</div><div class="m-label">意思 · MEANING</div><div class="meaning" id="quoteMeaning">${q.m}</div><div class="explain" id="quoteExplain">${q.e}</div>`})();
 
 /* ---------- kitchen: knead button up + make another one ---------- */
 const _scs=window.setCookStage;
@@ -2108,48 +2108,48 @@ spawnBalls();
 
 /* ---------- decor: elegant ornaments ---------- */
 (function(){
- const star=(x,y,r)=>`<path d="M${x} y-rQ{x} ${y} ${x+r} yQ{x} ${y} ${x} y+rQ{x} ${y} ${x-r} yQ{x} ${y} ${x} ${y-r}Z" fill="#ffe6a0" opacity=".85"/>`;
- const pe=(x,y,s)=>{let g=`<g transform="translate(${x} y)scale({s})">`;
-  [[8,34,"#f7a8bd"],[7,24,"#ef7f9f"],[6,15,"#db5a80"],[5,8,"#c7456d"]].forEach(([n,r,c],k)=>{for(let i=0;i<n;i++)g+=`<ellipse cy="-r"rx="{r*.62}" ry="r*.78"fill="{c}" stroke="#ffe3ea" stroke-opacity=".7" transform="rotate(${i*360/n+k*20})"/>`});
+ const star=(x,y,r)=>`<path d="M${x} ${y-r}Q${x} ${y} ${x+r} ${y}Q${x} ${y} ${x} ${y+r}Q${x} ${y} ${x-r} ${y}Q${x} ${y} ${x} ${y-r}Z" fill="#ffe6a0" opacity=".85"/>`;
+ const pe=(x,y,s)=>{let g=`<g transform="translate(${x} ${y}) scale(${s})">`;
+  [[8,34,"#f7a8bd"],[7,24,"#ef7f9f"],[6,15,"#db5a80"],[5,8,"#c7456d"]].forEach(([n,r,c],k)=>{for(let i=0;i<n;i++)g+=`<ellipse cy="${-r}" rx="${r*.62}" ry="${r*.78}" fill="${c}" stroke="#ffe3ea" stroke-opacity=".7" transform="rotate(${i*360/n+k*20})"/>`});
   return g+`<circle r="5" fill="#ffd36b"/></g>`};
- const lf=(x,y,a,s=1)=>`<path d="M0 0Q16 -11 34 0Q16 11 0 0Z" fill="#7aa563" stroke="#3f6b3a" stroke-width=".8" transform="translate(${x} y)rotate({a}) scale(${s})"/>`;
- const bl=(x,y,s)=>`<g transform="translate(${x} y)scale({s})">${[0,72,144,216,288].map(a=>`<circle cy="-7" r="6" fill="#fff4f7" stroke="#f08aa6" transform="rotate(${a})"/>`).join("")}<circle r="2.6" fill="#ffd36b"/></g>`;
+ const lf=(x,y,a,s=1)=>`<path d="M0 0Q16 -11 34 0Q16 11 0 0Z" fill="#7aa563" stroke="#3f6b3a" stroke-width=".8" transform="translate(${x} ${y}) rotate(${a}) scale(${s})"/>`;
+ const bl=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})">${[0,72,144,216,288].map(a=>`<circle cy="-7" r="6" fill="#fff4f7" stroke="#f08aa6" transform="rotate(${a})"/>`).join("")}<circle r="2.6" fill="#ffd36b"/></g>`;
  let o=`<defs><symbol id="cld" viewBox="0 0 70 46"><path d="M10 40C-3 40 -3 22 12 22C12 8 34 6 38 20C48 12 64 20 58 32C68 32 68 44 54 44H12" fill="none" stroke="#ffe29a" stroke-width="2.2" stroke-linecap="round"/><path d="M27 33c0-7 9-7 9 0s-7 5-7 0" fill="none" stroke="#ffe29a" stroke-width="2"/></symbol></defs>`;
  o+=`<g fill="none" stroke="#ffe29a"><circle cx="400" cy="320" r="250" stroke-opacity=".5" stroke-dasharray="3 9"/><circle cx="400" cy="320" r="272" stroke-opacity=".35" stroke-width="1.5"/></g>`;
- for(let i=0;i<32;i++){const a=i/32*6.283;o+=`<path d="M0 -8L5 0L0 8L-5 0Z" fill="#ffe29a" opacity=".6" transform="translate(${400+Math.cos(a)*290} 320+Math.sin(a)*290)rotate({a*57.3})"/>`}
+ for(let i=0;i<32;i++){const a=i/32*6.283;o+=`<path d="M0 -8L5 0L0 8L-5 0Z" fill="#ffe29a" opacity=".6" transform="translate(${400+Math.cos(a)*290} ${320+Math.sin(a)*290}) rotate(${a*57.3})"/>`}
  o+=lf(95,118,-150)+lf(95,118,-95,1.2)+lf(95,118,-30)+pe(95,118,1)+lf(160,80,-120,.8)+pe(160,80,.55);
  o+=lf(740,250,150)+lf(740,250,95,1.1)+lf(740,250,20)+pe(740,250,.85)+pe(696,310,.5);
  const br=`<path d="M0 0C30-24 62-12 96-48S158-70 176-118" fill="none" stroke="#5a2f2a" stroke-width="5" stroke-linecap="round"/><path d="M96-48C110-80 100-96 120-120" fill="none" stroke="#5a2f2a" stroke-width="3.5" stroke-linecap="round"/>`+[[30,-22,1],[66,-24,.9],[96,-48,1.1],[130,-62,.9],[160,-84,1],[176,-118,1.1],[120,-120,.9],[105,-90,.8]].map(a=>bl(...a)).join("");
- o+=`<g transform="translate(6 400) rotate(-8)">br</g><gtransform="translate(794400)scale(-11)rotate(-8)">{br}</g>`;
+ o+=`<g transform="translate(6 400) rotate(-8)">${br}</g><g transform="translate(794 400) scale(-1 1) rotate(-8)">${br}</g>`;
  o+=`<use href="#cld" x="150" y="36" width="84" height="55"/><use href="#cld" x="566" y="30" width="84" height="55"/><use href="#cld" x="22" y="190" width="70" height="46"/><use href="#cld" x="690" y="158" width="76" height="50"/>`;
- for(let r=0;r<2;r++)for(let x=250+(r?20:0);x<=570;x+=40)[20,14,8].forEach(k=>o+=`<path d="M${x-k} 598-r*12A{k} ${k} 0 0 1 ${x+k} ${598-r*12}" fill="none" stroke="#ffe29a" stroke-opacity=".6"/>`);
+ for(let r=0;r<2;r++)for(let x=250+(r?20:0);x<=570;x+=40)[20,14,8].forEach(k=>o+=`<path d="M${x-k} ${598-r*12}A${k} ${k} 0 0 1 ${x+k} ${598-r*12}" fill="none" stroke="#ffe29a" stroke-opacity=".6"/>`);
  for(let i=0;i<16;i++){const x=rnd(30,770),y=rnd(30,570);if(x>190&&x<610&&y>150&&y<480)continue;o+=star(x,y,rnd(5,10))}
  cakeTable.insertAdjacentHTML("beforeend",`<svg class="table-orn" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">${o}</svg>`);
 })();
 
 /* ---------- home: Chinese house + trees ---------- */
 (function(){
- const roof=(l,r,t,b,f)=>`M${l-f} b-30Q{l+8} ${b+2} ${l+44} bL{r-44} bQ{r-8} ${b+2} ${r+f} b-30Q{r-34} ${b-22} ${r-56} tL{l+56} tQ{l+34} ${b-22} ${l-f} ${b-30}Z`;
- const rf=(l,r,t,b,f)=>{const d=roof(l,r,t,b,f);return `<path d="d"fill="url(#ht)"/><pathd="{d}" fill="url(#hs)"/><path d="M${l+56} tH{r-56}" stroke="#e0b956" stroke-width="5"/><circle cx="l+56"cy="{t-4}" r="6" fill="#e0b956"/><circle cx="r-56"cy="{t-4}" r="6" fill="#e0b956"/>`};
+ const roof=(l,r,t,b,f)=>`M${l-f} ${b-30}Q${l+8} ${b+2} ${l+44} ${b}L${r-44} ${b}Q${r-8} ${b+2} ${r+f} ${b-30}Q${r-34} ${b-22} ${r-56} ${t}L${l+56} ${t}Q${l+34} ${b-22} ${l-f} ${b-30}Z`;
+ const rf=(l,r,t,b,f)=>{const d=roof(l,r,t,b,f);return `<path d="${d}" fill="url(#ht)"/><path d="${d}" fill="url(#hs)"/><path d="M${l+56} ${t}H${r-56}" stroke="#e0b956" stroke-width="5"/><circle cx="${l+56}" cy="${t-4}" r="6" fill="#e0b956"/><circle cx="${r-56}" cy="${t-4}" r="6" fill="#e0b956"/>`};
  let pil="",win="",brk="",studs="";
  for(let i=0;i<6;i++)pil+=`<rect x="${30+i*61}" y="126" width="14" height="138" fill="url(#hp)"/>`;
- [0,1,3,4].forEach(i=>{const x=47+i*61;win+=`<rect x="x"y="150"width="41"height="72"fill="#ffd27a"stroke="#4a2218"stroke-width="3"/><pathd="M{x+13} 150V222Mx+27150V222M{x} 174Hx+41M{x} 198H${x+41}" stroke="#4a2218" stroke-width="2"/>`});
+ [0,1,3,4].forEach(i=>{const x=47+i*61;win+=`<rect x="${x}" y="150" width="41" height="72" fill="#ffd27a" stroke="#4a2218" stroke-width="3"/><path d="M${x+13} 150V222M${x+27} 150V222M${x} 174H${x+41}M${x} 198H${x+41}" stroke="#4a2218" stroke-width="2"/>`});
  for(let i=0;i<21;i++)brk+=`<rect x="${14+i*16.5}" y="150" width="11" height="9" fill="#7a2a24"/>`;
- [[178,3],[200,3]].forEach(([x])=>{for(let r=0;r<3;r++)for(let c=0;c<2;c++)studs+=`<circle cx="x-4+c*9"cy="{182+r*28}" r="2.2" fill="#e0b956"/>`});
+ [[178,3],[200,3]].forEach(([x])=>{for(let r=0;r<3;r++)for(let c=0;c<2;c++)studs+=`<circle cx="${x-4+c*9}" cy="${182+r*28}" r="2.2" fill="#e0b956"/>`});
  const house=`<rect x="-10" y="276" width="400" height="12" fill="#6d6a78"/><rect x="0" y="262" width="380" height="16" fill="#8a8794"/><rect x="150" y="288" width="80" height="8" fill="#7d7a88"/>
-<rect x="30" y="130" width="320" height="132" fill="url(#hw)"/>pil{win}
+<rect x="30" y="130" width="320" height="132" fill="url(#hw)"/>${pil}${win}
 <rect x="168" y="156" width="43" height="108" fill="#a3242c" stroke="#e0b956" stroke-width="2"/><path d="M189.5 156V264" stroke="#5a1015" stroke-width="2"/>${studs}
 <rect x="104" y="62" width="172" height="44" fill="url(#hw)"/><rect x="104" y="62" width="10" height="44" fill="url(#hp)"/><rect x="266" y="62" width="10" height="44" fill="url(#hp)"/><rect x="124" y="70" width="34" height="28" fill="#ffd27a" stroke="#4a2218" stroke-width="3"/><rect x="222" y="70" width="34" height="28" fill="#ffd27a" stroke="#4a2218" stroke-width="3"/>
-rf(10,370,100,150,34)<rectx="10"y="150"width="360"height="7"fill="#8f2a2a"/>{brk}${rf(70,310,26,66,28)}
+${rf(10,370,100,150,34)}<rect x="10" y="150" width="360" height="7" fill="#8f2a2a"/>${brk}${rf(70,310,26,66,28)}
 <g><path d="M62 156V170M318 156V170" stroke="#e0b956" stroke-width="2"/><ellipse cx="62" cy="184" rx="11" ry="14" fill="#d9363e" stroke="#e0b956" stroke-width="2"/><ellipse cx="318" cy="184" rx="11" ry="14" fill="#d9363e" stroke="#e0b956" stroke-width="2"/><circle cx="62" cy="184" r="26" fill="url(#hg)"/><circle cx="318" cy="184" r="26" fill="url(#hg)"/></g>`;
  let pine=`<path d="M150 462C138 390 172 350 150 270C138 225 164 190 152 130" stroke="#33231d" stroke-width="18" fill="none" stroke-linecap="round"/><path d="M146 440C150 380 160 340 150 280" stroke="#5a4034" stroke-width="3" fill="none"/>`;
- for(let k=0;k<7;k++){const y=150+k*44,s=k%2?1:-1,w=44+k*9;[[s*w*.55,y,w,17],[-s*w*.35,y+22,w*.8,14]].forEach(([dx,yy,rx,ry])=>{pine+=`<ellipse cx="152+dx"cy="{yy+5}" rx="rx"ry="{ry}" fill="#1b4034"/><ellipse cx="152+dx"cy="{yy}" rx="rx*.92"ry="{ry*.8}" fill="#2f6a4c"/><ellipse cx="152+dx-rx*.2"cy="{yy-4}" rx="rx*.6"ry="{ry*.45}" fill="#4d8f62" opacity=".8"/>`})}
+ for(let k=0;k<7;k++){const y=150+k*44,s=k%2?1:-1,w=44+k*9;[[s*w*.55,y,w,17],[-s*w*.35,y+22,w*.8,14]].forEach(([dx,yy,rx,ry])=>{pine+=`<ellipse cx="${152+dx}" cy="${yy+5}" rx="${rx}" ry="${ry}" fill="#1b4034"/><ellipse cx="${152+dx}" cy="${yy}" rx="${rx*.92}" ry="${ry*.8}" fill="#2f6a4c"/><ellipse cx="${152+dx-rx*.2}" cy="${yy-4}" rx="${rx*.6}" ry="${ry*.45}" fill="#4d8f62" opacity=".8"/>`})}
  let plum=`<g stroke="#2f1f1f" fill="none" stroke-linecap="round"><path d="M330 462C318 400 352 372 332 322C312 282 342 250 362 218" stroke-width="15"/><path d="M336 335C300 318 272 304 250 268" stroke-width="7"/><path d="M346 300C392 292 420 270 442 228" stroke-width="7"/><path d="M344 262C318 232 332 204 308 170" stroke-width="6"/><path d="M358 236C382 212 402 192 396 150" stroke-width="6"/></g>`;
  for(let i=0,n=0;n<190&&i<900;i++){const x=340+rnd(-115,115),y=215+rnd(-85,70);if(((x-340)/115)**2+((y-215)/85)**2>1)continue;n++;
-  plum+=`<circle cx="x|0"cy="{y|0}" r="rnd(3,6).toFixed(1)"fill="{["#ffd6e0","#fff0f4","#ff9db8"][n%3]}" opacity=".9"/>`+(n%5?"":`<circle cx="x|0"cy="{y|0}" r="1.5" fill="#ffd36b"/>`)}
- let bam="";[30,52,78,100].forEach((x,i)=>{const t=250+i*22;bam+=`<rect x="x"y="{t}" width="7" height="${462-t}" fill="#5f8f55"/>`;
-  for(let y=t+20,k=0;y<460;y+=38,k++)bam+=`<rect x="x-1"y="{y}" width="9" height="3" fill="#3f6b3a"/>`+(k%2?`<path d="M${x+7} yq18-6304q-146-30-4z"fill="#78a863"/>`:`<pathd="M{x} ${y}q-18 -6 -30 4q14 6 30 -4z" fill="#78a863"/>`)});
- ("#home.sil")&&("#home .sil").remove();
+  plum+=`<circle cx="${x|0}" cy="${y|0}" r="${rnd(3,6).toFixed(1)}" fill="${["#ffd6e0","#fff0f4","#ff9db8"][n%3]}" opacity=".9"/>`+(n%5?"":`<circle cx="${x|0}" cy="${y|0}" r="1.5" fill="#ffd36b"/>`)}
+ let bam="";[30,52,78,100].forEach((x,i)=>{const t=250+i*22;bam+=`<rect x="${x}" y="${t}" width="7" height="${462-t}" fill="#5f8f55"/>`;
+  for(let y=t+20,k=0;y<460;y+=38,k++)bam+=`<rect x="${x-1}" y="${y}" width="9" height="3" fill="#3f6b3a"/>`+(k%2?`<path d="M${x+7} ${y}q18 -6 30 4q-14 6 -30 -4z" fill="#78a863"/>`:`<path d="M${x} ${y}q-18 -6 -30 4q14 6 30 -4z" fill="#78a863"/>`)});
+ $("#home .sil")&&$("#home .sil").remove();
  $("#home").insertAdjacentHTML("beforeend",`<svg class="home-scene" viewBox="0 0 1440 460" preserveAspectRatio="xMidYMax slice"><defs>
 <linearGradient id="hp" x1="0" x2="1"><stop offset="0" stop-color="#8a1a24"/><stop offset=".5" stop-color="#c0323a"/><stop offset="1" stop-color="#7a1620"/></linearGradient>
 <linearGradient id="hw" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#efe2c8"/><stop offset="1" stop-color="#cdbb9b"/></linearGradient>
@@ -2157,7 +2157,7 @@ rf(10,370,100,150,34)<rectx="10"y="150"width="360"height="7"fill="#8f2a2a"/>{brk
 <radialGradient id="hg"><stop offset="0" stop-color="#ffcf6a" stop-opacity=".55"/><stop offset="1" stop-color="#ffcf6a" stop-opacity="0"/></radialGradient>
 <pattern id="ht" width="9" height="13" patternUnits="userSpaceOnUse"><rect width="9" height="13" fill="#3b4058"/><path d="M0 13Q4.5 5 9 13" fill="none" stroke="#5d6480" stroke-width="1.4"/></pattern></defs>
 <path d="M0 330Q130 230 270 300T540 270T820 310T1100 240T1440 300V460H0Z" fill="#6b3a5e" opacity=".55"/><path d="M0 370Q200 300 420 350T860 330T1200 350T1440 320V460H0Z" fill="#4a2748" opacity=".8"/><path d="M0 410Q360 385 720 405T1440 395V460H0Z" fill="#2c1a3d"/>
-bam{pine}plum<gtransform="translate(1010150)">{house}</g><ellipse cx="720" cy="440" rx="720" ry="36" fill="#fff" opacity=".07"/></svg>`);
+${bam}${pine}${plum}<g transform="translate(1010 150)">${house}</g><ellipse cx="720" cy="440" rx="720" ry="36" fill="#fff" opacity=".07"/></svg>`);
 })();
 })();
 </script>
@@ -2165,7 +2165,7 @@ bam{pine}plum<gtransform="translate(1010150)">{house}</g><ellipse cx="720" cy="4
 /* ===== V6 PATCH — meaning section, elegant decor bg, trivia-show quiz, more vocab ===== */
 (function(){
 "use strict";
-const =s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const css=`
 /* ---- MEANING ---- */
 .meaning-room{background:radial-gradient(ellipse at 50% 0,#9a2c4a,transparent 60%),linear-gradient(180deg,#6e1d38,#4a1330)}
@@ -2247,7 +2247,7 @@ $("#home").insertAdjacentHTML("afterend",`<section class="room meaning-room" id=
 $(".topbar button[data-room=home]").insertAdjacentHTML("afterend",'<button data-room="meaning" onclick="go(\'meaning\')">中秋 · Meaning</button>');
 const tabs=$("#mnTabs");
 function showMN(i){const m=MN[i];$$("#mnTabs .mn-tab").forEach((b,k)=>b.classList.toggle("on",k===i));
- ("#mnPanel").outerHTML=`<divclass="mn-panel"id="mnPanel"><h3>{m.t} · m.tt</h3><divclass="py">{m.py}</div>${m.b.map(x=>`<p>${x}</p>`).join("")}<div class="mn-fact">💡 m.f</div><divclass="mn-say"id="mnSay"><small>Klikuntukmencobaucapkan·Taptosay</small><b>{m.s[0]}</b><small>${m.s[1]} · ${m.s[2]}</small></div></div>`;
+ $("#mnPanel").outerHTML=`<div class="mn-panel" id="mnPanel"><h3>${m.t} · ${m.tt}</h3><div class="py">${m.py}</div>${m.b.map(x=>`<p>${x}</p>`).join("")}<div class="mn-fact">💡 ${m.f}</div><div class="mn-say" id="mnSay"><small>Klik untuk mencoba ucapkan · Tap to say</small><b>${m.s[0]}</b><small>${m.s[1]} · ${m.s[2]}</small></div></div>`;
  $("#mnSay").onclick=function(){this.classList.remove("pop");void this.offsetWidth;this.classList.add("pop");
   if("speechSynthesis" in window){try{const u=new SpeechSynthesisUtterance(m.s[0]);u.lang="zh-CN";u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}}}
 MN.forEach((m,i)=>{const b=document.createElement("button");b.className="mn-tab";b.textContent=m.t+" "+m.tt.split(" ")[0];b.onclick=()=>showMN(i);tabs.appendChild(b)});
@@ -2255,7 +2255,7 @@ showMN(0);
 let gotFull=false;
 $("#mnRange").addEventListener("input",e=>{const v=+e.target.value,side=$("#mnSide");$("#mnMoon").style.setProperty("--v",v);
  const L=v<8?["新月","Xīnyuè · bulan baru, gelap dan tenang"]:v<40?["月牙","Yuèyá · bulan sabit mulai tumbuh"]:v<75?["上弦月","Shàngxián yuè · bulan makin terang"]:v<97?["盈凸月","Yíngtū yuè · hampir purnama..."]:["月圆人团圆","Bulan penuh, orang-orang berkumpul! 🥮"];
- ("#mnCap").textContent=L[0];("#mnSub").textContent=L[1];
+ $("#mnCap").textContent=L[0];$("#mnSub").textContent=L[1];
  const full=v>=97;side.classList.toggle("full",full);
  if(full){for(let k=0;k<14;k++){const s=document.createElement("span");s.className="mn-sp";s.textContent="✦";s.style.left="50%";s.style.top="42%";s.style.setProperty("--dx",(Math.random()*240-120)+"px");s.style.setProperty("--dy",(Math.random()*240-120)+"px");side.appendChild(s);setTimeout(()=>s.remove(),1500)}
   if(!gotFull){gotFull=true;coins+=1;updateCoins();toast("满月！ +1 coin ✨")}}});
@@ -2263,15 +2263,15 @@ $("#mnRange").addEventListener("input",e=>{const v=+e.target.value,side=$("#mnSi
 /* ---------- DECOR: elegant cream background ---------- */
 (function(){
  let o=`<g fill="none" stroke="#c9963a">`;
- [160,210,260,310].forEach((r,i)=>o+=`<circle cx="720" cy="330" r="r"stroke-opacity="{.3-i*.05}" ${i%2?'stroke-dasharray="2 8"':''}/>`);
+ [160,210,260,310].forEach((r,i)=>o+=`<circle cx="720" cy="330" r="${r}" stroke-opacity="${.3-i*.05}" ${i%2?'stroke-dasharray="2 8"':''}/>`);
  for(let c=0;c<4;c++){const x=c%2?1440:0,y=c<2?0:900,sx=c%2?-1:1,sy=c<2?1:-1;
-  for(let k=1;k<=5;k++)o+=`<path d="M${x} y+sy*k*46A{k*46} ${k*46} 0 0 ${sx*sy>0?1:0} ${x+sx*k*46} y"stroke-opacity="{.42-k*.05}" stroke-width="1.4"/>`;
-  o+=`<path d="M${x+sx*30} y+sy*30l{sx*22} sy*22M{x+sx*30} y+sy*30l{sx*60} 0M${x+sx*30} ${y+sy*30}l0 ${sy*60}" stroke-opacity=".5"/>`}
+  for(let k=1;k<=5;k++)o+=`<path d="M${x} ${y+sy*k*46}A${k*46} ${k*46} 0 0 ${sx*sy>0?1:0} ${x+sx*k*46} ${y}" stroke-opacity="${.42-k*.05}" stroke-width="1.4"/>`;
+  o+=`<path d="M${x+sx*30} ${y+sy*30}l${sx*22} ${sy*22}M${x+sx*30} ${y+sy*30}l${sx*60} 0M${x+sx*30} ${y+sy*30}l0 ${sy*60}" stroke-opacity=".5"/>`}
  o+=`</g>`;
  for(let i=0;i<9;i++){const x=240+i*120;o+=`<g transform="translate(${x} 70)" fill="none" stroke="#c9963a" stroke-opacity=".4"><path d="M-22 14C-34 14-34 -2-20-2C-20-14 2-16 6-4C16-12 32-4 26 8C36 8 36 18 22 18H-18"/></g>`;
   o+=`<path d="M${x} 840l10 12l-10 12l-10-12Z" fill="#e0b25a" opacity=".35"/>`}
  o+=`<g stroke="#c9963a" stroke-opacity=".35" fill="none"><path d="M120 450C200 390 260 520 340 450"/><path d="M1100 450C1180 390 1240 520 1320 450"/></g>`;
- ("#decor").insertAdjacentHTML("afterbegin",`<divclass="decor-bg"><svgviewBox="001440900"preserveAspectRatio="xMidYMidslice">{o}</svg></div>`);
+ $("#decor").insertAdjacentHTML("afterbegin",`<div class="decor-bg"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">${o}</svg></div>`);
 })();
 
 /* ---------- QUIZ: trivia show stage ---------- */
@@ -2303,5 +2303,3 @@ renderQuiz();
 </script>
 </body>
 </html>
-
-
