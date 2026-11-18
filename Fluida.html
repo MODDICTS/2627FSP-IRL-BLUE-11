@@ -12,7 +12,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:70px}
 body{font:16px/1.65 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
-.wrap{width:min(1080px,calc(100% - 32px));margin:0 auto;position:relative}
+.wrap{width:min(1080px,calc(100% - 32px));margin:0 auto;position:relative;z-index:1}
 h1,h2,h3,.big{font-family:Fraunces,Georgia,serif}
 :focus-visible{outline:2px solid var(--amb);outline-offset:2px}
 .top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -66,11 +66,14 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .btn.sm2{padding:7px 12px;font-size:13px;width:100%}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .hero .btn{color:#fff;border-color:rgba(255,255,255,.7)}.hero .btn.pri{color:#1d1300;border-color:var(--amb)}
-/* SECTIONS */
+/* SECTIONS + BENTUK ELEGAN */
 .fl{fill:var(--fluid)}
-.st{position:relative;padding:60px 0 24px;overflow:hidden}
-.st::before{content:attr(data-g);position:absolute;right:-10px;top:14px;font:italic 700 clamp(60px,12vw,150px)/1 Fraunces,serif;color:var(--acc);opacity:.07;white-space:nowrap;pointer-events:none}
-.st:nth-of-type(even){background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--fluid) 9%,transparent))}
+.st{position:relative;padding:64px 0 28px;overflow:hidden}
+.st::before,.st::after{content:"";position:absolute;pointer-events:none;border-radius:50%;z-index:0}
+.st::before{width:460px;height:460px;right:-150px;top:-170px;border:1.5px solid color-mix(in srgb,var(--acc) 30%,transparent);box-shadow:0 0 0 38px color-mix(in srgb,var(--acc) 5%,transparent),0 0 0 39px color-mix(in srgb,var(--acc) 16%,transparent),0 0 0 92px color-mix(in srgb,var(--acc) 3%,transparent)}
+.st::after{width:360px;height:360px;left:-130px;bottom:-130px;background:radial-gradient(circle at 35% 35%,color-mix(in srgb,var(--fluid) 24%,transparent),color-mix(in srgb,var(--amb) 7%,transparent) 60%,transparent 72%)}
+.st:nth-of-type(even)::before{right:auto;left:-150px;top:auto;bottom:-190px}
+.st:nth-of-type(even)::after{left:auto;right:-110px;bottom:auto;top:30px;width:300px;height:300px;border-radius:42% 58% 55% 45%/50% 40% 60% 50%;background:linear-gradient(135deg,color-mix(in srgb,var(--fluid) 18%,transparent),transparent 70%)}
 .st h2{font-size:clamp(26px,4vw,38px);display:flex;gap:14px;align-items:center}
 .num{display:grid;place-items:center;width:46px;height:46px;border-radius:50% 50% 50% 8px;background:var(--acc);color:var(--card);font:700 22px Fraunces,serif;transform:rotate(-8deg)}
 .st .lead{margin:12px 0 18px;color:var(--mut);max-width:66ch}
@@ -119,29 +122,28 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .col button.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card));cursor:default}
 .shake{animation:sh .4s}
 @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-/* PUZZLE GAMBAR TOKOH */
-.pzl{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:24px;align-items:center;margin-top:10px}
+/* PUZZLE FOTO TOKOH */
+.pzl{display:grid;grid-template-columns:minmax(0,380px) 1fr;gap:24px;align-items:center;margin-top:10px}
 .board{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px;border-radius:16px;background:var(--soft);transition:gap .5s,padding .5s}
 .tl{aspect-ratio:1;padding:0;border:3px solid transparent;border-radius:10px;overflow:hidden;cursor:pointer;background:var(--panel);transition:transform .15s,border-color .2s}
-.tl svg{width:100%;height:100%;display:block}
+.tl svg,.tl canvas{width:100%;height:100%;display:block}
 .tl:hover{transform:translateY(-2px)}
 .tl.sel{border-color:var(--amb);transform:scale(.93);box-shadow:0 0 0 3px rgba(240,138,36,.35)}
 .tl.lk{border-color:var(--ok);cursor:default}
 .tl.lk:hover{transform:none}
-.board.ok{gap:0;padding:0;animation:glow 1.2s ease 2}
+.board.ok{gap:0;padding:0;animation:glow 1.2s ease 2;overflow:hidden}
 .board.ok .tl{border-width:0;border-radius:0;transform:none;cursor:default}
-.board.ok .tl:first-child{border-top-left-radius:16px}.board.ok .tl:nth-child(3){border-top-right-radius:16px}
-.board.ok .tl:nth-child(7){border-bottom-left-radius:16px}.board.ok .tl:last-child{border-bottom-right-radius:16px}
 @keyframes glow{50%{box-shadow:0 0 0 8px rgba(21,122,75,.3)}}
-.thumb{width:130px;margin-top:12px;border-radius:12px;overflow:hidden;border:2px solid var(--line)}
-.thumb svg{display:block;width:100%}
+.thumb{width:150px;margin-top:12px;border-radius:12px;overflow:hidden;border:2px solid var(--line)}
+.thumb svg,.thumb canvas{display:block;width:100%;height:auto}
+.credit{font-size:12px;color:var(--mut);margin-top:10px}
 .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .res .stat{text-align:center;padding:16px 10px}.res .stat b{font-size:26px;color:var(--acc);display:block}
 .bar{height:12px;background:var(--soft);border-radius:99px;overflow:hidden;margin:18px 0 8px}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--amb));transition:width .6s}
 .rv{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}.rv.in{opacity:1;transform:none}
 footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
-@media(max-width:820px){.lab,.mt,.pzl{grid-template-columns:1fr}.nav .logo span{display:none}.hero .wrap{padding-bottom:190px}}
+@media(max-width:820px){.lab,.mt,.pzl{grid-template-columns:1fr}.nav .logo span{display:none}.hero .wrap{padding-bottom:190px}.st::before{width:300px;height:300px;right:-120px}}
 @media(prefers-reduced-motion:reduce){.wv,.sm,.drop,.ar,.lg,.board.ok{animation:none}html{scroll-behavior:auto}.rv{opacity:1;transform:none}}
 </style>
 </head>
@@ -165,7 +167,7 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="wrap"><div class="ht">
     <div class="eyebrow">Laboratorium fisika interaktif · 5 stasiun + puzzle tokoh</div>
     <h1>Rasakan cara fluida bergerak, bukan cuma menghafal rumusnya.</h1>
-    <p class="lead">Ikuti aliran air dari air terjun: pahami kontinuitas, Bernoulli, Torricelli, dan viskositas. Tiap stasiun punya simulasi, puzzle gambar tokoh ilmuwan, dan kuis.</p>
+    <p class="lead">Ikuti aliran air dari air terjun: pahami kontinuitas, Bernoulli, Torricelli, dan viskositas. Tiap stasiun punya simulasi, puzzle foto tokoh ilmuwan, dan kuis.</p>
     <div class="cta"><a class="btn pri" href="#s1">Mulai dari Stasiun 1</a><a class="btn" href="#hasil">Lihat papan skor</a></div>
   </div></div>
   <div class="pool" aria-hidden="true">
@@ -178,9 +180,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
 </section>
 
 <main>
-<section class="st" id="s1" data-g="A₁v₁ = A₂v₂"><div class="wrap">
+<section class="st" id="s1"><div class="wrap">
   <h2><span class="num">1</span>Kontinuitas</h2>
-  <p class="lead">Debit air yang masuk pipa harus sama dengan debit yang keluar: A₁v₁ = A₂v₂. Semakin sempit pipanya, semakin cepat airnya. Tantanganmu: atur lebar pipa sempit supaya kecepatan air tepat menyalakan turbin mini (sekitar 6 m/s). Lalu susun puzzle tokohnya dan kerjakan kuis.</p>
+  <p class="lead">Debit air yang masuk pipa harus sama dengan debit yang keluar: A₁v₁ = A₂v₂. Semakin sempit pipanya, semakin cepat airnya. Tantanganmu: atur lebar pipa sempit supaya kecepatan air tepat menyalakan turbin mini (sekitar 6 m/s). Lalu susun puzzle fotonya dan kerjakan kuis.</p>
   <div class="lab">
     <div>
       <svg id="sv1" class="scene" viewBox="0 0 600 250" role="img" aria-label="Pipa dengan bagian menyempit dan turbin mini">
@@ -208,9 +210,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="quiz" id="qz1"></div>
 </div></section>
 
-<section class="st" id="s2" data-g="P + ½ρv² + ρgh"><div class="wrap">
+<section class="st" id="s2"><div class="wrap">
   <h2><span class="num">2</span>Bernoulli</h2>
-  <p class="lead">Hukum Bernoulli menghubungkan kecepatan aliran dengan tekanan: makin cepat fluida bergerak, makin rendah tekanannya. Ubah kecepatan air dan lebar leher pipa, lalu amati tinggi kolom air di ketiga tabung. Susun puzzle tokohnya, lalu jawab lima soal.</p>
+  <p class="lead">Hukum Bernoulli menghubungkan kecepatan aliran dengan tekanan: makin cepat fluida bergerak, makin rendah tekanannya. Ubah kecepatan air dan lebar leher pipa, lalu amati tinggi kolom air di ketiga tabung. Susun puzzle fotonya, lalu jawab lima soal.</p>
   <div class="lab">
     <div>
       <svg id="sv2" class="scene" viewBox="0 0 600 290" role="img" aria-label="Pipa venturi dengan tiga tabung pengukur tekanan">
@@ -237,9 +239,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="quiz" id="qz"></div>
 </div></section>
 
-<section class="st" id="s3" data-g="v = √(2gh)"><div class="wrap">
+<section class="st" id="s3"><div class="wrap">
   <h2><span class="num">3</span>Torricelli</h2>
-  <p class="lead">Sebuah tangki air dibocorkan di satu titik (tangki dianggap terus terisi penuh). Semakin dalam lubangnya, semakin kencang semburannya, tetapi semakin sedikit waktu jatuhnya. Cari posisi lubang yang membuat air menyembur paling jauh, susun puzzle tokohnya, lalu kerjakan kuis.</p>
+  <p class="lead">Sebuah tangki air dibocorkan di satu titik (tangki dianggap terus terisi penuh). Semakin dalam lubangnya, semakin kencang semburannya, tetapi semakin sedikit waktu jatuhnya. Cari posisi lubang yang membuat air menyembur paling jauh, susun puzzle fotonya, lalu kerjakan kuis.</p>
   <div class="lab">
     <div>
       <svg id="sv3" class="scene" viewBox="0 0 600 275" role="img" aria-label="Tangki air dengan lubang dan lintasan semburan">
@@ -271,9 +273,9 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="quiz" id="qz3"></div>
 </div></section>
 
-<section class="st" id="s4" data-g="F = 6πηrv"><div class="wrap">
+<section class="st" id="s4"><div class="wrap">
   <h2><span class="num">4</span>Viskositas</h2>
-  <p class="lead">Sebuah kelereng kecil dijatuhkan ke tiga wadah: air, minyak goreng, dan madu. Viskositas (kekentalan) menghambat gerak benda yang jatuh. Tebak urutan tercepat ke terlambat, jalankan balapannya, susun puzzle tokohnya, lalu kerjakan kuis.</p>
+  <p class="lead">Sebuah kelereng kecil dijatuhkan ke tiga wadah: air, minyak goreng, dan madu. Viskositas (kekentalan) menghambat gerak benda yang jatuh. Tebak urutan tercepat ke terlambat, jalankan balapannya, susun puzzle fotonya, lalu kerjakan kuis.</p>
   <p class="lead" style="font-size:13px;font-style:italic">Catatan: kecepatan divisualisasikan sebanding dengan viskositas tiap fluida untuk memperjelas konsep, bukan hasil hitungan presisi rumus Stokes.</p>
   <div class="lab" style="grid-template-columns:1fr">
     <div class="tubes" id="tubes"></div>
@@ -285,16 +287,16 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   <div class="quiz" id="qz4"></div>
 </div></section>
 
-<section class="st" id="s5" data-g="Q = V / t"><div class="wrap">
+<section class="st" id="s5"><div class="wrap">
   <h2><span class="num">5</span>Cocokkan Konsep</h2>
-  <p class="lead">Pilih satu fenomena di kolom kiri, lalu pilih penjelasan yang tepat di kolom kanan. Susun puzzle tokoh hukum tekanan, lalu tutup dengan kuis akhir.</p>
+  <p class="lead">Pilih satu fenomena di kolom kiri, lalu pilih penjelasan yang tepat di kolom kanan. Susun puzzle foto tokoh hukum tekanan, lalu tutup dengan kuis akhir.</p>
   <div class="quiz"><div class="mt"><div class="col" id="ml"></div><div class="col" id="mr"></div></div>
   <div class="msg" id="mmsg" style="margin-top:14px">0 dari 5 pasangan cocok.</div></div>
   <div class="quiz puz" id="pz5"></div>
   <div class="quiz" id="qz5"></div>
 </div></section>
 
-<section class="st" id="hasil" data-g="★"><div class="wrap">
+<section class="st" id="hasil"><div class="wrap">
   <h2><span class="num">★</span>Hasil</h2>
   <p class="lead">Ringkasan hasil dari kelima stasiun. Selesaikan semuanya untuk melihat predikatmu.</p>
   <div class="quiz">
@@ -313,7 +315,7 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   </div>
 </div></section>
 </main>
-<footer><div class="wrap">Fluida Dinamis · laboratorium interaktif fisika</div></footer>
+<footer><div class="wrap">Fluida Dinamis · laboratorium interaktif fisika<br><small>Foto tokoh: Wikimedia Commons (karya domain publik / lisensi terbuka)</small></div></footer>
 
 <script>
 (function () {
@@ -472,13 +474,15 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
   }
   function setQ(k) { return function (sc) { S.q[k] = Math.max(S.q[k], sc); res(); }; }
 
-  /* PUZZLE GAMBAR TOKOH */
+  /* PUZZLE FOTO TOKOH (Wikimedia Commons, cadangan: ilustrasi) */
+  var FP = 'https://commons.wikimedia.org/wiki/Special:FilePath/';
+  function U(n) { return FP + encodeURIComponent(n) + '?width=900'; }
   var PEOPLE = [
-    { n: 'Leonardo da Vinci', y: '1452–1519', k: 'Mengamati bahwa aliran sungai yang menyempit menjadi lebih cepat, gagasan awal prinsip kontinuitas.', bg: '#7fb8c9', coat: '#7a3b2e', skin: '#e8b98f', hair: '#c9c3b5', brow: '#8a8478', st: 'long', beard: 'full', hat: 'beret', hatc: '#2c3e6b', col: '#efe6d2' },
-    { n: 'Daniel Bernoulli', y: '1700–1782', k: 'Lewat buku Hydrodynamica (1738), ia menghubungkan kecepatan dan tekanan fluida.', bg: '#b9a9d9', coat: '#2f4f8f', skin: '#f0c9a4', hair: '#f4f4f4', brow: '#8a8a8a', st: 'wig', beard: 'none', hat: 'none', col: '#ffffff' },
-    { n: 'Evangelista Torricelli', y: '1608–1647', k: 'Merumuskan kecepatan semburan v = √(2gh) dan menemukan barometer raksa.', bg: '#d9b38a', coat: '#242424', skin: '#e6b48a', hair: '#3a2a20', brow: '#3a2a20', st: 'short', beard: 'stache', hat: 'cap', hatc: '#111111', col: '#ffffff' },
-    { n: 'George Gabriel Stokes', y: '1819–1903', k: 'Menurunkan hukum hambatan bola dalam fluida kental, F = 6πηrv.', bg: '#9cc7a6', coat: '#3d3d46', skin: '#efc6a0', hair: '#8d8d8d', brow: '#777777', st: 'bald', beard: 'side', hat: 'none', col: '#ffffff' },
-    { n: 'Blaise Pascal', y: '1623–1662', k: 'Merumuskan hukum Pascal: tekanan pada fluida tertutup diteruskan ke segala arah sama besar.', bg: '#e0a0a0', coat: '#1f1f2b', skin: '#f0cfae', hair: '#5a3a22', brow: '#4a3220', st: 'long', beard: 'none', hat: 'none', col: '#ffffff' }
+    { n: 'Leonardo da Vinci', y: '1452–1519', k: 'Mengamati bahwa aliran sungai yang menyempit menjadi lebih cepat, gagasan awal prinsip kontinuitas.', u: U('Leonardo da Vinci - presumed self-portrait - WGA12798.jpg'), cy: 0.05, bg: '#7fb8c9', coat: '#7a3b2e', skin: '#e8b98f', hair: '#c9c3b5', brow: '#8a8478', st: 'long', beard: 'full', hat: 'beret', hatc: '#2c3e6b', col: '#efe6d2' },
+    { n: 'Daniel Bernoulli', y: '1700–1782', k: 'Lewat buku Hydrodynamica (1738), ia menghubungkan kecepatan dan tekanan fluida.', u: U('Porträt des Daniel Bernoulli - edit1.jpg'), cy: 0.04, bg: '#b9a9d9', coat: '#2f4f8f', skin: '#f0c9a4', hair: '#f4f4f4', brow: '#8a8a8a', st: 'wig', beard: 'none', hat: 'none', col: '#ffffff' },
+    { n: 'Evangelista Torricelli', y: '1608–1647', k: 'Merumuskan kecepatan semburan v = √(2gh) dan menemukan barometer raksa.', u: U('Evangelista Torricelli.jpg'), cy: 0.06, bg: '#d9b38a', coat: '#242424', skin: '#e6b48a', hair: '#3a2a20', brow: '#3a2a20', st: 'short', beard: 'stache', hat: 'cap', hatc: '#111111', col: '#ffffff' },
+    { n: 'George Gabriel Stokes', y: '1819–1903', k: 'Menurunkan hukum hambatan bola dalam fluida kental, F = 6πηrv.', u: U('George Gabriel Stokes.jpg'), cy: 0.05, bg: '#9cc7a6', coat: '#3d3d46', skin: '#efc6a0', hair: '#8d8d8d', brow: '#777777', st: 'bald', beard: 'side', hat: 'none', col: '#ffffff' },
+    { n: 'Blaise Pascal', y: '1623–1662', k: 'Merumuskan hukum Pascal: tekanan pada fluida tertutup diteruskan ke segala arah sama besar.', u: U('Blaise Pascal Versailles.JPG'), cy: 0.05, bg: '#e0a0a0', coat: '#1f1f2b', skin: '#f0cfae', hair: '#5a3a22', brow: '#4a3220', st: 'long', beard: 'none', hat: 'none', col: '#ffffff' }
   ];
   function portrait(p) {
     var s = '<rect width="300" height="300" fill="' + p.bg + '"/><circle cx="240" cy="52" r="24" fill="#fff" opacity=".35"/>';
@@ -508,22 +512,52 @@ footer{padding:40px 0 60px;color:var(--mut);font-size:14px;text-align:center}
     if (p.hat === 'cap') s += '<path d="M97 102 Q98 46 150 44 Q202 46 203 102 Q150 86 97 102Z" fill="' + p.hatc + '"/><circle cx="150" cy="42" r="6" fill="' + p.hatc + '"/>';
     return s;
   }
+
+  /* muat foto dulu; kalau gagal / offline, pakai ilustrasi cadangan */
   function puzzle(box, pi, title) {
-    var P = PEOPLE[pi], art = portrait(P), pos = [], sel = -1, done = false, i;
+    box.innerHTML = '<div class="qk">' + title + '</div><p class="why">Memuat foto tokoh…</p>';
+    var im = new Image(), fin = false;
+    function go(ok) { if (fin) return; fin = true; build(box, pi, title, ok ? im : null); }
+    im.onload = function () { go(im.naturalWidth > 10); };
+    im.onerror = function () { go(false); };
+    setTimeout(function () { go(false); }, 9000);
+    im.src = PEOPLE[pi].u;
+  }
+  function build(box, pi, title, img) {
+    var P = PEOPLE[pi], art = portrait(P), pos = [], sel = -1, done = false, i, sx = 0, sy = 0, sw = 0;
+    if (img) { sw = Math.min(img.naturalWidth, img.naturalHeight); sx = (img.naturalWidth - sw) / 2; sy = (img.naturalHeight - sw) * P.cy; }
     for (i = 0; i < 9; i++) pos.push(i);
     (function sh() {
       do {
         for (i = 8; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pos[i]; pos[i] = pos[j]; pos[j] = t; }
       } while (pos.some(function (v, k) { return v === k; }));
     })();
-    box.innerHTML = '<div class="qk">' + title + '</div><div class="pzl"><div class="board"></div><div><p class="why" style="margin-top:0">Ketuk dua kepingan untuk menukar posisinya. Susun sampai menjadi gambar utuh dan temukan siapa tokohnya. Kepingan yang benar akan terkunci hijau.</p><div class="msg pk">Kepingan benar: 0 / 9</div><div class="row"><button class="btn peek">Intip gambar</button></div><div class="thumb" hidden><svg viewBox="0 0 300 300" aria-hidden="true">' + art + '</svg></div></div></div>';
+    box.innerHTML = '<div class="qk">' + title + '</div><div class="pzl"><div class="board"></div><div><p class="why" style="margin-top:0">Ketuk dua kepingan untuk menukar posisinya. Susun sampai menjadi foto utuh dan temukan siapa tokohnya. Kepingan yang benar akan terkunci hijau.</p><div class="msg pk">Kepingan benar: 0 / 9</div><div class="row"><button class="btn peek">Intip gambar</button></div><div class="thumb" hidden></div><p class="credit">' + (img ? 'Sumber foto: Wikimedia Commons.' : 'Foto tidak dapat dimuat, memakai ilustrasi cadangan.') + '</p></div></div>';
     var bd = box.querySelector('.board'), pk = box.querySelector('.pk'), th = box.querySelector('.thumb'), pb = box.querySelector('.peek');
+    if (img) {
+      var tc = document.createElement('canvas'); tc.width = tc.height = 300;
+      tc.getContext('2d').drawImage(img, sx, sy, sw, sw, 0, 0, 300, 300); th.appendChild(tc);
+    } else th.innerHTML = '<svg viewBox="0 0 300 300" aria-hidden="true">' + art + '</svg>';
     pb.onclick = function () { th.hidden = !th.hidden; pb.textContent = th.hidden ? 'Intip gambar' : 'Sembunyikan gambar'; };
+    function tile(pc) {
+      var r = Math.floor(pc / 3), c = pc % 3;
+      if (img) {
+        var cn = document.createElement('canvas'); cn.width = cn.height = 240;
+        cn.getContext('2d').drawImage(img, sx + c * sw / 3, sy + r * sw / 3, sw / 3, sw / 3, 0, 0, 240, 240);
+        return cn;
+      }
+      var d = document.createElement('div'); d.style.cssText = 'width:100%;height:100%';
+      d.innerHTML = '<svg viewBox="' + (c * 100) + ' ' + (r * 100) + ' 100 100" aria-hidden="true">' + art + '</svg>';
+      return d;
+    }
     function draw() {
-      bd.innerHTML = pos.map(function (pc, s) {
-        var r = Math.floor(pc / 3), c = pc % 3;
-        return '<button class="tl' + (pc === s ? ' lk' : '') + (s === sel ? ' sel' : '') + '" data-s="' + s + '" aria-label="Kepingan posisi ' + (s + 1) + '"><svg viewBox="' + (c * 100) + ' ' + (r * 100) + ' 100 100" aria-hidden="true">' + art + '</svg></button>';
-      }).join('');
+      bd.innerHTML = '';
+      pos.forEach(function (pc, s) {
+        var b = document.createElement('button');
+        b.className = 'tl' + (pc === s ? ' lk' : '') + (s === sel ? ' sel' : '');
+        b.dataset.s = s; b.setAttribute('aria-label', 'Kepingan posisi ' + (s + 1));
+        b.appendChild(tile(pc)); bd.appendChild(b);
+      });
     }
     bd.onclick = function (e) {
       var t = e.target.closest('.tl'); if (!t || done) return;
